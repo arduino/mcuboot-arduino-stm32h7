@@ -1,0 +1,3 @@
+[submodule "mcuboot"]
+	path = mcuboot
+	url = git@github.com:AGlass0fMilk/mcuboot.git
