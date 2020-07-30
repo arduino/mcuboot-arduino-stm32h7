@@ -1,10 +1,20 @@
 {
     "target_overrides": {
-	"MCU_NRF52840": {
+        "*": {
+            "target.restrict_size": "0x20000"
+        },
+	"NRF52840_DK": {
             "target.features_add": ["STORAGE"],
 	    "target.features_remove": ["CRYPTOCELL310"],
 	    "target.macros_remove": ["MBEDTLS_CONFIG_HW_SUPPORT"],
             "target.components_add": ["QSPIF", "FLASHIAP"]
-	}
+	},
+        "EP_AGORA": {
+            "target.features_add": ["STORAGE"],
+            "target.features_remove": ["CRYPTOCELL310"],
+            "target.macros_remove": ["MBEDTLS_CONFIG_HW_SUPPORT"],
+            "target.components_remove": ["QSPIF"],
+            "target.components_add": ["SPIF", "FLASHIAP"]
+        }
     }
 }
