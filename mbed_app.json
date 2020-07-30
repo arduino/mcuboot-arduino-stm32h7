@@ -1,15 +1,19 @@
 {
+    "requires": ["bare-metal", "mbedtls", "mcuboot", "flashiap-block-device", "spif-driver", "qspif", "mbed-trace"],
     "target_overrides": {
         "*": {
-            "target.restrict_size": "0x20000"
+            "target.restrict_size": "0x20000",
+            "target.c_lib": "small"
         },
 	"NRF52840_DK": {
+            "target.device_has_remove": ["ITM"],
             "target.features_add": ["STORAGE"],
 	    "target.features_remove": ["CRYPTOCELL310"],
 	    "target.macros_remove": ["MBEDTLS_CONFIG_HW_SUPPORT"],
             "target.components_add": ["QSPIF", "FLASHIAP"]
 	},
         "EP_AGORA": {
+            "target.device_has_remove": ["ITM"],
             "target.features_add": ["STORAGE"],
             "target.features_remove": ["CRYPTOCELL310"],
             "target.macros_remove": ["MBEDTLS_CONFIG_HW_SUPPORT"],
