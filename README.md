@@ -31,13 +31,11 @@ Care should be exercised when configuring the bootable application to ensure the
 
 The **"secondary"** memory region is provided by you. Typically this is an external flash chip used for bulk data and firmware update storage.
 
-In this example, the secondary memory region is initialized to the target's default block device instance in the following line of `flash_map.cpp` below:
+By default, the secondary memory region is provided by the `mbed::BlockDevice::get_default_instance()` API. This functionality can be overridden by redefining the weak function declared in `secondary_bd.h`:
 
 ```
-mbed::BlockDevice* mcuboot_secondary_bd = mbed::BlockDevice
+mbed::BlockDevice* get_secondary_bd(void);
 ```
-
-The symbol, `mcuboot_secondary_bd`, is an `extern` expected to be defined when `mcuboot.bootloader-build` is 1 (ie: you are building mcuboot as a bootloader and not an application library).
 
 Since the Mbed-OS mcuboot port uses Mbed's `BlockDevice` API, there is a lot of flexibility when providing the secondary memory region. For example, you can use a `FlashIAPBlockDevice` if your application is small enough to fit two copies in the internal flash. If you also use your external flash chip for data storage you can simply wrap the whole `BlockDevice` object in a `SlicingBlockDevice` to give mcuboot access to a certain region of your external flash.
 
