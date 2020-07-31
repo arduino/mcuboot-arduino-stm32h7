@@ -1,5 +1,5 @@
 {
-    "requires": ["bare-metal", "mbedtls", "mcuboot", "flashiap-block-device", "spif-driver", "qspif", "mbed-trace"],
+    "requires": ["bare-metal", "mbedtls", "mcuboot", "flashiap-block-device", "spif-driver", "qspif", "mbed-trace", "serialcobs"],
     "target_overrides": {
         "*": {
             "target.restrict_size": "0x20000",

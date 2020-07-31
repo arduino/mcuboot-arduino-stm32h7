@@ -14,3 +14,4 @@ mbed_config.h
 *.pem
 signing_keys.c
 mbed-os/*
+mcuboot/*
