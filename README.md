@@ -37,6 +37,8 @@ By default, the secondary memory region is provided by the `mbed::BlockDevice::g
 mbed::BlockDevice* get_secondary_bd(void);
 ```
 
+See the example file in this repository, `default_bd.cpp`.
+
 Since the Mbed-OS mcuboot port uses Mbed's `BlockDevice` API, there is a lot of flexibility when providing the secondary memory region. For example, you can use a `FlashIAPBlockDevice` if your application is small enough to fit two copies in the internal flash. If you also use your external flash chip for data storage you can simply wrap the whole `BlockDevice` object in a `SlicingBlockDevice` to give mcuboot access to a certain region of your external flash.
 
 The Mbed-OS mcuboot port also has an additional function that the application can define if needed: `void mbed_mcuboot_user_init(void)`. This is provided as a `weak` symbol so the application can perform any necessary initialization before the rest of the boot process begins.
