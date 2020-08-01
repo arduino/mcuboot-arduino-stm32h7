@@ -5,8 +5,6 @@
  *      Author: gdbeckstein
  */
 
-#include "PinNames.h"
-
 /** Enable serial bootloader feature by default */
 #ifndef MBED_CONF_APP_SERIAL_BOOTLOADER_ENABLE
 #define MBED_CONF_APP_SERIAL_BOOTLOADER_ENABLE 1
