@@ -7,6 +7,8 @@
 
 #include "BlockDevice.h"
 
+#include "SlicingBlockDevice.h"
+
 #if COMPONENT_SPIF
 #include "SPIFBlockDevice.h"
 #endif
@@ -72,7 +74,12 @@ BlockDevice *BlockDevice::get_default_instance()
  * You can override this function to suit your hardware/memory configuration
  * By default it simply returns what is returned by BlockDevice::get_default_instance();
  */
-//mbed::BlockDevice* get_secondary_bd(void) {
-//    return mbed::BlockDevice::get_default_instance();
-//}
+mbed::BlockDevice* get_secondary_bd(void) {
+    // In this case, our flash is much larger than a single image so
+    // slice it into a smaller size, 1MB at the beginning
+
+    mbed::BlockDevice* default_bd = mbed::BlockDevice::get_default_instance();
+    static mbed::SlicingBlockDevice sliced_bd(default_bd, 0x0, 0xDD000);
+    return &sliced_bd;
+}
 

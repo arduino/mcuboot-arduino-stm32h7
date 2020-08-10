@@ -10,7 +10,9 @@
             "target.features_add": ["STORAGE"],
 	    "target.features_remove": ["CRYPTOCELL310"],
 	    "target.macros_remove": ["MBEDTLS_CONFIG_HW_SUPPORT"],
-            "target.components_add": ["QSPIF", "FLASHIAP"]
+            "target.components_add": ["QSPIF", "FLASHIAP"],
+            "mcuboot.max-img-sectors": 256,
+            "qspif.QSPI_MIN_PROG_SIZE": 4
 	},
         "EP_AGORA": {
             "target.device_has_remove": ["ITM"],
@@ -18,7 +20,8 @@
             "target.features_remove": ["CRYPTOCELL310"],
             "target.macros_remove": ["MBEDTLS_CONFIG_HW_SUPPORT"],
             "target.components_remove": ["QSPIF"],
-            "target.components_add": ["SPIF", "FLASHIAP"]
+            "target.components_add": ["SPIF", "FLASHIAP"],
+            "mcuboot.max-img-sectors": 256
         }
     }
 }

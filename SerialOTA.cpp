@@ -20,6 +20,7 @@ SerialOTA::ota_error_t SerialOTA::begin(void) {
     uint32_t bytes_collected = 0;
     packet_header_t header = { 0 };
     uint32_t crc;
+    uint8_t tx_byte = 0;
 
     // Initialize the secondary block device
     _update_bd.init();
@@ -29,8 +30,9 @@ SerialOTA::ota_error_t SerialOTA::begin(void) {
 
     _serial.set_blocking(true);
 
-    // Tell the serial bootloader host application to begin :)
-    _serial.write("GO", 2);
+    // Tell the serial bootloader host application to begin
+    tx_byte = 2;
+    _serial.write(&tx_byte, 1);
 
     while(true) {
 
@@ -40,13 +42,8 @@ SerialOTA::ota_error_t SerialOTA::begin(void) {
         // The first bytes will be the header
         memcpy(&header, _payload_buffer, sizeof(packet_header_t));
 
-        // If the sequence number is OTA_DONE_SEQ_NUM we're done!
-        if(header.sequence_num == OTA_DONE_SEQ_NUM) {
-            return OTA_SUCCESS;
-        }
-
         // Check the sequence number
-        if(_current_seq != header.sequence_num) {
+        if((_current_seq != header.sequence_num) && (header.sequence_num != OTA_DONE_SEQ_NUM)) {
             return OTA_OUT_OF_SYNC;
         }
 
@@ -73,5 +70,16 @@ SerialOTA::ota_error_t SerialOTA::begin(void) {
         _current_seq++;
         bytes_collected += header.payload_size;
 
+        // If the sequence number is OTA_DONE_SEQ_NUM we're done!
+        if(header.sequence_num == OTA_DONE_SEQ_NUM) {
+            return OTA_SUCCESS;
+        }
+
+        // Tell the loader script to continue
+        tx_byte = 0;
+        _serial.write(&tx_byte, 1);
+
     }
+
+    return OTA_SUCCESS;
 }

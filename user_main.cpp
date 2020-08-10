@@ -28,6 +28,10 @@
 #include "drivers/DigitalIn.h"
 #include "SerialCOBS.h"
 
+#include "SlicingBlockDevice.h"
+
+#include "bootutil.h"
+
 #define BOOT_WAIT_TIMEOUT 5s
 
 using namespace std::chrono;
@@ -49,6 +53,7 @@ void mbed_mcuboot_user_init(void) {
 
     // Set up the serial interface
     mbed::BufferedSerial pc(STDIO_UART_TX, STDIO_UART_RX, MBED_CONF_APP_SERIAL_BOOTLOADER_BAUD);
+    //mbed::BufferedSerial pc(P0_3, P0_4, MBED_CONF_APP_SERIAL_BOOTLOADER_BAUD);
 
     // Wait for a specified timeout until just booting
     rtos::Kernel::Clock::duration time_waited = 0ms;
@@ -87,7 +92,9 @@ void mbed_mcuboot_user_init(void) {
 
     SerialOTA::ota_error_t error = ota.begin();
 
-    // TODO - check error?
+    if(error == SerialOTA::OTA_SUCCESS) {
+        boot_set_pending(false);
+    }
 
 #endif // MBED_CONF_APP_SERIAL_BOOTLOADER_ENABLE
 
