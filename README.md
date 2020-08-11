@@ -81,7 +81,7 @@ cd &_
 **Note:** even if the internal main application is not verified (ie: the digital signature is not checked) this step **must** be performed so the appropriate application header info is prepended to the binary. mcuboot will not execute the internal main application if this header info is missing or corrupt.
 
 ```
-imgtool sign -k signing-keys.pem --align 4 -v 1.2.3 --header-size 1024 --pad-header -S 901120 mbed-mcuboot-blinky.hex signed.hex
+imgtool sign -k signing-keys.pem --align 4 -v 1.2.3 --header-size 4096 --pad-header -S 901120 mbed-mcuboot-blinky.hex signed.hex
 ```
 
 Explanation of each option:
@@ -89,7 +89,7 @@ Explanation of each option:
 - `-k signing-keys.pem`: this specifies the file containing the keys used to sign/verify the application
 - `--align 4`: this lets mcuboot know the intrinsic alignment of the flash (32-bits = 4 byte alignemtn)
 - `-v 1.2.3`: this sets the version number of the application to 1.2.3
-- `--header-size 1024`: this must be the same as the value specified in `mcuboot.header-size` configuration (1024 bytes by default)
+- `--header-size 4096`: this must be the same as the value specified in `mcuboot.header-size` configuration (4096 bytes by default)
 - `--pad-header`: this tells imgtool to insert the entire header, including any necessary padding bytes.
 - `-S 901120`: this specifies the maximum size of the application ("slot size"). It **must** be the same as the value specified in the **main application's** `target.mbed_app_size` configuration (0xDC000 = 901120)
 
