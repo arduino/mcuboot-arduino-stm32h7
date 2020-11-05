@@ -34,7 +34,9 @@ The application header info section is at the beginning of the "primary memory s
 
 When deciding what to boot/update, the mcuboot bootloader looks at an installed application's header info, which is a special struct prepended to the application binary. It uses this header info to validate that there is a bootable image installed in the "slot".
 
-By default, this header is configured to be 4kB in size. This can be adjusted using the configuration parameter `mcuboot.header_size`. **However,** due to the way the FlashIAP block device currently works while erasing, the header_size should be configured to be the size of an erase sector (4kB in the case of an nRF52840). Erasing using the FlashIAPBlockDevice only works if the given address is erase-sector aligned!
+By default, this header is configured to be 4kB in size. This can be adjusted using the configuration parameter `mcuboot.header_size`. 
+
+**However,** due to the way the FlashIAP block device currently works while erasing, the header_size should be configured to be the size of an erase sector (4kB in the case of an nRF52840). Erasing using the FlashIAPBlockDevice only works if the given address is erase-sector aligned!
 
 This header is prepended to the application binary during the signing process (explained later).
 
@@ -44,13 +46,18 @@ The primary application is the currently installed, bootable application. In thi
 
 #### Application TLV Trailers
 
-There are also type-length-value (TLV) encoded pieces of information following the application binary called the "application trailer". These TLV encoded values include things like a digital signature and SHA hash, among other things. Similar to the application header info, the tlv trailers are also appended to the application hex during signing.
+There are also type-length-value (TLV) encoded pieces of information following the application binary called the "application trailer". These TLV encoded values include things like a digital signature and SHA hash, among other things. Similar to the application header info, the TLV trailers are also appended to the application hex during signing.
 
-The space reserved for the application TLV trailers is determined from other configuration parameters. The TLV trailers reside in the memory between the **end** of the *primary application* and the **end** of the *primary slot*. ie: The TLV trailers start at `target.mbed_app_start + target.mbed_app_size` and end at `mcuboot.primary-slot-address + mcuboot.slot-size`.
+The space reserved for the application TLV trailers is determined from other configuration parameters. The TLV trailers reside in the memory between the **end** of the *primary application* and the **end** of the *primary slot*. 
+
+ie: The TLV trailers start at `target.mbed_app_start + target.mbed_app_size` and end at `mcuboot.primary-slot-address + mcuboot.slot-size`.
 
 In our case, our configuration gives us:
+
 `target.mbed_app_start + target.mbed_app_size = 0x21000 + 0xBE000 = 0xDF000 = TLV start address`
+
 `mcuboot.primary-slot-address + mcuboot.slot-size = 0x20000 + 0xC0000 = 0xE0000 = TLV end address`
+
 `TLV region size = 0xE0000 - 0xDF000 = 0x1000`
 
 In most cases, 4kB will be plenty of room for the required TLV trailers. Enabling features such as update binary encryption increases the number of required TLV trailer entries and so you may need to adjust the size of the TLV trailer region based on your use case. During signing, the imgtool script will complain if there is not enough room for TLV trailers.
@@ -65,6 +72,7 @@ To perform this kind of swap update, mcuboot requires a non-volatile "scratch" s
 
 The scratch region starting address may be specified with the configuration parameter, `mcuboot.scratch-address`. The size of the scratch space can be configured using `mcuboot.scratch-size` -- this value **must** be erase-sector aligned (ie: a multiple of the internal flash's eraseable size).
 
+For more advanced information about configuring the scratch space region, see the [mcuboot documentation on Image Slots](https://github.com/mcu-tools/mcuboot/blob/master/docs/design.md#image-slots). For more information on swap updates, see the [mcuboot documentation on Swap Updates](https://github.com/mcu-tools/mcuboot/blob/master/docs/design.md#image-swapping)
 
 ### Secondary Slot Region
 
@@ -118,11 +126,15 @@ It is beneficial to first install mcuboot's imgtool python command line tool:
 
 `pip3 install --user -r mcuboot/scripts/requirements.txt && python3 mcuboot/scripts/setup.py install`
 
-You should also install the python package `intelhex` if it is not already installed: `pip install intelhex`. This python package includes several utility scripts for working with binaries and .hex files.
+You should also install the python package `intelhex` if it is not already installed: 
+
+`pip install intelhex` 
+
+This python package includes several utility scripts for working with binaries and .hex files.
 
 ### Creating the signing keys and building the bootloader
 
-This section will only cover steps specific to setting up this project with a signing key pair and signing a main application binary. For more advanced use cases and information, such as using alternative signing algorithms to rsa-2048, see the mcuboot documentation.
+This section will only cover steps specific to setting up this project with a signing key pair and signing a main application binary. For more advanced use cases and information, such as using alternative signing algorithms to rsa-2048, see the [mcuboot documentation on Image Signing](https://github.com/mcu-tools/mcuboot/blob/master/docs/signed_images.md#image-signing).
 
 For this project the required steps to sign an application are:
 
