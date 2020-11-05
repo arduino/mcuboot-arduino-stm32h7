@@ -1,8 +1,0 @@
-{
-    "target_overrides": {
-	"MCU_NRF52840": {
-            "target.features_add": ["STORAGE"],
-            "target.components_add": ["QSPIF", "FLASHIAP"]
-	}
-    }
-}
