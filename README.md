@@ -170,7 +170,7 @@ The next step is to sign the main application binary.
 **Note:** even if the internal main application is not verified (ie: the digital signature is not checked) this step **must** be performed so the appropriate application header info is prepended to the binary. mcuboot will not execute the internal main application if this header info is missing or corrupt.
 
 ```
-imgtool sign -k signing-keys.pem --align 4 -v 1.2.3+4 --header-size 4096 --pad-header -S 0xC0000 mbed-mcuboot-blinky.hex signed.hex
+imgtool sign -k signing-keys.pem --align 4 -v 1.2.3+4 --header-size 4096 --pad-header -S 0xC0000 --pad mbed-mcuboot-blinky.hex signed.hex
 ```
 
 Explanation of each option:
@@ -181,6 +181,7 @@ Explanation of each option:
 - `--header-size 4096`: this must be the same as the value specified in `mcuboot.header-size` configuration (4096 bytes by default)
 - `--pad-header`: this tells imgtool to insert the entire header, including any necessary padding bytes.
 - `-S 0xC0000`: this specifies the maximum size of the application ("slot size"). It **must** be the same as the configured `mcuboot.slot-size`!
+- `--pad`: this should only be used for binaries you plan on initially flashing to your target at the factory. It pads the resulting binary to the slot size and adds initialized trailer TLVs. This is not needed for update binaries.
 
 
 ### Creating the update binary
