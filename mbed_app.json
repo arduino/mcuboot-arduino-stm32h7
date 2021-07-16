@@ -44,6 +44,21 @@
             "mcuboot.max-img-sectors": "0x180",
             "mcuboot.read-granularity": 1,
             "qspif.QSPI_MIN_PROG_SIZE": 1
+        },
+        "PORTENTA_H7_M7": {
+            "target.clock_source": "USE_PLL_HSE_EXTC",
+            "target.use-mpu": false,
+            "target.components_remove" : ["WHD", "4343W", "CYW43XXX"],
+            "target.extra_labels_remove" : ["WHD", "CORDIO", "CYW4343X", "STM_EMAC"],
+            "target.device_has_remove": ["USBDEVICE", "EMAC", "CAN"],
+            "platform.stdio-baud-rate": 115200,
+            "mcuboot.primary-slot-address": "0x8020000",
+            "mcuboot.slot-size": "0xC0000",
+            "mcuboot.scratch-address": "0x80E0000",
+            "mcuboot.scratch-size": "0x20000",
+            "mcuboot.max-img-sectors": "0x180",
+            "mcuboot.read-granularity": 1,
+            "qspif.QSPI_MIN_PROG_SIZE": 1
         }
     }
 }
