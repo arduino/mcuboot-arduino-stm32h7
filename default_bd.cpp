@@ -39,7 +39,7 @@ BlockDevice *BlockDevice::get_default_instance()
 
 #elif COMPONENT_QSPIF
 
-    static QSPIFBlockDevice default_bd;
+    static QSPIFBlockDevice default_bd(PD_11, PD_12, PF_7, PD_13,  PF_10, PG_6, QSPIF_POLARITY_MODE_1, 40000000);
 
     return &default_bd;
 
