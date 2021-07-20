@@ -1,11 +1,21 @@
-# mbed-mcuboot-demo
-Demo of mcuboot with Mbed-OS
+# MCUboot-portenta-boot
+Demo of mcuboot with Mbed-OS for `PORTENTA_H7` target
 
-This application builds as a bootloader and should be built with the [corresponding bootable blinky demo application](https://github.com/AGlass0fMilk/mbed-mcuboot-blinky).
+This application builds as a bootloader and should be built with the [corresponding bootable application](https://github.com/bcmi-labs/mcuboot-portenta-app).
 
 ## Overview
 
 Go to the [mcuboot repository](https://github.com/mcu-tools/mcuboot) for more information on mcuboot and how to configure it. This section will only cover topics specific to the mbed-os implementation.
+
+## This is a WIP 
+
+Memory regions are not yet placed in their final position.
+
+Default upgrade method is `OVERWRITE_ONLY`.
+
+`SWAP UPGRADES` are in test.
+
+The following part of this README needs to be reviewed.
 
 ## Memory Regions Overview
 
