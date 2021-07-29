@@ -102,3 +102,26 @@ mbed::BlockDevice* get_secondary_bd(void) {
 #endif
 }
 
+mbed::BlockDevice* get_scratch_bd(void) {
+#if !defined MCUBOOT_USE_FILE_BD
+    static FlashIAPBlockDevice scratch_bd(MCUBOOT_SCRATCH_START_ADDR, MCUBOOT_SCRATCH_SIZE);
+    return &scratch_bd;
+#else
+    mbed::BlockDevice* default_bd = mbed::BlockDevice::get_default_instance();
+    static mbed::MBRBlockDevice mbr_bd(default_bd, 2);
+
+    int err = mbr_bd.init();
+    if (err) {
+        printf("Error initializing mbr device\n");
+    }
+
+    static mbed::FATFileSystem secondary_bd_fs("fs");
+    err = secondary_bd_fs.mount(&mbr_bd);
+    if (err) {
+        printf("Error mounting fs\n");
+    }
+    static mbed::FileBlockDevice file_bd(&mbr_bd, "/fs/scratch.bin", "rb+", MCUBOOT_SCRATCH_SIZE);
+    return &file_bd;
+#endif
+}
+
