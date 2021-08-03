@@ -36,6 +36,11 @@ The binary file to load on the board is here:
 ## Prepare QSPI flash
 At boot time MCUBoot will check for 2 "FileBlockDevices" into the QSPI flash. To prepare and format the QSPI flash as needed run this [sketch](https://github.com/bcmi-labs/mcuboot-portenta-boot/blob/boot_sketch/tools/PortentaMCUBootQSPIFormat.ino) before updating to MCUBoot
 
+## Generate Sketch header
+Even if the image is not signed MCUBoot will look for the image header to decide if boot the binary. To create an MCUBoot compatible Sketch use the following command:
+
+`python3 mcuboot-portenta-boot/mcuboot/scripts/imgtool.py sign --align 32 --max-align 32 -v 1.2.3+4 --header-size 4096 --pad-header -S 0xC0000 --pad -x 0x803F000 Sketch.ino.hex SketchWithHeader.ino.hex`
+
 ## The following part of this README needs to be reviewed.
 
 ## Memory Regions Overview
