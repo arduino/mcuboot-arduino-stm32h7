@@ -33,6 +33,9 @@ The binary file to load on the board is here:
 
 `mcuboot-portenta-boot/BUILD/PORTENTA_H7_M7/GCC_ARM`
 
+## Prepare QSPI flash
+At boot time MCUBoot will check for 2 "FileBlockDevices" into the QSPI flash. To prepare and format the QSPI flash as needed run this [sketch](https://github.com/bcmi-labs/mcuboot-portenta-boot/blob/boot_sketch/tools/PortentaMCUBootQSPIFormat.ino) before updating to MCUBoot
+
 ## The following part of this README needs to be reviewed.
 
 ## Memory Regions Overview
