@@ -15,7 +15,25 @@ Default upgrade method is `OVERWRITE_ONLY`.
 
 `SWAP UPGRADES` are in test.
 
-The following part of this README needs to be reviewed.
+`FILE SWAP UPGRADES` are supported and in test.
+
+## Build MCUBoot to run Arduino Sketches
+
+`git clone https://github.com/bcmi-labs/mcuboot-portenta-boot.git`
+
+`cd mcuboot-portenta-boot`
+
+`git checkout boot_sketch`
+
+`mbed deploy`
+
+`mbed compile -m PORTENTA_H7_M7 -t GCC_ARM`
+
+The binary file to load on the board is here:
+
+`mcuboot-portenta-boot/BUILD/PORTENTA_H7_M7/GCC_ARM`
+
+## The following part of this README needs to be reviewed.
 
 ## Memory Regions Overview
 
