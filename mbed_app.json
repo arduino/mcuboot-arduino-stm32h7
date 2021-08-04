@@ -59,7 +59,8 @@
             "mcuboot.max-img-sectors": "0x180",
             "mcuboot.max-align": 32,
             "mcuboot.file-as-blockdevice": true,
-            "mcuboot.signature-algorithm": "SIGNATURE_TYPE_NONE"
+            "mcuboot.signature-algorithm": "SIGNATURE_TYPE_NONE",
+            "mcuboot.mcuboot-as-envie": true
         }
     }
 }
