@@ -43,4 +43,7 @@
 #define PORTENTA_EXTCLOCK       25
 #endif
 
+int target_init(void);
+void envie_loop(void);
+
 #endif /* __TARGET_INIT_H */
