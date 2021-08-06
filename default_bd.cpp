@@ -17,7 +17,7 @@
 #if MCUBOOT_AS_ENVIE
 #include "FlashIAPBlockDevice.h"
 #include "SDMMCBlockDevice.h"
-//#include "LittleFileSystem.h"
+#include "LittleFileSystem.h"
 #include "ota.h"
 #endif
 
@@ -168,12 +168,12 @@ mbed::BlockDevice* get_secondary_bd(void) {
 
         if((storage_type & LITTLEFS_FLAG)) {
             printf("LITTLEFS \n");
-            //static LittleFileSystem secondary_bd_fs("secondary");
+            static LittleFileSystem secondary_bd_fs("fs");
 
-            //int err = secondary_bd_fs.mount(logical_bd);
-            //if (err) {
-            //    printf("Error mounting secondary fs\n");
-            //}
+            int err = secondary_bd_fs.mount(logical_bd);
+            if (err) {
+                printf("Error mounting fs\n");
+            }
         } else {
             printf("FATFS \n");
             static FATFileSystem secondary_bd_fs("secondary");
@@ -192,14 +192,14 @@ mbed::BlockDevice* get_secondary_bd(void) {
             printf("Error initializing secondary bd\n");
         }
 
-        if((storage_type & LITTLEFS_FLAG)) {
-            printf("LITTLEFS no MBR\n");
-            //static LittleFileSystem secondary_bd_fs("secondary");
+         if((storage_type & LITTLEFS_FLAG)) {
+            printf("LITTLEFS \n");
+            static LittleFileSystem secondary_bd_fs("fs");
 
-            //int err = secondary_bd_fs.mount(default_bd);
-            //if (err) {
-            //    printf("Error mounting secondary fs\n");
-            //}
+            int err = secondary_bd_fs.mount(default_bd);
+            if (err) {
+                printf("Error mounting fs\n");
+            }
         } else {
             printf("FATFS no MBR \n");
             static FATFileSystem secondary_bd_fs("secondary");
