@@ -1,5 +1,6 @@
 #include "mbed.h"
 #include "target_init.h"
+#include "ota.h"
 
 // clock source is selected with CLOCK_SOURCE in json config
 #define USE_PLL_HSE_EXTC     0x8  // Use external clock (ST Link MCO)
@@ -218,6 +219,23 @@ int target_init(void) {
   usb_reset = 1;
 
   HAL_Delay(10);
+
+  if (magic == 0x07AA) {
+    // DR1 contains the backing storage type, DR2 the offset in case of raw device / MBR
+    storageType storage_type = (storageType)HAL_RTCEx_BKUPRead(&RtcHandle, RTC_BKP_DR1);
+    uint32_t offset = HAL_RTCEx_BKUPRead(&RtcHandle, RTC_BKP_DR2);
+    uint32_t update_size = HAL_RTCEx_BKUPRead(&RtcHandle, RTC_BKP_DR3);
+    int ota_result = setOTAData(storage_type, offset, update_size);
+    /*if (ota_result == 0) {
+      // clean reboot with success flag
+      HAL_RTCEx_BKUPWrite(&RtcHandle, RTC_BKP_DR0, 0);
+      HAL_FLASH_Lock();
+      // wait for external reboot
+      while (1) {}
+    } else {
+      HAL_RTCEx_BKUPWrite(&RtcHandle, RTC_BKP_DR0, ota_result);
+    }*/
+  }
 
   /* Test if user code is programmed starting from USBD_DFU_APP_DEFAULT_ADD
    * address. TODO check MCUBoot header instead.
