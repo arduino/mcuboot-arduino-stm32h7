@@ -187,8 +187,13 @@ mbed::BlockDevice* get_secondary_bd(void) {
         static mbed::FileBlockDevice file_bd(logical_bd, "/secondary/update.bin", "rb+", update_size);
         return &file_bd;
     } else {
-         if((storage_type & LITTLEFS_FLAG)) {
-            printf("LITTLEFS \n");
+        int err = default_bd->init();
+        if (err) {
+            printf("Error initializing secondary bd\n");
+        }
+
+        if((storage_type & LITTLEFS_FLAG)) {
+            printf("LITTLEFS no MBR\n");
             //static LittleFileSystem secondary_bd_fs("secondary");
 
             //int err = secondary_bd_fs.mount(default_bd);
@@ -196,12 +201,12 @@ mbed::BlockDevice* get_secondary_bd(void) {
             //    printf("Error mounting secondary fs\n");
             //}
         } else {
-            printf("FATFS \n");
+            printf("FATFS no MBR \n");
             static FATFileSystem secondary_bd_fs("secondary");
 
             int err = secondary_bd_fs.mount(default_bd);
             if (err) {
-            printf("Error mounting secondary fs\n");
+                printf("Error mounting secondary fs\n");
             }
         }
 
