@@ -52,7 +52,7 @@
             "target.extra_labels_remove" : ["WHD", "CORDIO", "CYW4343X", "STM_EMAC"],
             "target.device_has_remove": ["USBDEVICE", "EMAC", "CAN"],
             "platform.stdio-baud-rate": 115200,
-            "mcuboot.primary-slot-address": "0x803F000",
+            "mcuboot.primary-slot-address": "0x8020000",
             "mcuboot.slot-size": "0xC0000",
             "mcuboot.scratch-address": "0x80E0000",
             "mcuboot.scratch-size": "0x20000",
