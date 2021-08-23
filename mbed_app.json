@@ -1,5 +1,5 @@
 {
-    "requires": ["rtos", "cmsis-cmsis5-rtos2", "bare-metal", "mbedtls", "mcuboot", "flashiap-block-device", "spif-driver", "qspif", "mbed-trace", "filesystem", "fat_chan", "littlefs", "events"],
+    "requires": ["bare-metal", "mbedtls", "mcuboot", "flashiap-block-device", "spif-driver", "qspif", "mbed-trace", "filesystem", "fat_chan", "littlefs", "rtos", "cmsis-cmsis5-rtos2", "events"],
     "macros": ["USE_USB_HS", "LOWSPEED=1"],
     "config": {
         "serial-bootloader-enable": {
