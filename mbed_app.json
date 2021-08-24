@@ -54,6 +54,8 @@
             "target.features_remove" : ["BLE"],
             "target.device_has_remove": ["USBDEVICE", "EMAC", "CAN", "SPI_ASYNCH", "SPISLAVE", "SPI","SERIAL_FC", "PWMOUT", "ANALOGIN", "ANALOGOUT", "I2CSLAVE", "I2C_ASYNC", "OSPI", "TRNG", "DAC", "CRC", "WATCHDOG", "RTC", "LPTICKER", "SLEEP"],
             "platform.stdio-baud-rate": 115200,
+            "fat_chan.ff_use_mkfs": 0,
+            "fat_chan.ff_fs_rpath": 0,
             "mcuboot.primary-slot-address": "0x8020000",
             "mcuboot.slot-size": "0xC0000",
             "mcuboot.scratch-address": "0x80E0000",
