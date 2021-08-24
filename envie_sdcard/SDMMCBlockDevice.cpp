@@ -15,6 +15,8 @@
  *
  */
 
+#if MCUBOOT_AS_ENVIE
+
 #include "SDMMCBlockDevice.h"
 #include "mbed_debug.h"
 
@@ -259,3 +261,5 @@ const char *SDMMCBlockDevice::get_type() const
 {
     return "SDCARD";
 }
+
+#endif

@@ -17,6 +17,8 @@
   ******************************************************************************
   */
 
+#if MCUBOOT_AS_ENVIE
+
 /* Includes ------------------------------------------------------------------ */
 #include "usbd_core.h"
 #include "usbd_desc.h"
@@ -287,5 +289,7 @@ static void IntToUnicode(uint32_t value, uint8_t * pbuf, uint8_t len)
     pbuf[2 * idx + 1] = 0;
   }
 }
+
+#endif
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

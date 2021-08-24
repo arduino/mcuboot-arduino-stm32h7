@@ -1,3 +1,5 @@
+#if MCUBOOT_AS_ENVIE
+
 #include "mbed.h"
 #include "ota.h"
 
@@ -10,3 +12,5 @@ int getOTAData(enum storageType* storage_type, uint32_t* data_offset, uint32_t* 
   *update_size = MCUBOOT_SLOT_SIZE;
   return 0;	
 }
+
+#endif

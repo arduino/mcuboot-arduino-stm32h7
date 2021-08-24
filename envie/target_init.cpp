@@ -1,3 +1,5 @@
+#if MCUBOOT_AS_ENVIE
+
 #include "mbed.h"
 #include "target_init.h"
 #include "ota.h"
@@ -308,3 +310,5 @@ void envie_loop(void) {
     LED_pulse(&led);
   }
 }
+
+#endif
