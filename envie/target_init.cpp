@@ -259,9 +259,12 @@ int target_init(void) {
   }
 }
 
+#if MCUBOOT_ENVIE_DFU
 USBD_HandleTypeDef USBD_Device;
 extern PCD_HandleTypeDef hpcd;
 extern void init_Memories(void);
+#endif
+
 extern "C" {
   uint8_t SetSysClock_PLL_HSE(uint8_t bypass, bool lowspeed);
 }
@@ -277,6 +280,7 @@ void envie_loop(void) {
 
   //turnDownEthernet();
 
+#if MCUBOOT_ENVIE_DFU
   init_Memories();
 
   /* Otherwise enters DFU mode to allow user programming his application */
@@ -298,8 +302,10 @@ void envie_loop(void) {
   /* Enable USBHS Interrupt */
   HAL_NVIC_DisableIRQ(OTG_HS_IRQn);
   HAL_NVIC_DisableIRQ(OTG_FS_IRQn);
+#endif
 
   while(1) {
+#if MCUBOOT_ENVIE_DFU
 #ifdef USE_USB_HS
     if (USB_OTG_HS->GINTSTS & USB_OTG_HS->GINTMSK) {
 #else // USE_USB_FS
@@ -307,6 +313,7 @@ void envie_loop(void) {
 #endif
       HAL_PCD_IRQHandler(&hpcd);
     }
+#endif
     LED_pulse(&led);
   }
 }

@@ -62,6 +62,9 @@
             "mcuboot.max-align": 32,
             "mcuboot.file-as-blockdevice": true,
             "mcuboot.mcuboot-as-envie": true,
+            "mcuboot.mcuboot-envie-littlefs": true,
+            "mcuboot.mcuboot-envie-sdcard": true,
+            "mcuboot.mcuboot-envie-dfu": true,
             "mcuboot.encrypt-rsa": true
         }
     }

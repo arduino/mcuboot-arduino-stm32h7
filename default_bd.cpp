@@ -17,7 +17,9 @@
 #if MCUBOOT_AS_ENVIE
 #include "FlashIAPBlockDevice.h"
 #include "SDMMCBlockDevice.h"
+#if MCUBOOT_ENVIE_LITTLEFS
 #include "LittleFileSystem.h"
+#endif
 #include "ota.h"
 #endif
 
@@ -73,12 +75,13 @@ BlockDevice *BlockDevice::get_default_instance()
             raw_bd = &flashIAP_bd;
         }
     }
-
+#if MCUBOOT_ENVIE_SDCARD
     if (storage_type & SDCARD_FLAG) {
         printf("SD_FLASH \n");
         static SDMMCBlockDevice SDMMC_bd;
         raw_bd = &SDMMC_bd;
     }
+#endif
 
     if (storage_type & QSPI_FLASH_FLAG) {
         printf("QSPI_FLASH\n");
@@ -165,24 +168,27 @@ mbed::BlockDevice* get_secondary_bd(void) {
         if (err) {
             printf("Error initializing mbr device\n");
         }
-
+#if MCUBOOT_ENVIE_LITTLEFS
         if((storage_type & LITTLEFS_FLAG)) {
             printf("LITTLEFS \n");
-            static LittleFileSystem secondary_bd_fs("fs");
+            static LittleFileSystem secondary_bd_fs("secondary");
 
-            int err = secondary_bd_fs.mount(logical_bd);
+            err = secondary_bd_fs.mount(logical_bd);
             if (err) {
                 printf("Error mounting fs\n");
             }
         } else {
+#endif
             printf("FATFS \n");
             static FATFileSystem secondary_bd_fs("secondary");
 
-            int err = secondary_bd_fs.mount(logical_bd);
+            err = secondary_bd_fs.mount(logical_bd);
             if (err) {
                 printf("Error mounting secondary fs\n");
             }
+#if MCUBOOT_ENVIE_LITTLEFS
         }
+#endif
 
         static mbed::FileBlockDevice file_bd(logical_bd, "/secondary/update.bin", "rb+", update_size);
         return &file_bd;
@@ -191,24 +197,27 @@ mbed::BlockDevice* get_secondary_bd(void) {
         if (err) {
             printf("Error initializing secondary bd\n");
         }
-
+#if MCUBOOT_ENVIE_LITTLEFS
          if((storage_type & LITTLEFS_FLAG)) {
             printf("LITTLEFS \n");
-            static LittleFileSystem secondary_bd_fs("fs");
+            static LittleFileSystem secondary_bd_fs("secondary");
 
-            int err = secondary_bd_fs.mount(default_bd);
+            err = secondary_bd_fs.mount(default_bd);
             if (err) {
                 printf("Error mounting fs\n");
             }
         } else {
+#endif
             printf("FATFS no MBR \n");
             static FATFileSystem secondary_bd_fs("secondary");
 
-            int err = secondary_bd_fs.mount(default_bd);
+            err = secondary_bd_fs.mount(default_bd);
             if (err) {
                 printf("Error mounting secondary fs\n");
             }
+#if MCUBOOT_ENVIE_LITTLEFS
         }
+#endif
 
         static mbed::FileBlockDevice file_bd(default_bd, "/secondary/update.bin", "rb+", update_size);
         return &file_bd;
