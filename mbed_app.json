@@ -11,8 +11,8 @@
         "*": {
             "target.restrict_size": "0x20000",
             "target.c_lib": "small",
-            "mcuboot.log-level": "MCUBOOT_LOG_LEVEL_DEBUG",
-            "mbed-trace.enable": true,
+            "mcuboot.log-level": "MCUBOOT_LOG_LEVEL_INFO",
+            "mbed-trace.enable": false,
             "mbed-trace.fea-ipv6": false
         },
         "NRF52840_DK": {
