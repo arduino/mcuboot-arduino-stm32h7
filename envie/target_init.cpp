@@ -227,7 +227,8 @@ int target_init(void) {
     storageType storage_type = (storageType)HAL_RTCEx_BKUPRead(&RtcHandle, RTC_BKP_DR1);
     uint32_t offset = HAL_RTCEx_BKUPRead(&RtcHandle, RTC_BKP_DR2);
     uint32_t update_size = HAL_RTCEx_BKUPRead(&RtcHandle, RTC_BKP_DR3);
-    int ota_result = setOTAData(storage_type, offset, update_size);
+    //int ota_result =
+    setOTAData(storage_type, offset, update_size);
     /*if (ota_result == 0) {
       // clean reboot with success flag
       HAL_RTCEx_BKUPWrite(&RtcHandle, RTC_BKP_DR0, 0);

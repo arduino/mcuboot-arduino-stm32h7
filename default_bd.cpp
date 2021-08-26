@@ -56,11 +56,7 @@ BlockDevice *BlockDevice::get_default_instance()
     uint32_t update_size;
     BlockDevice *raw_bd = NULL;
 
-    int rc = getOTAData(&storage_type, &data_offset, &update_size);
-    if (rc!=0) {
-        printf("OTA not configured using default configuration\n");
-        storage_type = QSPI_FLASH_FATFS_MBR;
-    }
+    getOTAData(&storage_type, &data_offset, &update_size);
 
     if (storage_type & INTERNAL_FLASH_FLAG) {
         if (storage_type & (FATFS_FLAG | LITTLEFS_FLAG)) {
@@ -153,13 +149,7 @@ mbed::BlockDevice* get_secondary_bd(void) {
     uint32_t data_offset;
     uint32_t update_size;
 
-    int rc = getOTAData(&storage_type, &data_offset, &update_size);
-    if (rc != 0) {
-        printf("OTA not configured using default configuration\n");
-        storage_type = QSPI_FLASH_FATFS_MBR;
-        data_offset = 2;
-        update_size = MCUBOOT_SLOT_SIZE;
-    }
+    getOTAData(&storage_type, &data_offset, &update_size);
 
     if (storage_type & MBR_FLAG)  {
         printf("MBR \n");
@@ -254,13 +244,7 @@ mbed::BlockDevice* get_scratch_bd(void) {
     uint32_t data_offset;
     uint32_t update_size;
 
-    int rc = getOTAData(&storage_type, &data_offset, &update_size);
-    if (rc != 0) {
-        printf("OTA not configured using default configuration\n");
-        storage_type = QSPI_FLASH_FATFS_MBR;
-        data_offset = 2;
-        update_size = MCUBOOT_SLOT_SIZE;
-    }
+    getOTAData(&storage_type, &data_offset, &update_size);
 
     if(!(storage_type & QSPI_FLASH_FLAG)) {
         default_bd = new QSPIFBlockDevice(PD_11, PD_12, PF_7, PD_13,  PF_10, PG_6, QSPIF_POLARITY_MODE_1, 40000000);
