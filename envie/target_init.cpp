@@ -3,6 +3,7 @@
 #include "mbed.h"
 #include "target_init.h"
 #include "ota.h"
+#include "bootutil/bootutil_log.h"
 
 // clock source is selected with CLOCK_SOURCE in json config
 #define USE_PLL_HSE_EXTC     0x8  // Use external clock (ST Link MCO)
@@ -122,7 +123,7 @@ int target_init(void) {
   RTC_CalendarBkupInit();
 
   int magic = HAL_RTCEx_BKUPRead(&RtcHandle, RTC_BKP_DR0);
-  printf("Magic 0x%x\n");
+  BOOT_LOG_DBG("Envie magic 0x%x");
 
   // in case we have been reset let's wait 500 ms to see if user is trying to stay in bootloader
   if (ResetReason::get() == RESET_REASON_PIN_RESET) {
@@ -130,7 +131,7 @@ int target_init(void) {
     // flag we need to stay in bootloader.
     HAL_RTCEx_BKUPWrite(&RtcHandle, RTC_BKP_DR0, 0xDF59);
     HAL_Delay(500);
-    printf("envie loader magic set 0x%x \n", HAL_RTCEx_BKUPRead(&RtcHandle, RTC_BKP_DR0));
+    BOOT_LOG_DBG("Envie magic set 0x%x", HAL_RTCEx_BKUPRead(&RtcHandle, RTC_BKP_DR0));
   }
 
   DigitalOut usb_reset(PJ_4, 0);
@@ -251,11 +252,11 @@ int target_init(void) {
   if (app_valid && magic != 0xDF59 && magic != 0x07AA && boot_sel==0) {
     HAL_RTCEx_BKUPWrite(&RtcHandle, RTC_BKP_DR0, 0);
     HAL_FLASH_Lock();
-    printf("boot app magic 0x%x \n", HAL_RTCEx_BKUPRead(&RtcHandle, RTC_BKP_DR0));
+    BOOT_LOG_DBG("Envie app magic 0x%x", HAL_RTCEx_BKUPRead(&RtcHandle, RTC_BKP_DR0));
     return 0;
 
   } else {
-    printf("boot loop magic 0x%x \n", HAL_RTCEx_BKUPRead(&RtcHandle, RTC_BKP_DR0));
+    BOOT_LOG_DBG("Envie loop magic 0x%x", HAL_RTCEx_BKUPRead(&RtcHandle, RTC_BKP_DR0));
     return 1;
   }
 }
@@ -272,7 +273,7 @@ extern "C" {
 
 void envie_loop(void) {
 
-  printf("App not found\n");
+  BOOT_LOG_INF("Application not found. Starting boot loop\n");
 
   HAL_RTCEx_BKUPWrite(&RtcHandle, RTC_BKP_DR0, 0);
 

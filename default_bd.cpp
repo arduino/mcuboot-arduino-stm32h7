@@ -6,8 +6,9 @@
  */
 
 #include "BlockDevice.h"
-
 #include "SlicingBlockDevice.h"
+#include "bootutil/bootutil_log.h"
+
 #if MCUBOOT_AS_ENVIE || MCUBOOT_USE_FILE_BD
 #include "MBRBlockDevice.h"
 #include "FileBlockDevice.h"
@@ -61,26 +62,22 @@ BlockDevice *BlockDevice::get_default_instance()
     if (storage_type & INTERNAL_FLASH_FLAG) {
         if (storage_type & (FATFS_FLAG | LITTLEFS_FLAG)) {
             // have a filesystem, use offset as partition start
-            printf("INTERNAL_FLASH + FS\n");
             static FlashIAPBlockDevice flashIAP_bd(0x8000000 + data_offset, 2 * 1024 * 1024 - data_offset);
             raw_bd = &flashIAP_bd;
         } else {
             // raw device, no offset
-            printf("INTERNAL_FLASH\n");
             static FlashIAPBlockDevice flashIAP_bd(0x8000000, 2 * 1024 * 1024);
             raw_bd = &flashIAP_bd;
         }
     }
 #if MCUBOOT_ENVIE_SDCARD
     if (storage_type & SDCARD_FLAG) {
-        printf("SD_FLASH \n");
         static SDMMCBlockDevice SDMMC_bd;
         raw_bd = &SDMMC_bd;
     }
 #endif
 
     if (storage_type & QSPI_FLASH_FLAG) {
-        printf("QSPI_FLASH\n");
         static QSPIFBlockDevice QSPIF_bd(PD_11, PD_12, PF_7, PD_13,  PF_10, PG_6, QSPIF_POLARITY_MODE_1, 40000000);
         raw_bd = &QSPIF_bd;
     }
@@ -152,29 +149,24 @@ mbed::BlockDevice* get_secondary_bd(void) {
     getOTAData(&storage_type, &data_offset, &update_size);
 
     if (storage_type & MBR_FLAG)  {
-        printf("MBR \n");
         logical_bd = new MBRBlockDevice(default_bd, data_offset);
         int err = logical_bd->init();
         if (err) {
-            printf("Error initializing mbr device\n");
+            BOOT_LOG_ERR("Error initializing secondary mbr device");
         }
 #if MCUBOOT_ENVIE_LITTLEFS
         if((storage_type & LITTLEFS_FLAG)) {
-            printf("LITTLEFS \n");
             static LittleFileSystem secondary_bd_fs("secondary");
-
             err = secondary_bd_fs.mount(logical_bd);
             if (err) {
-                printf("Error mounting fs\n");
+                BOOT_LOG_ERR("Error mounting littlefs on secondary mbr device");
             }
         } else {
 #endif
-            printf("FATFS \n");
             static FATFileSystem secondary_bd_fs("secondary");
-
             err = secondary_bd_fs.mount(logical_bd);
             if (err) {
-                printf("Error mounting secondary fs\n");
+                BOOT_LOG_ERR("Error mounting fatfs on secondary mbr device");
             }
 #if MCUBOOT_ENVIE_LITTLEFS
         }
@@ -185,25 +177,21 @@ mbed::BlockDevice* get_secondary_bd(void) {
     } else {
         int err = default_bd->init();
         if (err) {
-            printf("Error initializing secondary bd\n");
+            BOOT_LOG_ERR("Error initializing secondary raw device");
         }
 #if MCUBOOT_ENVIE_LITTLEFS
          if((storage_type & LITTLEFS_FLAG)) {
-            printf("LITTLEFS \n");
             static LittleFileSystem secondary_bd_fs("secondary");
-
             err = secondary_bd_fs.mount(default_bd);
             if (err) {
-                printf("Error mounting fs\n");
+                BOOT_LOG_ERR("Error mounting littlefs on secondary raw device");
             }
         } else {
 #endif
-            printf("FATFS no MBR \n");
             static FATFileSystem secondary_bd_fs("secondary");
-
             err = secondary_bd_fs.mount(default_bd);
             if (err) {
-                printf("Error mounting secondary fs\n");
+                BOOT_LOG_ERR("Error mounting fatfs on secondary raw device");
             }
 #if MCUBOOT_ENVIE_LITTLEFS
         }
@@ -219,13 +207,13 @@ mbed::BlockDevice* get_secondary_bd(void) {
 
     int err = mbr_bd.init();
     if (err) {
-        printf("Error initializing mbr device\n");
+        BOOT_LOG_ERR("Error initializing secondary mbr device");
     }
 
     static mbed::FATFileSystem secondary_bd_fs("secondary");
     err = secondary_bd_fs.mount(&mbr_bd);
     if (err) {
-        printf("Error mounting secondary fs\n");
+        BOOT_LOG_ERR("Error mounting fatfs on secondary mbr device");
     }
     static mbed::FileBlockDevice file_bd(&mbr_bd, "/secondary/update.bin", "rb+", MCUBOOT_SLOT_SIZE);
     return &file_bd;
@@ -252,13 +240,13 @@ mbed::BlockDevice* get_scratch_bd(void) {
 
         int err = logical_bd->init();
         if (err) {
-            printf("Error initializing scratch mbr device\n");
+            BOOT_LOG_ERR("Error initializing scratch mbr device");
         }
 
         static mbed::FATFileSystem secondary_bd_fs("scratch");
         err = secondary_bd_fs.mount(logical_bd);
         if (err) {
-            printf("Error mounting scratch fs\n");
+            BOOT_LOG_ERR("Error mounting fatfs on scratch mbr device");
         }
     }
 
@@ -270,13 +258,13 @@ mbed::BlockDevice* get_scratch_bd(void) {
 
     int err = mbr_bd.init();
     if (err) {
-        printf("Error initializing mbr device\n");
+        BOOT_LOG_ERR("Error initializing scratch mbr device");
     }
 
     static mbed::FATFileSystem secondary_bd_fs("scratch");
     err = secondary_bd_fs.mount(&mbr_bd);
     if (err) {
-        printf("Error mounting scratch fs\n");
+        BOOT_LOG_ERR("Error mounting fatfs on scratch mbr device");
     }
     static mbed::FileBlockDevice file_bd(&mbr_bd, "/scratch/scratch.bin", "rb+", MCUBOOT_SCRATCH_SIZE);
     return &file_bd;
