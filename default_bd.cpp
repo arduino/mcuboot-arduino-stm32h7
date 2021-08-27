@@ -70,17 +70,18 @@ BlockDevice *BlockDevice::get_default_instance()
 
     getOTAData(&storage_type, &data_offset, &update_size);
 
-    if (storage_type & INTERNAL_FLASH_FLAG) {
-        if (storage_type & (FATFS_FLAG | LITTLEFS_FLAG)) {
-            // have a filesystem, use offset as partition start
-            static FlashIAPBlockDevice flashIAP_bd(0x8000000 + data_offset, 2 * 1024 * 1024 - data_offset);
-            raw_bd = &flashIAP_bd;
-        } else {
-            // raw device, no offset
-            static FlashIAPBlockDevice flashIAP_bd(0x8000000, 2 * 1024 * 1024);
-            raw_bd = &flashIAP_bd;
-        }
-    }
+    //if (storage_type & INTERNAL_FLASH_FLAG) {
+    //    if (storage_type & (FATFS_FLAG | LITTLEFS_FLAG)) {
+    //        // have a filesystem, use offset as partition start
+    //        static FlashIAPBlockDevice flashIAP_bd(0x8000000 + data_offset, 2 * 1024 * 1024 - data_offset);
+    //        raw_bd = &flashIAP_bd;
+    //    } else {
+    //        // raw device, no offset
+    //        static FlashIAPBlockDevice flashIAP_bd(0x8000000, 2 * 1024 * 1024);
+    //        raw_bd = &flashIAP_bd;
+    //    }
+    //}
+
 #if MCUBOOT_ENVIE_SDCARD
     if (storage_type & SDCARD_FLAG) {
         static SDMMCBlockDevice SDMMC_bd;
