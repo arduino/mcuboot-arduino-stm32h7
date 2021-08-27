@@ -49,6 +49,17 @@ static BlockDevice *default_bd = NULL;
 static MBRBlockDevice *logical_bd = NULL;
 #endif
 
+/*
+ * MCUBOOT_AS_ENVIE     -> Secondary Block device defined by getOTAData [SDCARD, QSPI] Internal flash not supported
+ *                      -> !!WARNING!! Scratch Block device by default on QSPI + MBR + FAT
+ *
+ * MCUBOOT_USE_FILE_BD  -> Secondary Block device on QSPI + MBR + FAT
+ *                      -> Scratch Block device on QSPI + MBR + FAT
+ *
+ *                      -> Secondary Block device on RAW QSPI @0x0000000
+ *                      -> Scratch Block device on Internal flash @MCUBOOT_SCRATCH_START_ADDR
+ */
+
 BlockDevice *BlockDevice::get_default_instance()
 {
 #if MCUBOOT_AS_ENVIE
