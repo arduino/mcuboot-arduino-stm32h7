@@ -133,15 +133,6 @@ mbed::BlockDevice* get_secondary_bd(void) {
     // slice it into the size of an image slot
 #if MCUBOOT_AS_ENVIE
     default_bd = mbed::BlockDevice::get_default_instance();
-#else
-    mbed::BlockDevice* default_bd = mbed::BlockDevice::get_default_instance();
-#endif
-#if !defined MCUBOOT_USE_FILE_BD
-    static mbed::SlicingBlockDevice sliced_bd(default_bd, 0x0, MCUBOOT_SLOT_SIZE);
-    return &sliced_bd;
-#else
-
-#if MCUBOOT_AS_ENVIE
     storageType storage_type;
     uint32_t data_offset;
     uint32_t update_size;
@@ -203,6 +194,11 @@ mbed::BlockDevice* get_secondary_bd(void) {
 
     return NULL;
 #else
+    mbed::BlockDevice* default_bd = mbed::BlockDevice::get_default_instance();
+#if !defined MCUBOOT_USE_FILE_BD
+    static mbed::SlicingBlockDevice sliced_bd(default_bd, 0x0, MCUBOOT_SLOT_SIZE);
+    return &sliced_bd;
+#else
     static mbed::MBRBlockDevice mbr_bd(default_bd, 2);
 
     int err = mbr_bd.init();
@@ -217,22 +213,28 @@ mbed::BlockDevice* get_secondary_bd(void) {
     }
     static mbed::FileBlockDevice file_bd(&mbr_bd, "/secondary/update.bin", "rb+", MCUBOOT_SLOT_SIZE);
     return &file_bd;
+#endif
 #endif //MCUBOOT_AS_ENVIE
 
-#endif //MCUBOOT_USE_FILE_BD
+
 }
 
 mbed::BlockDevice* get_scratch_bd(void) {
-#if !defined MCUBOOT_USE_FILE_BD
-    static FlashIAPBlockDevice scratch_bd(MCUBOOT_SCRATCH_START_ADDR, MCUBOOT_SCRATCH_SIZE);
-    return &scratch_bd;
-#else
+
 #if MCUBOOT_AS_ENVIE
     storageType storage_type;
     uint32_t data_offset;
     uint32_t update_size;
 
     getOTAData(&storage_type, &data_offset, &update_size);
+
+    /*
+     * If the secondary slot is not into the internal QSPI flash, i.e. SDMCC; initialize
+     * QSPI storage and mount the filesystem.
+     *
+     * WARNING: by default we are assuming the QSPI flash is formatted as MBR device with FAT
+     *
+     */
 
     if(!(storage_type & QSPI_FLASH_FLAG)) {
         default_bd = new QSPIFBlockDevice(PD_11, PD_12, PF_7, PD_13,  PF_10, PG_6, QSPIF_POLARITY_MODE_1, 40000000);
@@ -253,6 +255,10 @@ mbed::BlockDevice* get_scratch_bd(void) {
     static mbed::FileBlockDevice file_bd(logical_bd, "/scratch/scratch.bin", "rb+", MCUBOOT_SCRATCH_SIZE);
     return &file_bd;
 #else
+#if !defined MCUBOOT_USE_FILE_BD
+    static FlashIAPBlockDevice scratch_bd(MCUBOOT_SCRATCH_START_ADDR, MCUBOOT_SCRATCH_SIZE);
+    return &scratch_bd;
+#else
     mbed::BlockDevice* default_bd = mbed::BlockDevice::get_default_instance();
     static mbed::MBRBlockDevice mbr_bd(default_bd, 2);
 
@@ -268,7 +274,7 @@ mbed::BlockDevice* get_scratch_bd(void) {
     }
     static mbed::FileBlockDevice file_bd(&mbr_bd, "/scratch/scratch.bin", "rb+", MCUBOOT_SCRATCH_SIZE);
     return &file_bd;
-#endif //MCUBOOT_AS_ENVIE
 #endif
+#endif //MCUBOOT_AS_ENVIE
 }
 
