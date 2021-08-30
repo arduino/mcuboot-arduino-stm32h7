@@ -20,7 +20,7 @@
 
 #define SD_OTA_TEST 1
 
-void getOTAData(enum storageType* storage_type, uint32_t* data_offset, uint32_t* update_size) {
+static void getOTAData(enum storageType* storage_type, uint32_t* data_offset, uint32_t* update_size) {
     RTCInit();
     /*
      * Magic 0x07AA is set by Arduino_Portenta_OTA
