@@ -44,11 +44,6 @@ const spi_pinmap_t static_spi_pinmap = get_spi_pinmap(MBED_CONF_SD_SPI_MOSI, MBE
 #endif
 #endif
 
-#if MCUBOOT_AS_ENVIE
-static BlockDevice *default_bd = NULL;
-static MBRBlockDevice *logical_bd = NULL;
-#endif
-
 /*
  * MCUBOOT_AS_ENVIE     -> Secondary Block device defined by getOTAData [SDCARD, QSPI] Internal flash not supported
  *                      -> !!WARNING!! Scratch Block device by default on QSPI + MBR + FAT
@@ -66,7 +61,6 @@ BlockDevice *BlockDevice::get_default_instance()
     storageType storage_type;
     uint32_t data_offset;
     uint32_t update_size;
-    BlockDevice *raw_bd = NULL;
 
     getOTAData(&storage_type, &data_offset, &update_size);
 
@@ -74,27 +68,29 @@ BlockDevice *BlockDevice::get_default_instance()
     //    if (storage_type & (FATFS_FLAG | LITTLEFS_FLAG)) {
     //        // have a filesystem, use offset as partition start
     //        static FlashIAPBlockDevice flashIAP_bd(0x8000000 + data_offset, 2 * 1024 * 1024 - data_offset);
-    //        raw_bd = &flashIAP_bd;
+    //        return &flashIAP_bd;
     //    } else {
     //        // raw device, no offset
     //        static FlashIAPBlockDevice flashIAP_bd(0x8000000, 2 * 1024 * 1024);
-    //        raw_bd = &flashIAP_bd;
+    //        return &flashIAP_bd;
     //    }
     //}
 
 #if MCUBOOT_ENVIE_SDCARD
     if (storage_type & SDCARD_FLAG) {
         static SDMMCBlockDevice SDMMC_bd;
-        raw_bd = &SDMMC_bd;
+        BOOT_LOG_INF("SDMMCBlockDevice");
+        return &SDMMC_bd;
     }
 #endif
 
     if (storage_type & QSPI_FLASH_FLAG) {
         static QSPIFBlockDevice QSPIF_bd(PD_11, PD_12, PF_7, PD_13,  PF_10, PG_6, QSPIF_POLARITY_MODE_1, 40000000);
-        raw_bd = &QSPIF_bd;
+        BOOT_LOG_INF("QSPIFBlockDevice");
+        return &QSPIF_bd;
     }
 
-    return raw_bd;
+    return NULL;
 #else //MCUBOOT_AS_ENVIE
 #if COMPONENT_SPIF
 
@@ -144,7 +140,8 @@ mbed::BlockDevice* get_secondary_bd(void) {
     // In this case, our flash is much larger than a single image so
     // slice it into the size of an image slot
 #if MCUBOOT_AS_ENVIE
-    default_bd = mbed::BlockDevice::get_default_instance();
+    mbed::BlockDevice* default_bd = mbed::BlockDevice::get_default_instance();
+    mbed::BlockDevice* logical_bd;
     storageType storage_type;
     uint32_t data_offset;
     uint32_t update_size;
@@ -175,7 +172,7 @@ mbed::BlockDevice* get_secondary_bd(void) {
         }
 #endif
 
-        static mbed::FileBlockDevice file_bd(logical_bd, "/secondary/update.bin", "rb+", update_size);
+        static mbed::FileBlockDevice file_bd("/secondary/update.bin", "rb+", update_size);
         return &file_bd;
     } else {
         int err = default_bd->init();
@@ -200,7 +197,7 @@ mbed::BlockDevice* get_secondary_bd(void) {
         }
 #endif
 
-        static mbed::FileBlockDevice file_bd(default_bd, "/secondary/update.bin", "rb+", update_size);
+        static mbed::FileBlockDevice file_bd("/secondary/update.bin", "rb+", update_size);
         return &file_bd;
     }
 
@@ -223,7 +220,7 @@ mbed::BlockDevice* get_secondary_bd(void) {
     if (err) {
         BOOT_LOG_ERR("Error mounting fatfs on secondary mbr device");
     }
-    static mbed::FileBlockDevice file_bd(&mbr_bd, "/secondary/update.bin", "rb+", MCUBOOT_SLOT_SIZE);
+    static mbed::FileBlockDevice file_bd("/secondary/update.bin", "rb+", MCUBOOT_SLOT_SIZE);
     return &file_bd;
 #endif
 #endif //MCUBOOT_AS_ENVIE
@@ -248,9 +245,9 @@ mbed::BlockDevice* get_scratch_bd(void) {
      *
      */
 
-    if(!(storage_type & QSPI_FLASH_FLAG)) {
-        default_bd = new QSPIFBlockDevice(PD_11, PD_12, PF_7, PD_13,  PF_10, PG_6, QSPIF_POLARITY_MODE_1, 40000000);
-        logical_bd = new MBRBlockDevice(default_bd, 2);
+    //if(!(storage_type & QSPI_FLASH_FLAG)) {
+        mbed::BlockDevice* default_bd = new QSPIFBlockDevice(PD_11, PD_12, PF_7, PD_13,  PF_10, PG_6, QSPIF_POLARITY_MODE_1, 40000000);
+        mbed::BlockDevice* logical_bd = new MBRBlockDevice(default_bd, 2);
 
         int err = logical_bd->init();
         if (err) {
@@ -262,9 +259,9 @@ mbed::BlockDevice* get_scratch_bd(void) {
         if (err) {
             BOOT_LOG_ERR("Error mounting fatfs on scratch mbr device");
         }
-    }
+    //}
 
-    static mbed::FileBlockDevice file_bd(logical_bd, "/scratch/scratch.bin", "rb+", MCUBOOT_SCRATCH_SIZE);
+    static mbed::FileBlockDevice file_bd("/scratch/scratch.bin", "rb+", MCUBOOT_SCRATCH_SIZE);
     return &file_bd;
 #else
 #if !defined MCUBOOT_USE_FILE_BD
@@ -284,7 +281,7 @@ mbed::BlockDevice* get_scratch_bd(void) {
     if (err) {
         BOOT_LOG_ERR("Error mounting fatfs on scratch mbr device");
     }
-    static mbed::FileBlockDevice file_bd(&mbr_bd, "/scratch/scratch.bin", "rb+", MCUBOOT_SCRATCH_SIZE);
+    static mbed::FileBlockDevice file_bd("/scratch/scratch.bin", "rb+", MCUBOOT_SCRATCH_SIZE);
     return &file_bd;
 #endif
 #endif //MCUBOOT_AS_ENVIE
