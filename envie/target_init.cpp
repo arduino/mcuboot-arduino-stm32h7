@@ -168,12 +168,12 @@ int target_init(void) {
   /* Test if user code is programmed starting from USBD_DFU_APP_DEFAULT_ADD
    * address. TODO check MCUBoot header instead.
    */
-  int app_valid = (((*(__IO uint32_t *) 0x08040000) & 0xFF000000) == 0x20000000)
-               || (((*(__IO uint32_t *) 0x08040000) & 0xFF000000) == 0x24000000)
-               || (((*(__IO uint32_t *) 0x08040000) & 0xFF000000) == 0x30000000)
-               || (((*(__IO uint32_t *) 0x08040000) & 0xFF000000) == 0x38000000);
+  //int app_valid = (((*(__IO uint32_t *) 0x08040000) & 0xFF000000) == 0x20000000)
+  //             || (((*(__IO uint32_t *) 0x08040000) & 0xFF000000) == 0x24000000)
+  //             || (((*(__IO uint32_t *) 0x08040000) & 0xFF000000) == 0x30000000)
+  //             || (((*(__IO uint32_t *) 0x08040000) & 0xFF000000) == 0x38000000);
 
-  if (app_valid && magic != 0xDF59 && magic != 0x07AA && boot_sel==0) {
+  if (/*app_valid &&*/ magic != 0xDF59 /*&& magic != 0x07AA*/ && boot_sel==0) {
     RTCSetBKPRegister(RTC_BKP_DR0, 0);
     HAL_FLASH_Lock();
     BOOT_LOG_DBG("Envie app magic 0x%x", RTCGetBKPRegister(RTC_BKP_DR0));
@@ -181,7 +181,11 @@ int target_init(void) {
 
   } else {
     BOOT_LOG_DBG("Envie loop magic 0x%x", RTCGetBKPRegister(RTC_BKP_DR0));
-    return 1;
+    if(boot_sel) {
+      return 1;
+    } else  {
+      return 2;
+    }
   }
 }
 
