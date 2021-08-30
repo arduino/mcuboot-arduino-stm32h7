@@ -3,6 +3,7 @@
 #include "mbed.h"
 #include "target_init.h"
 #include "ota.h"
+#include "rtc.h"
 #include "bootutil/bootutil_log.h"
 
 // clock source is selected with CLOCK_SOURCE in json config
@@ -30,8 +31,6 @@ volatile uint8_t ledTargetValue = 20;
 volatile int8_t ledDirection = 1;
 volatile int divisor = 0;
 
-RTC_HandleTypeDef RtcHandle;
-
 DigitalOut led(PK_6);
 
 static inline void LED_pulse(DigitalOut* led)
@@ -40,8 +39,8 @@ static inline void LED_pulse(DigitalOut* led)
     return;
   }
 
-  if (HAL_GetTick() > 500 && double_tap_flag && HAL_RTCEx_BKUPRead(&RtcHandle, RTC_BKP_DR0) == 0xDF59) {
-    HAL_RTCEx_BKUPWrite(&RtcHandle, RTC_BKP_DR0, 0);
+  if (HAL_GetTick() > 500 && double_tap_flag && RTCGetBKPRegister(RTC_BKP_DR0) == 0xDF59) {
+    RTCSetBKPRegister(RTC_BKP_DR0, 0);
     double_tap_flag = false;
   }
 
@@ -61,77 +60,20 @@ static inline void LED_pulse(DigitalOut* led)
   }
 }
 
-void HAL_RTC_MspInit(RTC_HandleTypeDef *hrtc)
-{
-  RCC_OscInitTypeDef        RCC_OscInitStruct;
-  RCC_PeriphCLKInitTypeDef  PeriphClkInitStruct;
-
-  /*##-1- Configure LSE as RTC clock source ##################################*/
-  RCC_OscInitStruct.OscillatorType =  RCC_OSCILLATORTYPE_LSI | RCC_OSCILLATORTYPE_LSE;
-  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
-  RCC_OscInitStruct.LSEState = RCC_LSE_OFF;
-  RCC_OscInitStruct.LSIState = RCC_LSI_ON;
-  if(HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
-  {
-    return;
-  }
-
-  PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_RTC;
-  PeriphClkInitStruct.RTCClockSelection = RCC_RTCCLKSOURCE_LSI;
-  if(HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
-  {
-    return;
-  }
-
-  /*##-2- Enable RTC peripheral Clocks #######################################*/
-  /* Enable RTC Clock */
-  __HAL_RCC_RTC_ENABLE();
-}
-
-#define RTC_ASYNCH_PREDIV  0x7F   /* LSE as RTC clock */
-#define RTC_SYNCH_PREDIV   0x00FF /* LSE as RTC clock */
-
-void RTC_CalendarBkupInit(void)
-{
-
-  /*##-1- Configure the RTC peripheral #######################################*/
-  /* Configure RTC prescaler and RTC data registers */
-  /* RTC configured as follow:
-  - Hour Format    = Format 24
-  - Asynch Prediv  = Value according to source clock
-  - Synch Prediv   = Value according to source clock
-  - OutPut         = Output Disable
-  - OutPutPolarity = High Polarity
-  - OutPutType     = Open Drain */
-  RtcHandle.Instance = RTC;
-  RtcHandle.Init.HourFormat = RTC_HOURFORMAT_24;
-  RtcHandle.Init.AsynchPrediv = RTC_ASYNCH_PREDIV;
-  RtcHandle.Init.SynchPrediv = RTC_SYNCH_PREDIV;
-  RtcHandle.Init.OutPut = RTC_OUTPUT_DISABLE;
-  RtcHandle.Init.OutPutPolarity = RTC_OUTPUT_POLARITY_HIGH;
-  RtcHandle.Init.OutPutType = RTC_OUTPUT_TYPE_OPENDRAIN;
-
-  if(HAL_RTC_Init(&RtcHandle) != HAL_OK)
-  {
-  }
-}
 
 int target_init(void) {
   DigitalIn boot_sel(PI_8,PullDown);
 
-  HAL_RTC_MspInit(&RtcHandle);
-  RTC_CalendarBkupInit();
-
-  int magic = HAL_RTCEx_BKUPRead(&RtcHandle, RTC_BKP_DR0);
-  BOOT_LOG_DBG("Envie magic 0x%x");
+  int magic = RTCGetBKPRegister(RTC_BKP_DR0);
+  BOOT_LOG_DBG("Envie magic 0x%x", magic);
 
   // in case we have been reset let's wait 500 ms to see if user is trying to stay in bootloader
   if (ResetReason::get() == RESET_REASON_PIN_RESET) {
     // now that we've been reset let's set magic. resetting with this set will
     // flag we need to stay in bootloader.
-    HAL_RTCEx_BKUPWrite(&RtcHandle, RTC_BKP_DR0, 0xDF59);
+    RTCSetBKPRegister(RTC_BKP_DR0, 0xDF59);
     HAL_Delay(500);
-    BOOT_LOG_DBG("Envie magic set 0x%x", HAL_RTCEx_BKUPRead(&RtcHandle, RTC_BKP_DR0));
+    BOOT_LOG_DBG("Envie magic set 0x%x", RTCGetBKPRegister( RTC_BKP_DR0));
   }
 
   DigitalOut usb_reset(PJ_4, 0);
@@ -223,24 +165,6 @@ int target_init(void) {
 
   HAL_Delay(10);
 
-  if (magic == 0x07AA) {
-    // DR1 contains the backing storage type, DR2 the offset in case of raw device / MBR
-    storageType storage_type = (storageType)HAL_RTCEx_BKUPRead(&RtcHandle, RTC_BKP_DR1);
-    uint32_t offset = HAL_RTCEx_BKUPRead(&RtcHandle, RTC_BKP_DR2);
-    uint32_t update_size = HAL_RTCEx_BKUPRead(&RtcHandle, RTC_BKP_DR3);
-    //int ota_result =
-    setOTAData(storage_type, offset, update_size);
-    /*if (ota_result == 0) {
-      // clean reboot with success flag
-      HAL_RTCEx_BKUPWrite(&RtcHandle, RTC_BKP_DR0, 0);
-      HAL_FLASH_Lock();
-      // wait for external reboot
-      while (1) {}
-    } else {
-      HAL_RTCEx_BKUPWrite(&RtcHandle, RTC_BKP_DR0, ota_result);
-    }*/
-  }
-
   /* Test if user code is programmed starting from USBD_DFU_APP_DEFAULT_ADD
    * address. TODO check MCUBoot header instead.
    */
@@ -250,13 +174,13 @@ int target_init(void) {
                || (((*(__IO uint32_t *) 0x08040000) & 0xFF000000) == 0x38000000);
 
   if (app_valid && magic != 0xDF59 && magic != 0x07AA && boot_sel==0) {
-    HAL_RTCEx_BKUPWrite(&RtcHandle, RTC_BKP_DR0, 0);
+    RTCSetBKPRegister(RTC_BKP_DR0, 0);
     HAL_FLASH_Lock();
-    BOOT_LOG_DBG("Envie app magic 0x%x", HAL_RTCEx_BKUPRead(&RtcHandle, RTC_BKP_DR0));
+    BOOT_LOG_DBG("Envie app magic 0x%x", RTCGetBKPRegister(RTC_BKP_DR0));
     return 0;
 
   } else {
-    BOOT_LOG_DBG("Envie loop magic 0x%x", HAL_RTCEx_BKUPRead(&RtcHandle, RTC_BKP_DR0));
+    BOOT_LOG_DBG("Envie loop magic 0x%x", RTCGetBKPRegister(RTC_BKP_DR0));
     return 1;
   }
 }
@@ -272,13 +196,10 @@ extern "C" {
 }
 
 void envie_loop(void) {
-
-  BOOT_LOG_INF("Application not found. Starting boot loop\n");
-
-  HAL_RTCEx_BKUPWrite(&RtcHandle, RTC_BKP_DR0, 0);
+  RTCSetBKPRegister(RTC_BKP_DR0, 0);
 
   SetSysClock_PLL_HSE(1, false);
-  SystemCoreClockUpdate();;
+  SystemCoreClockUpdate();
 
   //turnDownEthernet();
 

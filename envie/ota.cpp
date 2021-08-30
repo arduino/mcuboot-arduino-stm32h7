@@ -1,32 +1,43 @@
 #if MCUBOOT_AS_ENVIE
 
 #include "ota.h"
+#include "rtc.h"
+#include "bootutil/bootutil_log.h"
 
-//static storageType _storage_type = INVALID;
-//static uint32_t _data_offset = 0;
-//static uint32_t _update_size = 0;
+#define SD_OTA_TEST 1
 
-static storageType _storage_type = SD_FATFS;
-static uint32_t _data_offset = 2;
-static uint32_t _update_size = MCUBOOT_SLOT_SIZE;
-
-
-void setOTAData(enum storageType storage_type, uint32_t data_offset, uint32_t update_size) {
-	_storage_type = storage_type;
-  _data_offset = data_offset;
-  _update_size = update_size;
-
-}
 void getOTAData(enum storageType* storage_type, uint32_t* data_offset, uint32_t* update_size) {
-  if(_storage_type == INVALID) {
+  RTCInit();
+  /*
+   * Magic 0x07AA is set by Arduino_Portenta_OTA
+   * Magic 0xDF59 is set by the loader if RESET_REASON_PIN_RESET
+   */
+
+#if SD_OTA_TEST
+  *storage_type = SD_FATFS;
+  *data_offset = 2;
+  *update_size = MCUBOOT_SLOT_SIZE;
+  return;
+#endif
+
+  int magic = RTCGetBKPRegister(RTC_BKP_DR0);
+  if (magic == 0x07AA) {
+    // DR1 contains the backing storage type, DR2 the offset in case of raw device / MBR
+    *storage_type = (storageType)RTCGetBKPRegister(RTC_BKP_DR1);
+    *data_offset = RTCGetBKPRegister(RTC_BKP_DR2);
+    *update_size = RTCGetBKPRegister(RTC_BKP_DR3);
+    //BOOT_LOG_INF("Custom OTA data");
+  } else {
     *storage_type = QSPI_FLASH_FATFS_MBR;
     *data_offset = 2;
     *update_size = MCUBOOT_SLOT_SIZE;
-  } else {
-    *storage_type = _storage_type;
-    *data_offset = _data_offset;
-    *update_size = _update_size;
+    //BOOT_LOG_INF("Default OTA data");
   }
+  return;
+
+  //BOOT_LOG_INF("Storage type %d",(int)*storage_type);
+  //BOOT_LOG_INF("Offset %d",*data_offset);
+  //BOOT_LOG_INF("Update size %d",*update_size);
 }
 
 #endif

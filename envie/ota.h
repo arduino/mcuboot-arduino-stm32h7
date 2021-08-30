@@ -33,8 +33,6 @@ enum storageType {
 #define NO_OTA_FILE          (-3)
 #define INIT_FAILED          (-4)
 
-//int tryOTA(enum storageType storage_type, uint32_t data_offset, uint32_t update_size);
-void setOTAData(enum storageType storage_type, uint32_t data_offset, uint32_t update_size);
 void getOTAData(enum storageType* storage_type, uint32_t* data_offset, uint32_t* update_size);
 
 #endif //__OTA_H
