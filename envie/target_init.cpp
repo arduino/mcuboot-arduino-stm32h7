@@ -138,7 +138,7 @@ int target_init(void) {
   DigitalOut video_enable(PJ_2, 0);
   DigitalOut video_reset(PJ_3, 0);
 
-  Ticker pulse;
+  //Ticker pulse;
   //DigitalOut eth_rst(PJ_15, 1);
 
   HAL_FLASH_Unlock();
