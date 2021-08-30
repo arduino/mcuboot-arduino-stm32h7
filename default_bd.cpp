@@ -7,6 +7,7 @@
 
 #include "BlockDevice.h"
 #include "SlicingBlockDevice.h"
+#include "FlashIAPBlockDevice.h"
 #include "bootutil/bootutil_log.h"
 
 #if MCUBOOT_AS_ENVIE || MCUBOOT_USE_FILE_BD
@@ -16,7 +17,6 @@
 #endif
 
 #if MCUBOOT_AS_ENVIE
-#include "FlashIAPBlockDevice.h"
 #include "SDMMCBlockDevice.h"
 #if MCUBOOT_ENVIE_LITTLEFS
 #include "LittleFileSystem.h"
