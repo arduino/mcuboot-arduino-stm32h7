@@ -2,6 +2,8 @@
 #define __OTA_H
 
 #include <stdint.h>
+#include "BlockDevice.h"
+#include "FileSystem.h"
 
 #define INTERNAL_FLASH_FLAG         (1 << 1)
 #define QSPI_FLASH_FLAG             (1 << 2)
@@ -26,6 +28,25 @@ enum storageType {
     SD_LITTLEFS = SDCARD_FLAG | LITTLEFS_FLAG,
     SD_FATFS_MBR = SDCARD_FLAG | FATFS_FLAG | MBR_FLAG,
     SD_LITTLEFS_MBR = SDCARD_FLAG | LITTLEFS_FLAG | MBR_FLAG,
+};
+
+enum OTABlockDevice {
+    SECONDARY_BLOCK_DEVICE = 0,
+    SCRATCH_BLOCK_DEVICE = 1
+};
+
+struct BlockTableData {
+    uint32_t storage_type;
+    uint8_t raw_type;
+    bool raw_flag;
+    bool mbr_flag;
+    uint8_t fs_type;
+    uint32_t data_offset;
+    uint32_t update_size;
+    mbed::BlockDevice* raw_bd;
+    mbed::BlockDevice* log_bd;
+    mbed::BlockDevice* file_bd;
+    mbed::FileSystem*  log_fs;
 };
 
 #define WRONG_OTA_BINARY     (-1)
