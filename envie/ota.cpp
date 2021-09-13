@@ -22,6 +22,7 @@
 
 #define ALL_IN_SD 1
 
+static bool BlockTableLoaded = false;
 static BlockTableData block_info[2];
 
 static void loadOTAData(void) {
@@ -367,7 +368,10 @@ static void initBlockTable(void) {
  */
 mbed::BlockDevice* get_secondary_bd(void) {
 
-    initBlockTable();
+    if(!BlockTableLoaded) {
+        initBlockTable();
+        BlockTableLoaded = true;
+    }
 
     if(block_info[SECONDARY_BLOCK_DEVICE].raw_flag) {
         return block_info[SECONDARY_BLOCK_DEVICE].log_bd;
