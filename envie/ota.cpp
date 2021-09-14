@@ -386,6 +386,11 @@ mbed::BlockDevice* get_secondary_bd(void) {
 
 mbed::BlockDevice* get_scratch_bd(void) {
 
+    if(!BlockTableLoaded) {
+        initBlockTable();
+        BlockTableLoaded = true;
+    }
+
     if(block_info[SCRATCH_BLOCK_DEVICE].raw_flag) {
         return block_info[SCRATCH_BLOCK_DEVICE].log_bd;;
     } else {
