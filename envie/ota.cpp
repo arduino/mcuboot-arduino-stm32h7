@@ -378,9 +378,6 @@ mbed::BlockDevice* get_secondary_bd(void) {
     } else {
         return block_info[SECONDARY_BLOCK_DEVICE].file_bd;
     }
-
-    BOOT_LOG_ERR("Cannot define secondary Blockdevice Instance");
-    return NULL;
 }
 
 
@@ -396,9 +393,6 @@ mbed::BlockDevice* get_scratch_bd(void) {
     } else {
         return block_info[SCRATCH_BLOCK_DEVICE].file_bd;
     }
-
-    BOOT_LOG_ERR("Cannot define secondary Blockdevice Instance");
-    return NULL;
 }
 
 #endif
