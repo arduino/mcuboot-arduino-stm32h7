@@ -93,7 +93,7 @@ static void loadOTAData(void) {
         block_info[SECONDARY_BLOCK_DEVICE].mbr_flag = 1;
 
         block_info[SCRATCH_BLOCK_DEVICE].storage_type = INTERNAL_FLASH_OFFSET;
-        block_info[SCRATCH_BLOCK_DEVICE].data_offset = 2;
+        block_info[SCRATCH_BLOCK_DEVICE].data_offset = MCUBOOT_SCRATCH_START_ADDR;
         block_info[SCRATCH_BLOCK_DEVICE].update_size = MCUBOOT_SCRATCH_SIZE;
         block_info[SCRATCH_BLOCK_DEVICE].raw_type = INTERNAL_FLASH_FLAG;
         block_info[SCRATCH_BLOCK_DEVICE].raw_flag = 1;
