@@ -76,7 +76,7 @@ bool Flash_If_Init_requested = false;
 void init_Memories() {
   flash.init();
   dfu_secondary_bd->init();
-  snprintf(BOOTLOADER_DESC_STR, sizeof(BOOTLOADER_DESC_STR), "@Bootloader version %d /0x00000000/0*4Kg", BOOTLOADER_VERSION);
+  snprintf(BOOTLOADER_DESC_STR, sizeof(BOOTLOADER_DESC_STR), "@MCUBoot version %d /0x00000000/0*4Kg", BOOTLOADER_VERSION);
 }
 
 Thread writeThread(osPriorityHigh);

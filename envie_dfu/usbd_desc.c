@@ -30,8 +30,8 @@
 #define USBD_PID                      0x035B
 #define USBD_LANGID_STRING            0x409
 #define USBD_MANUFACTURER_STRING      "Arduino SA"
-#define USBD_PRODUCT_HS_STRING        "Envie H7 Bootloader"
-#define USBD_PRODUCT_FS_STRING        "Envie H7 Bootloader"
+#define USBD_PRODUCT_HS_STRING        "Portenta MCUBoot"
+#define USBD_PRODUCT_FS_STRING        "Portenta MCUBoot"
 #define USBD_CONFIGURATION_HS_STRING  "DFU Config"
 #define USBD_INTERFACE_HS_STRING      "DFU Interface"
 #define USBD_CONFIGURATION_FS_STRING  "DFU Config"
