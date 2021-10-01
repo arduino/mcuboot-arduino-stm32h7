@@ -20,8 +20,6 @@
 #include "LittleFileSystem.h"
 #endif
 
-#define ALL_IN_SD 1
-
 static bool BlockTableLoaded = false;
 static BlockTableData block_info[2];
 
