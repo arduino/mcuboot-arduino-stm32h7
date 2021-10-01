@@ -11,6 +11,5 @@ mbed_settings.py
 mbed_settings.pyc
 mbed_config.h
 *.hex
-*.pem
 mbed-os/*
 mcuboot/*
