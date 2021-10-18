@@ -28,7 +28,7 @@ mbed compile -m PORTENTA_H7_M7 -t GCC_ARM --profile=release --profile mbed-os/to
 
 The diagram below shows the default memory map configuration used for this mcuboot demo on the nRF52840. The nRF52840 has a total of 1MB of internal program flash. The following sections detail how the bounds of each memory region is configured.
 
-![nRF52840-mcuboot-map](assets/nRF52840-mcuboot-map.png)
+![Portenta-mcuboot-map](assets/current-layout.png)
 
 ### Bootloader
 The bootloader (the application in this repository) lives in the first region of flash where the processor begins execution. The basic mcuboot bootloader does not implement any interfaces to receive updates. It simply looks at available application "slots". The application (or another bootloader) is responsible for loading application updates into a slot visible to the mcuboot bootloader. Update candidates are typically placed in the "secondary" flash region.
