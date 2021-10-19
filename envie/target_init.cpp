@@ -1,5 +1,6 @@
 #include "mbed.h"
 #include "target_init.h"
+#include "ota.h"
 
 // clock source is selected with CLOCK_SOURCE in json config
 #define USE_PLL_HSE_EXTC     0x8  // Use external clock (ST Link MCO)
@@ -219,6 +220,23 @@ int target_init(void) {
 
   HAL_Delay(10);
 
+  if (magic == 0x07AA) {
+    // DR1 contains the backing storage type, DR2 the offset in case of raw device / MBR
+    storageType storage_type = (storageType)HAL_RTCEx_BKUPRead(&RtcHandle, RTC_BKP_DR1);
+    uint32_t offset = HAL_RTCEx_BKUPRead(&RtcHandle, RTC_BKP_DR2);
+    uint32_t update_size = HAL_RTCEx_BKUPRead(&RtcHandle, RTC_BKP_DR3);
+    int ota_result = setOTAData(storage_type, offset, update_size);
+    /*if (ota_result == 0) {
+      // clean reboot with success flag
+      HAL_RTCEx_BKUPWrite(&RtcHandle, RTC_BKP_DR0, 0);
+      HAL_FLASH_Lock();
+      // wait for external reboot
+      while (1) {}
+    } else {
+      HAL_RTCEx_BKUPWrite(&RtcHandle, RTC_BKP_DR0, ota_result);
+    }*/
+  }
+
   /* Test if user code is programmed starting from USBD_DFU_APP_DEFAULT_ADD
    * address. TODO check MCUBoot header instead.
    */
@@ -239,8 +257,54 @@ int target_init(void) {
   }
 }
 
+USBD_HandleTypeDef USBD_Device;
+extern PCD_HandleTypeDef hpcd;
+extern void init_Memories(void);
+extern "C" {
+  uint8_t SetSysClock_PLL_HSE(uint8_t bypass, bool lowspeed);
+}
+
 void envie_loop(void) {
+
+  printf("App not found\n");
+
+  HAL_RTCEx_BKUPWrite(&RtcHandle, RTC_BKP_DR0, 0);
+
+  SetSysClock_PLL_HSE(1, false);
+  SystemCoreClockUpdate();;
+
+  //turnDownEthernet();
+
+  init_Memories();
+
+  /* Otherwise enters DFU mode to allow user programming his application */
+  /* Init Device Library */
+  USBD_Init(&USBD_Device, &DFU_Desc, 0);
+
+  /* Add Supported Class */
+  USBD_RegisterClass(&USBD_Device, USBD_DFU_CLASS);
+
+  /* Add DFU Media interface */
+  USBD_DFU_RegisterMedia(&USBD_Device, &USBD_DFU_Flash_fops);
+
+  /* Start Device Process */
+  USBD_Start(&USBD_Device);
+
+  /* Set USBHS Interrupt to the lowest priority */
+  // HAL_NVIC_SetPriority(OTG_HS_IRQn, 1, 0);
+
+  /* Enable USBHS Interrupt */
+  HAL_NVIC_DisableIRQ(OTG_HS_IRQn);
+  HAL_NVIC_DisableIRQ(OTG_FS_IRQn);
+
   while(1) {
+#ifdef USE_USB_HS
+    if (USB_OTG_HS->GINTSTS & USB_OTG_HS->GINTMSK) {
+#else // USE_USB_FS
+    if (USB_OTG_FS->GINTSTS & USB_OTG_FS->GINTMSK) {
+#endif
+      HAL_PCD_IRQHandler(&hpcd);
+    }
     LED_pulse(&led);
   }
 }
