@@ -8,6 +8,9 @@
 #include "BlockDevice.h"
 
 #include "SlicingBlockDevice.h"
+#include "MBRBlockDevice.h"
+#include "FileBlockDevice.h"
+#include "FATFileSystem.h"
 
 #if COMPONENT_SPIF
 #include "SPIFBlockDevice.h"
@@ -78,7 +81,47 @@ mbed::BlockDevice* get_secondary_bd(void) {
     // In this case, our flash is much larger than a single image so
     // slice it into the size of an image slot
     mbed::BlockDevice* default_bd = mbed::BlockDevice::get_default_instance();
+#if !defined MCUBOOT_USE_FILE_BD
     static mbed::SlicingBlockDevice sliced_bd(default_bd, 0x0, MCUBOOT_SLOT_SIZE);
     return &sliced_bd;
+#else
+    static mbed::MBRBlockDevice mbr_bd(default_bd, 2);
+
+    int err = mbr_bd.init();
+    if (err) {
+        printf("Error initializing mbr device\n");
+    }
+
+    static mbed::FATFileSystem secondary_bd_fs("fs");
+    err = secondary_bd_fs.mount(&mbr_bd);
+    if (err) {
+        printf("Error mounting fs\n");
+    }
+    static mbed::FileBlockDevice file_bd(&mbr_bd, "/fs/update.bin", "rb+", MCUBOOT_SLOT_SIZE);
+    return &file_bd;
+#endif
+}
+
+mbed::BlockDevice* get_scratch_bd(void) {
+#if !defined MCUBOOT_USE_FILE_BD
+    static FlashIAPBlockDevice scratch_bd(MCUBOOT_SCRATCH_START_ADDR, MCUBOOT_SCRATCH_SIZE);
+    return &scratch_bd;
+#else
+    mbed::BlockDevice* default_bd = mbed::BlockDevice::get_default_instance();
+    static mbed::MBRBlockDevice mbr_bd(default_bd, 2);
+
+    int err = mbr_bd.init();
+    if (err) {
+        printf("Error initializing mbr device\n");
+    }
+
+    static mbed::FATFileSystem secondary_bd_fs("fs");
+    err = secondary_bd_fs.mount(&mbr_bd);
+    if (err) {
+        printf("Error mounting fs\n");
+    }
+    static mbed::FileBlockDevice file_bd(&mbr_bd, "/fs/scratch.bin", "rb+", MCUBOOT_SCRATCH_SIZE);
+    return &file_bd;
+#endif
 }
 

@@ -1,5 +1,5 @@
 {
-    "requires": ["bare-metal", "mbedtls", "mcuboot", "flashiap-block-device", "spif-driver", "qspif", "mbed-trace"],
+    "requires": ["bare-metal", "mbedtls", "mcuboot", "flashiap-block-device", "spif-driver", "qspif", "mbed-trace", "filesystem", "fat_chan"],
     "config": {
         "serial-bootloader-enable": {
             "help": "Build bootloader with serial update support",
@@ -57,10 +57,9 @@
             "mcuboot.scratch-address": "0x80E0000",
             "mcuboot.scratch-size": "0x20000",
             "mcuboot.max-img-sectors": "0x180",
-            "mcuboot.max-align": "32",
+            "mcuboot.max-align": 32,
             "mcuboot.overwrite-only": true,
-            "mcuboot.read-granularity": 1,
-            "qspif.QSPI_MIN_PROG_SIZE": 1
+            "mcuboot.file-as-blockdevice": true
         }
     }
 }
