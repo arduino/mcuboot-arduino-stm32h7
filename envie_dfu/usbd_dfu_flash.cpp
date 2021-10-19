@@ -27,6 +27,7 @@
 #include "QSPIFBlockDevice.h"
 #include "FlashSimBlockDevice.h"
 #include "flash_map_backend/secondary_bd.h"
+#include "bootutil/bootutil.h"
 
 /* Private typedef ----------------------------------------------------------- */
 /* Private define ------------------------------------------------------------ */
@@ -101,6 +102,7 @@ uint16_t Flash_If_Init(void)
   */
 uint16_t Flash_If_DeInit(void)
 {
+  boot_set_pending(false);
   flash.deinit();
   dfu_secondary_bd->deinit();
   return 0;
