@@ -12,6 +12,5 @@ mbed_settings.pyc
 mbed_config.h
 *.hex
 *.pem
-signing_keys.c
 mbed-os/*
 mcuboot/*

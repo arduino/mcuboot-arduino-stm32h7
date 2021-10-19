@@ -1,6 +1,9 @@
+#if MCUBOOT_AS_ENVIE
+
 #include "mbed.h"
 #include "target_init.h"
 #include "ota.h"
+#include "bootutil/bootutil_log.h"
 
 // clock source is selected with CLOCK_SOURCE in json config
 #define USE_PLL_HSE_EXTC     0x8  // Use external clock (ST Link MCO)
@@ -120,7 +123,7 @@ int target_init(void) {
   RTC_CalendarBkupInit();
 
   int magic = HAL_RTCEx_BKUPRead(&RtcHandle, RTC_BKP_DR0);
-  printf("Magic 0x%x\n");
+  BOOT_LOG_DBG("Envie magic 0x%x");
 
   // in case we have been reset let's wait 500 ms to see if user is trying to stay in bootloader
   if (ResetReason::get() == RESET_REASON_PIN_RESET) {
@@ -128,7 +131,7 @@ int target_init(void) {
     // flag we need to stay in bootloader.
     HAL_RTCEx_BKUPWrite(&RtcHandle, RTC_BKP_DR0, 0xDF59);
     HAL_Delay(500);
-    printf("envie loader magic set 0x%x \n", HAL_RTCEx_BKUPRead(&RtcHandle, RTC_BKP_DR0));
+    BOOT_LOG_DBG("Envie magic set 0x%x", HAL_RTCEx_BKUPRead(&RtcHandle, RTC_BKP_DR0));
   }
 
   DigitalOut usb_reset(PJ_4, 0);
@@ -225,7 +228,8 @@ int target_init(void) {
     storageType storage_type = (storageType)HAL_RTCEx_BKUPRead(&RtcHandle, RTC_BKP_DR1);
     uint32_t offset = HAL_RTCEx_BKUPRead(&RtcHandle, RTC_BKP_DR2);
     uint32_t update_size = HAL_RTCEx_BKUPRead(&RtcHandle, RTC_BKP_DR3);
-    int ota_result = setOTAData(storage_type, offset, update_size);
+    //int ota_result =
+    setOTAData(storage_type, offset, update_size);
     /*if (ota_result == 0) {
       // clean reboot with success flag
       HAL_RTCEx_BKUPWrite(&RtcHandle, RTC_BKP_DR0, 0);
@@ -248,25 +252,28 @@ int target_init(void) {
   if (app_valid && magic != 0xDF59 && magic != 0x07AA && boot_sel==0) {
     HAL_RTCEx_BKUPWrite(&RtcHandle, RTC_BKP_DR0, 0);
     HAL_FLASH_Lock();
-    printf("boot app magic 0x%x \n", HAL_RTCEx_BKUPRead(&RtcHandle, RTC_BKP_DR0));
+    BOOT_LOG_DBG("Envie app magic 0x%x", HAL_RTCEx_BKUPRead(&RtcHandle, RTC_BKP_DR0));
     return 0;
 
   } else {
-    printf("boot loop magic 0x%x \n", HAL_RTCEx_BKUPRead(&RtcHandle, RTC_BKP_DR0));
+    BOOT_LOG_DBG("Envie loop magic 0x%x", HAL_RTCEx_BKUPRead(&RtcHandle, RTC_BKP_DR0));
     return 1;
   }
 }
 
+#if MCUBOOT_ENVIE_DFU
 USBD_HandleTypeDef USBD_Device;
 extern PCD_HandleTypeDef hpcd;
 extern void init_Memories(void);
+#endif
+
 extern "C" {
   uint8_t SetSysClock_PLL_HSE(uint8_t bypass, bool lowspeed);
 }
 
 void envie_loop(void) {
 
-  printf("App not found\n");
+  BOOT_LOG_INF("Application not found. Starting boot loop\n");
 
   HAL_RTCEx_BKUPWrite(&RtcHandle, RTC_BKP_DR0, 0);
 
@@ -275,6 +282,7 @@ void envie_loop(void) {
 
   //turnDownEthernet();
 
+#if MCUBOOT_ENVIE_DFU
   init_Memories();
 
   /* Otherwise enters DFU mode to allow user programming his application */
@@ -296,8 +304,10 @@ void envie_loop(void) {
   /* Enable USBHS Interrupt */
   HAL_NVIC_DisableIRQ(OTG_HS_IRQn);
   HAL_NVIC_DisableIRQ(OTG_FS_IRQn);
+#endif
 
   while(1) {
+#if MCUBOOT_ENVIE_DFU
 #ifdef USE_USB_HS
     if (USB_OTG_HS->GINTSTS & USB_OTG_HS->GINTMSK) {
 #else // USE_USB_FS
@@ -305,6 +315,9 @@ void envie_loop(void) {
 #endif
       HAL_PCD_IRQHandler(&hpcd);
     }
+#endif
     LED_pulse(&led);
   }
 }
+
+#endif

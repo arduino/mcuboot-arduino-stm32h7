@@ -59,6 +59,8 @@
 
   ------------------------------------------------------------------------------*/
 
+#if MCUBOOT_AS_ENVIE && MCUBOOT_ENVIE_SDCARD
+
 /* Includes ------------------------------------------------------------------*/
 #include "BSP.h"
 
@@ -457,6 +459,7 @@ void SDMMC2_IRQHandler(void)
   BSP_SD_IRQHandler();
 }
 
+#endif
 
 /**
     @}

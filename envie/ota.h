@@ -1,6 +1,8 @@
 #ifndef __OTA_H
 #define __OTA_H
 
+#include <stdint.h>
+
 #define INTERNAL_FLASH_FLAG         (1 << 1)
 #define QSPI_FLASH_FLAG             (1 << 2)
 #define SDCARD_FLAG                 (1 << 3)
@@ -10,6 +12,7 @@
 #define MBR_FLAG                    (1 << 7)
 
 enum storageType {
+    INVALID = 0,
     INTERNAL_FLASH_OFFSET = INTERNAL_FLASH_FLAG | RAW_FLAG,
     INTERNAL_FLASH_FATFS = INTERNAL_FLASH_FLAG | FATFS_FLAG,
     INTERNAL_FLASH_LITTLEFS = INTERNAL_FLASH_FLAG | LITTLEFS_FLAG,
@@ -31,7 +34,7 @@ enum storageType {
 #define INIT_FAILED          (-4)
 
 //int tryOTA(enum storageType storage_type, uint32_t data_offset, uint32_t update_size);
-int setOTAData(enum storageType storage_type, uint32_t data_offset, uint32_t update_size);
-int getOTAData(enum storageType* storage_type, uint32_t* data_offset, uint32_t* update_size);
+void setOTAData(enum storageType storage_type, uint32_t data_offset, uint32_t update_size);
+void getOTAData(enum storageType* storage_type, uint32_t* data_offset, uint32_t* update_size);
 
 #endif //__OTA_H

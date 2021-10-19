@@ -1,6 +1,6 @@
 {
-    "requires": ["rtos", "cmsis-cmsis5-rtos2", "bare-metal", "mbedtls", "mcuboot", "flashiap-block-device", "spif-driver", "qspif", "mbed-trace", "filesystem", "fat_chan", "littlefs", "events"],
-    "macros": ["USE_USB_HS", "LOWSPEED=1"],
+    "requires": ["bare-metal", "mbedtls", "mcuboot", "flashiap-block-device", "spif-driver", "qspif", "mbed-trace", "filesystem", "fat_chan", "littlefs", "rtos", "cmsis-cmsis5-rtos2", "events"],
+    "macros": ["USE_USB_HS", "LOWSPEED=1", "MBEDTLS_USER_CONFIG_FILE=\"mbedtls_config.h\""],
     "config": {
         "serial-bootloader-enable": {
             "help": "Build bootloader with serial update support",
@@ -11,8 +11,8 @@
         "*": {
             "target.restrict_size": "0x20000",
             "target.c_lib": "small",
-            "mcuboot.log-level": "MCUBOOT_LOG_LEVEL_DEBUG",
-            "mbed-trace.enable": true,
+            "mcuboot.log-level": "MCUBOOT_LOG_LEVEL_INFO",
+            "mbed-trace.enable": false,
             "mbed-trace.fea-ipv6": false
         },
         "NRF52840_DK": {
@@ -49,10 +49,13 @@
         "PORTENTA_H7_M7": {
             "target.clock_source": "USE_PLL_HSE_EXTC",
             "target.use-mpu": false,
-            "target.components_remove" : ["WHD", "4343W", "CYW43XXX"],
-            "target.extra_labels_remove" : ["WHD", "CORDIO", "CYW4343X", "STM_EMAC"],
-            "target.device_has_remove": ["USBDEVICE", "EMAC", "CAN"],
+            "target.components_remove" : ["WHD", "4343W_FS", "CYW43XXX"],
+            "target.extra_labels_remove" : ["CORDIO"],
+            "target.features_remove" : ["BLE"],
+            "target.device_has_remove": ["USBDEVICE", "EMAC", "CAN", "SPI_ASYNCH", "SPISLAVE", "SPI","SERIAL_FC", "PWMOUT", "ANALOGIN", "ANALOGOUT", "I2CSLAVE", "I2C_ASYNC", "OSPI", "TRNG", "DAC", "CRC", "WATCHDOG", "RTC", "LPTICKER", "SLEEP"],
             "platform.stdio-baud-rate": 115200,
+            "fat_chan.ff_use_mkfs": 0,
+            "fat_chan.ff_fs_rpath": 0,
             "mcuboot.primary-slot-address": "0x8020000",
             "mcuboot.slot-size": "0xC0000",
             "mcuboot.scratch-address": "0x80E0000",
@@ -60,8 +63,11 @@
             "mcuboot.max-img-sectors": "0x180",
             "mcuboot.max-align": 32,
             "mcuboot.file-as-blockdevice": true,
-            "mcuboot.signature-algorithm": "SIGNATURE_TYPE_NONE",
-            "mcuboot.mcuboot-as-envie": true
+            "mcuboot.mcuboot-as-envie": true,
+            "mcuboot.mcuboot-envie-littlefs": true,
+            "mcuboot.mcuboot-envie-sdcard": true,
+            "mcuboot.mcuboot-envie-dfu": true,
+            "mcuboot.encrypt-rsa": true
         }
     }
 }

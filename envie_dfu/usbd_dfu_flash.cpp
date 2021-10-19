@@ -17,6 +17,8 @@
   ******************************************************************************
   */
 
+#if MCUBOOT_AS_ENVIE && MCUBOOT_ENVIE_DFU
+
 /* Includes ------------------------------------------------------------------ */
 #include "usbd_dfu_flash.h"
 //#include "option_bits.h"
@@ -213,5 +215,7 @@ uint16_t Flash_If_GetStatus(uint32_t Add, uint8_t Cmd, uint8_t * buffer)
   }
   return 0;
 }
+
+#endif
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

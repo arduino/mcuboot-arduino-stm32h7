@@ -5,10 +5,12 @@
 #include "stm32h7xx_hal_rtc.h"
 #include "stm32h7xx_hal_mdma.h"
 #include "stm32h7xx_hal_qspi.h"
+#if MCUBOOT_ENVIE_DFU
 #include "usbd_core.h"
 #include "usbd_desc.h"
 #include "usbd_dfu.h"
 #include "usbd_dfu_flash.h"
+#endif
 
 #define BOOTLOADER_CONFIG_MAGIC   0xA0
 #define BOOTLOADER_VERSION        22

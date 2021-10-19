@@ -17,6 +17,8 @@
   ******************************************************************************
   */
 
+#if MCUBOOT_AS_ENVIE && MCUBOOT_ENVIE_DFU
+
 /* Includes ------------------------------------------------------------------ */
 #include "target_init.h"
 
@@ -562,5 +564,7 @@ void USBD_LL_Delay(uint32_t Delay)
 {
   HAL_Delay(Delay);
 }
+
+#endif
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
