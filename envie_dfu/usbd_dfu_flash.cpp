@@ -26,12 +26,13 @@
 #include "target_init.h"
 #include "QSPIFBlockDevice.h"
 #include "FlashSimBlockDevice.h"
+#include "flash_map_backend/secondary_bd.h"
 
 /* Private typedef ----------------------------------------------------------- */
 /* Private define ------------------------------------------------------------ */
-#define FLASH_DESC_STR      "@Internal Flash   /0x08000000/01*128Ka,15*128Kg"
-//#define OPTIONB_DESC_STR    "@Option Bits      /0x52002000/01*1Ka"
-#define QSPI_FLASH_DESC_STR "@External Flash   /0x90000000/4096*4Kg"
+#define FLASH_DESC_STR      "@Internal Flash  2MB   /0x08000000/01*128Ka,15*128Kg"
+//#define BOOTLOADER_DESC_STR    "@Option Bits      /0x52002000/01*1Ka"
+#define QSPI_FLASH_DESC_STR "@External Flash 16MB   /0x90000000/16*128Kg"
 
 #define FLASH_ERASE_TIME    (uint16_t)0
 #define FLASH_PROGRAM_TIME  (uint16_t)0
@@ -52,7 +53,7 @@ uint16_t Flash_If_DeInit(void);
 uint16_t Flash_If_GetStatus(uint32_t Add, uint8_t Cmd, uint8_t * buffer);
 
 FlashIAP flash;
-QSPIFBlockDevice qspi_flash(PD_11, PD_12, PF_7, PD_13, PF_10, PG_6, QSPIF_POLARITY_MODE_1, 40000000);
+mbed::BlockDevice* dfu_secondary_bd = get_secondary_bd();
 
 const uint32_t QSPIFLASH_BASE_ADDRESS   =  0x90000000;
 
@@ -74,8 +75,8 @@ bool Flash_If_Init_requested = false;
 
 void init_Memories() {
   flash.init();
-  qspi_flash.init();
-  snprintf(BOOTLOADER_DESC_STR, sizeof(BOOTLOADER_DESC_STR), "@Bootloader version %d /0x00000000/0*4Kg", BOOTLOADER_VERSION);
+  dfu_secondary_bd->init();
+  snprintf(BOOTLOADER_DESC_STR, sizeof(BOOTLOADER_DESC_STR), "@MCUBoot version %d /0x00000000/0*4Kg", BOOTLOADER_VERSION);
 }
 
 Thread writeThread(osPriorityHigh);
@@ -101,7 +102,7 @@ uint16_t Flash_If_Init(void)
 uint16_t Flash_If_DeInit(void)
 {
   flash.deinit();
-  qspi_flash.deinit();
+  dfu_secondary_bd->deinit();
   return 0;
 }
 
@@ -118,7 +119,7 @@ uint16_t Flash_If_Erase(uint32_t Add)
 {
   if (isExternalFlash(Add)) {
     Add -= QSPIFLASH_BASE_ADDRESS;
-    return qspi_flash.erase(Add, qspi_flash.get_erase_size(Add));
+    return dfu_secondary_bd->erase(Add, dfu_secondary_bd->get_erase_size(Add));
   } else {
     return flash.erase(Add, flash.get_sector_size(Add));
   }
@@ -147,10 +148,10 @@ uint16_t Flash_If_Write(uint8_t * src, uint8_t * dest, uint32_t Len)
 {
   if (isExternalFlash((uint32_t)dest)) {
     dest -= QSPIFLASH_BASE_ADDRESS;
-    if (Len < qspi_flash.get_erase_size(0)) {
-      Len = qspi_flash.get_erase_size(0);
+    if (Len < dfu_secondary_bd->get_erase_size(0)) {
+      Len = dfu_secondary_bd->get_erase_size(0);
     }
-    return qspi_flash.program(src, (uint32_t)dest, Len);
+    return dfu_secondary_bd->program(src, (uint32_t)dest, Len);
   } else {
     uint8_t* srcCopy = (uint8_t*)malloc(Len);
     memcpy(srcCopy, src, Len);
@@ -177,8 +178,7 @@ uint8_t *Flash_If_Read(uint8_t * src, uint8_t * dest, uint32_t Len)
 
   if (isExternalFlash((uint32_t)src)) {
     src -= QSPIFLASH_BASE_ADDRESS;
-
-    qspi_flash.read(dest, (uint32_t)src, Len);
+    dfu_secondary_bd->read(dest, (uint32_t)src, Len);
   } else {
     for (i = 0; i < Len; i++)
     {

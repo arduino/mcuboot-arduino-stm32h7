@@ -26,7 +26,11 @@ void create_scratch_file(void) {
   int size=0;
 
   while(size < 128 * 1024) {
-    fwrite(buffer, 128, 1, fp);
+    int ret = fwrite(buffer, 128, 1, fp);
+    if(ret != 1) {
+      Serial.println("Error writing scratch file");
+      break;
+    }
     size += 128;
   }
 
@@ -39,7 +43,11 @@ void create_update_file(void) {
   int size=0;
 
   while(size < 768 * 1024) {
-    fwrite(buffer, 128, 1, fp);
+    int ret = fwrite(buffer, 128, 1, fp);
+    if(ret != 1) {
+      Serial.println("Error writing scratch file");
+      break;
+    }
     size += 128;
   }
 

@@ -20,8 +20,7 @@
 #include "LittleFileSystem.h"
 #endif
 
-#define ALL_IN_SD 1
-
+static bool BlockTableLoaded = false;
 static BlockTableData block_info[2];
 
 static void loadOTAData(void) {
@@ -92,7 +91,7 @@ static void loadOTAData(void) {
         block_info[SECONDARY_BLOCK_DEVICE].mbr_flag = 1;
 
         block_info[SCRATCH_BLOCK_DEVICE].storage_type = INTERNAL_FLASH_OFFSET;
-        block_info[SCRATCH_BLOCK_DEVICE].data_offset = 2;
+        block_info[SCRATCH_BLOCK_DEVICE].data_offset = MCUBOOT_SCRATCH_START_ADDR;
         block_info[SCRATCH_BLOCK_DEVICE].update_size = MCUBOOT_SCRATCH_SIZE;
         block_info[SCRATCH_BLOCK_DEVICE].raw_type = INTERNAL_FLASH_FLAG;
         block_info[SCRATCH_BLOCK_DEVICE].raw_flag = 1;
@@ -367,29 +366,31 @@ static void initBlockTable(void) {
  */
 mbed::BlockDevice* get_secondary_bd(void) {
 
-    initBlockTable();
+    if(!BlockTableLoaded) {
+        initBlockTable();
+        BlockTableLoaded = true;
+    }
 
     if(block_info[SECONDARY_BLOCK_DEVICE].raw_flag) {
         return block_info[SECONDARY_BLOCK_DEVICE].log_bd;
     } else {
         return block_info[SECONDARY_BLOCK_DEVICE].file_bd;
     }
-
-    BOOT_LOG_ERR("Cannot define secondary Blockdevice Instance");
-    return NULL;
 }
 
 
 mbed::BlockDevice* get_scratch_bd(void) {
+
+    if(!BlockTableLoaded) {
+        initBlockTable();
+        BlockTableLoaded = true;
+    }
 
     if(block_info[SCRATCH_BLOCK_DEVICE].raw_flag) {
         return block_info[SCRATCH_BLOCK_DEVICE].log_bd;;
     } else {
         return block_info[SCRATCH_BLOCK_DEVICE].file_bd;
     }
-
-    BOOT_LOG_ERR("Cannot define secondary Blockdevice Instance");
-    return NULL;
 }
 
 #endif
