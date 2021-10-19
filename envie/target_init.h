@@ -2,7 +2,6 @@
 #define __TARGET_INIT_H
 
 #include "stm32h7xx_hal.h"
-#include "stm32h7xx_hal_rtc.h"
 #include "stm32h7xx_hal_mdma.h"
 #include "stm32h7xx_hal_qspi.h"
 #if MCUBOOT_ENVIE_DFU
