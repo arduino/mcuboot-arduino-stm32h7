@@ -58,7 +58,7 @@
             "fat_chan.ff_fs_rpath": 0,
             "mcuboot.primary-slot-address": "0x8020000",
             "mcuboot.slot-size": "0x1E0000",
-            "mcuboot.scratch-address": "0x80E0000",
+            "mcuboot.scratch-address": "0x9000000",
             "mcuboot.scratch-size": "0x20000",
             "mcuboot.max-img-sectors": "0x180",
             "mcuboot.max-align": 32,
