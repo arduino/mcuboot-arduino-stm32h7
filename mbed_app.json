@@ -60,7 +60,7 @@
             "mcuboot.slot-size": "0x1E0000",
             "mcuboot.scratch-address": "0x9000000",
             "mcuboot.scratch-size": "0x20000",
-            "mcuboot.max-img-sectors": "0x180",
+            "mcuboot.max-img-sectors": "0x3C0",
             "mcuboot.max-align": 32,
             "mcuboot.mcuboot-as-envie": true,
             "mcuboot.mcuboot-envie-littlefs": true,
