@@ -81,21 +81,6 @@ static void loadOTAData(void) {
         block_info[SCRATCH_BLOCK_DEVICE].raw_type = QSPI_FLASH_FLAG;
         block_info[SCRATCH_BLOCK_DEVICE].raw_flag = 0;
         block_info[SCRATCH_BLOCK_DEVICE].mbr_flag = 1;
-#elif SCRATCH_INTERNAL_FLASH
-        /* TODO Check error readinf internal flash */
-        block_info[SECONDARY_BLOCK_DEVICE].storage_type = QSPI_FLASH_FATFS_MBR;
-        block_info[SECONDARY_BLOCK_DEVICE].data_offset = 2;
-        block_info[SECONDARY_BLOCK_DEVICE].update_size = MCUBOOT_SLOT_SIZE;
-        block_info[SECONDARY_BLOCK_DEVICE].raw_type = QSPI_FLASH_FLAG;
-        block_info[SECONDARY_BLOCK_DEVICE].raw_flag = 0;
-        block_info[SECONDARY_BLOCK_DEVICE].mbr_flag = 1;
-
-        block_info[SCRATCH_BLOCK_DEVICE].storage_type = INTERNAL_FLASH_OFFSET;
-        block_info[SCRATCH_BLOCK_DEVICE].data_offset = MCUBOOT_SCRATCH_START_ADDR;
-        block_info[SCRATCH_BLOCK_DEVICE].update_size = MCUBOOT_SCRATCH_SIZE;
-        block_info[SCRATCH_BLOCK_DEVICE].raw_type = INTERNAL_FLASH_FLAG;
-        block_info[SCRATCH_BLOCK_DEVICE].raw_flag = 1;
-        block_info[SCRATCH_BLOCK_DEVICE].mbr_flag = 0;
 #else
         block_info[SECONDARY_BLOCK_DEVICE].storage_type = QSPI_FLASH_FATFS_MBR;
         block_info[SECONDARY_BLOCK_DEVICE].data_offset = 2;
@@ -238,7 +223,7 @@ static void initBlockTable(void) {
         }
 
         if (block_info[SCRATCH_BLOCK_DEVICE].raw_type & INTERNAL_FLASH_FLAG) {
-            block_info[SCRATCH_BLOCK_DEVICE].raw_bd = new FlashIAPBlockDevice(block_info[SCRATCH_BLOCK_DEVICE].data_offset, block_info[SCRATCH_BLOCK_DEVICE].update_size);
+            BOOT_LOG_ERR("Scratch block device on internal flash not supported");
         } else if (block_info[SCRATCH_BLOCK_DEVICE].raw_type & SDCARD_FLAG) {
 #if MCUBOOT_ENVIE_SDCARD
             block_info[SCRATCH_BLOCK_DEVICE].raw_bd = new SDMMCBlockDevice();
@@ -285,7 +270,7 @@ static void initBlockTable(void) {
         /* Setup Raw sliced devices */
         if(block_info[SCRATCH_BLOCK_DEVICE].raw_flag) {
             if (block_info[SCRATCH_BLOCK_DEVICE].raw_type & INTERNAL_FLASH_FLAG) {
-                block_info[SCRATCH_BLOCK_DEVICE].log_bd = block_info[SCRATCH_BLOCK_DEVICE].raw_bd;
+                BOOT_LOG_ERR("Scratch block device on internal flash not supported");
             } else if (block_info[SCRATCH_BLOCK_DEVICE].raw_type & SDCARD_FLAG) {
 #if MCUBOOT_ENVIE_SDCARD
                 block_info[SCRATCH_BLOCK_DEVICE].log_bd = new SlicingBlockDevice(block_info[SCRATCH_BLOCK_DEVICE].raw_bd, block_info[SCRATCH_BLOCK_DEVICE].data_offset, block_info[SCRATCH_BLOCK_DEVICE].update_size);
