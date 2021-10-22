@@ -216,8 +216,8 @@ static void initBlockTable(void) {
             }
 
             /* Setup FileBlockDevice */
-            block_info[SECONDARY_BLOCK_DEVICE].file_bd = new FileBlockDevice("/fs/update.bin", "rb+", block_info[SECONDARY_BLOCK_DEVICE].update_size);
-            block_info[SCRATCH_BLOCK_DEVICE].file_bd = new FileBlockDevice("/fs/scratch.bin", "rb+", block_info[SCRATCH_BLOCK_DEVICE].update_size);
+            block_info[SECONDARY_BLOCK_DEVICE].file_bd = new FileBlockDevice("/fs/update.bin", "rb+", block_info[SECONDARY_BLOCK_DEVICE].update_size, FILEBD_READ_SIZE, FILEBD_WRITE_SIZE, FILEBD_ERASE_SIZE);
+            block_info[SCRATCH_BLOCK_DEVICE].file_bd = new FileBlockDevice("/fs/scratch.bin", "rb+", block_info[SCRATCH_BLOCK_DEVICE].update_size, FILEBD_READ_SIZE, FILEBD_WRITE_SIZE, FILEBD_ERASE_SIZE);
         }
 
     } else {
@@ -331,7 +331,7 @@ static void initBlockTable(void) {
             }
 
             /* Setup FileBlockDevice */
-            block_info[SECONDARY_BLOCK_DEVICE].file_bd = new FileBlockDevice("/sec/update.bin", "rb+", block_info[SECONDARY_BLOCK_DEVICE].update_size);
+            block_info[SECONDARY_BLOCK_DEVICE].file_bd = new FileBlockDevice("/sec/update.bin", "rb+", block_info[SECONDARY_BLOCK_DEVICE].update_size, FILEBD_READ_SIZE, FILEBD_WRITE_SIZE, FILEBD_ERASE_SIZE);
         }
 
         /* Setup FS */
@@ -352,7 +352,7 @@ static void initBlockTable(void) {
             }
 
             /* Setup FileBlockDevice */
-            block_info[SCRATCH_BLOCK_DEVICE].file_bd = new FileBlockDevice("/scr/scratch.bin", "rb+", block_info[SCRATCH_BLOCK_DEVICE].update_size);
+            block_info[SCRATCH_BLOCK_DEVICE].file_bd = new FileBlockDevice("/scr/scratch.bin", "rb+", block_info[SCRATCH_BLOCK_DEVICE].update_size, FILEBD_READ_SIZE, FILEBD_WRITE_SIZE, FILEBD_ERASE_SIZE);
         }
     }
 }
