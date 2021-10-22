@@ -148,8 +148,8 @@ uint16_t Flash_If_Write(uint8_t * src, uint8_t * dest, uint32_t Len)
 {
   if (isExternalFlash((uint32_t)dest)) {
     dest -= QSPIFLASH_BASE_ADDRESS;
-    if (Len < dfu_secondary_bd->get_erase_size(0)) {
-      Len = dfu_secondary_bd->get_erase_size(0);
+    if (Len < dfu_secondary_bd->get_program_size()) {
+      Len = dfu_secondary_bd->get_program_size();
     }
     return dfu_secondary_bd->program(src, (uint32_t)dest, Len);
   } else {
