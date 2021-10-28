@@ -56,6 +56,6 @@ struct BlockTableData {
 
 #define FILEBD_READ_SIZE      0x1
 #define FILEBD_WRITE_SIZE     0x1
-#define FILEBD_ERASE_SIZE     0x20000
+#define FILEBD_ERASE_SIZE     0x1000
 
 #endif //__OTA_H
