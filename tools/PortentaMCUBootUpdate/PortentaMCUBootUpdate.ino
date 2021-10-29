@@ -1,11 +1,17 @@
 #include "FlashIAP.h"
 #include "bootloader.h"
+#include "encrypt_key.h"
+#include "signing_key.h"
 
 #ifndef CORE_CM7  
   #error Update the bootloader by uploading the sketch to the M7 core instead of the M4 core.
 #endif
 
 #define BOOTLOADER_ADDR   (0x8000000)
+#define SIGNING_KEY_ADDR  (0x801F600)
+#define ENCRYPT_KEY_ADDR  (0x801F100)
+#define ENCRYPT_KEY_SIZE  (0x0000500)
+#define SIGNING_KEY_SIZE  (0x0000120)
 mbed::FlashIAP flash;
 
 uint32_t bootloader_data_offset = 0x1F000;
@@ -128,6 +134,10 @@ void applyUpdate(uint32_t address) {
       }
     }
   }
+
+  flash.program(&enc_priv_key, ENCRYPT_KEY_ADDR, ENCRYPT_KEY_SIZE);
+  flash.program(&rsa_pub_key, SIGNING_KEY_ADDR, SIGNING_KEY_SIZE);
+
   Serial.println("Flashed 100%");
 
   delete[] page_buffer;
