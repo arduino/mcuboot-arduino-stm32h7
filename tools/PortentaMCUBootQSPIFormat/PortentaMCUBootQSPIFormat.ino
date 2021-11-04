@@ -42,7 +42,7 @@ void create_update_file(void) {
   char buffer[128] = {0xFF};
   int size=0;
 
-  while(size < 15 * 128 * 1024) {
+  while(size < ((14 * 128) + 1) * 1024) {
     int ret = fwrite(buffer, 128, 1, fp);
     if(ret != 1) {
       Serial.println("Error writing scratch file");
