@@ -30,6 +30,7 @@ volatile uint8_t ledKeepValue = 0;
 volatile uint8_t ledTargetValue = 20;
 volatile int8_t ledDirection = 1;
 volatile int divisor = 0;
+int envie_swap_index = -1;
 
 DigitalOut led(PK_6);
 
