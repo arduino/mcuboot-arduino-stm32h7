@@ -30,9 +30,54 @@ volatile uint8_t ledKeepValue = 0;
 volatile uint8_t ledTargetValue = 20;
 volatile int8_t ledDirection = 1;
 volatile int divisor = 0;
+
+DigitalOut green(PK_6, 1);
+DigitalOut blue(PK_7, 1);
+
+Ticker swap_ticker;
 int envie_swap_index = -1;
 
-DigitalOut led(PK_6);
+static inline void swap_feedback() {
+
+  static int blink_idx = 0;
+  static int blink_state = 0;
+
+  if(envie_swap_index >= 0){
+    switch(blink_state) {
+      case 0: {
+        if(blink_idx < envie_swap_index) {
+          if(blue == 0){
+            blue = 1;
+          } else {
+            blue = 0;
+            blink_idx++;
+          }
+        } else {
+          blink_idx = 0;
+          blink_state = 1;
+        }
+        green = 1;
+      }
+      break;
+
+      case 1: {
+        if(blink_idx < (15 - envie_swap_index)) {
+          if(green == 0){
+            green = 1;
+          } else {
+            green = 0;
+            blink_idx++;
+          }
+        } else {
+          blink_idx = 0;
+          blink_state = 0;
+        }
+        blue = 1;
+      }
+      break;
+    }
+  }
+}
 
 static inline void LED_pulse(DigitalOut* led)
 {
@@ -178,6 +223,7 @@ int target_init(void) {
     RTCSetBKPRegister(RTC_BKP_DR0, 0);
     HAL_FLASH_Lock();
     BOOT_LOG_DBG("Envie app magic 0x%x", RTCGetBKPRegister(RTC_BKP_DR0));
+    swap_ticker.attach(&swap_feedback, 250ms);
     return 0;
 
   } else {
@@ -242,7 +288,7 @@ void envie_loop(void) {
       HAL_PCD_IRQHandler(&hpcd);
     }
 #endif
-    LED_pulse(&led);
+    LED_pulse(&green);
   }
 }
 
