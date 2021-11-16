@@ -15,6 +15,15 @@ Using JFlash or JFlashLite is possible to upload the MCUBoot bootloader binary t
 ### Arduino Sketch
 Running this [sketch](https://github.com/bcmi-labs/mcuboot-portenta-boot/blob/boot_sketch/tools/PortentaMCUBootQSPIFormat.ino) will upload the last released MCUBoot bootloader to the board.
 
+## Keys customization
+The bootloder comes with a preloaded set of default keys for signing and encryption. !!!WARNING!!! The default keyset is public therefore is not safe to use them for production, they are included only for evaluation purpose. Keys can be manually regenerated and included in the build flow to provide a real security layer to custom projects.
+
+```
+imgtool keygen -k ecsdsa-p256-signing-key.pem -t ecdsa-p256
+imgtool keygen -k ecsdsa-p256-encrypt-key.pem -t ecdsa-p256
+imgtool getpub -k ecsdsa-p256-signing-key.pem > ecsdsa-p256-signing-key.c
+imgtool getpriv -k ecsdsa-p256-encrypt-key.pem > ecsda-p256-encrypt-key.c
+```
 
 ## Build from source
 
