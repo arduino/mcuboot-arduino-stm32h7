@@ -58,6 +58,7 @@
             "platform.minimal-printf-enable-64-bit": false,
             "platform.stdio-baud-rate": 115200,
             "fat_chan.ff_use_mkfs": 0,
+            "fat_chan.ff_use_lfn": 0,
             "fat_chan.ff_fs_rpath": 0,
             "mcuboot.primary-slot-address": "0x8020000",
             "mcuboot.slot-size": "0x1E0000",
