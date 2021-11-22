@@ -52,6 +52,10 @@ static void loadOTAData(void) {
         block_info[SCRATCH_BLOCK_DEVICE].data_offset = RTCGetBKPRegister(RTC_BKP_DR5);
         block_info[SCRATCH_BLOCK_DEVICE].update_size = RTCGetBKPRegister(RTC_BKP_DR6);
         BOOT_LOG_INF("Custom OTA data");
+
+        /* Print loaded Data */
+        BOOT_LOG_INF("Secondary [%d] [%d]", block_info[SECONDARY_BLOCK_DEVICE].storage_type, block_info[SECONDARY_BLOCK_DEVICE].raw_type);
+        BOOT_LOG_INF("Scratch [%d] [%d]", block_info[SCRATCH_BLOCK_DEVICE].storage_type, block_info[SCRATCH_BLOCK_DEVICE].raw_type);
     } else {
 #if ALL_IN_SD
         block_info[SECONDARY_BLOCK_DEVICE].storage_type = SD_FATFS;
@@ -98,14 +102,6 @@ static void loadOTAData(void) {
 #endif
         BOOT_LOG_INF("Default OTA data");
     }
-
-    /* Print loaded Data */
-    BOOT_LOG_INF("Secondary BlockDevice");
-    BOOT_LOG_INF("Storage type: %d", block_info[SECONDARY_BLOCK_DEVICE].storage_type);
-    BOOT_LOG_INF("Raw type: %d", block_info[SECONDARY_BLOCK_DEVICE].raw_type);
-    BOOT_LOG_INF("Scratch BlockDevice");
-    BOOT_LOG_INF("Storage type: %d", block_info[SCRATCH_BLOCK_DEVICE].storage_type);
-    BOOT_LOG_INF("Raw type: %d", block_info[SCRATCH_BLOCK_DEVICE].raw_type);
     return;
 }
 
@@ -120,19 +116,19 @@ static void initBlockTable(void) {
         if (block_info[SECONDARY_BLOCK_DEVICE].raw_type & INTERNAL_FLASH_FLAG) {
             //block_info[SECONDARY_BLOCK_DEVICE].raw_bd = new FlashIAPBlockDevice flashIAP_bd(data_offset, update_size);
             //block_info[SCRATCH_BLOCK_DEVICE].raw_bd = block_info[SECONDARY_BLOCK_DEVICE].raw_bd;
-            BOOT_LOG_ERR("Secondary block device on internal flash not supported");
+            BOOT_LOG_ERR("U on IAP");
         } else if (block_info[SECONDARY_BLOCK_DEVICE].raw_type & SDCARD_FLAG) {
 #if MCUBOOT_ENVIE_SDCARD
             block_info[SECONDARY_BLOCK_DEVICE].raw_bd = new SDMMCBlockDevice();
             block_info[SCRATCH_BLOCK_DEVICE].raw_bd = block_info[SECONDARY_BLOCK_DEVICE].raw_bd;
 #else
-            BOOT_LOG_ERR("SDMMCBlockDevice not supported");
+            BOOT_LOG_ERR("SDMMC");
 #endif
         } else if (block_info[SECONDARY_BLOCK_DEVICE].raw_type & QSPI_FLASH_FLAG) {
             block_info[SECONDARY_BLOCK_DEVICE].raw_bd = new QSPIFBlockDevice(PD_11, PD_12, PF_7, PD_13, PF_10, PG_6, QSPIF_POLARITY_MODE_1, 40000000);
             block_info[SCRATCH_BLOCK_DEVICE].raw_bd = block_info[SECONDARY_BLOCK_DEVICE].raw_bd;
         } else {
-            BOOT_LOG_ERR("Cannot configure secondary/scratch raw block device");
+            BOOT_LOG_ERR("Config");
         }
 
         /* Setup sliced block devices */
@@ -140,19 +136,19 @@ static void initBlockTable(void) {
             if (block_info[SECONDARY_BLOCK_DEVICE].raw_type & INTERNAL_FLASH_FLAG) {
                 //block_info[SECONDARY_BLOCK_DEVICE].raw_bd = new FlashIAPBlockDevice flashIAP_bd(data_offset, update_size);
                 //block_info[SCRATCH_BLOCK_DEVICE].raw_bd = block_info[SECONDARY_BLOCK_DEVICE].raw_bd;
-                BOOT_LOG_ERR("Secondary block device on internal flash not supported");
+                BOOT_LOG_ERR("U on IAP");
             } else if (block_info[SECONDARY_BLOCK_DEVICE].raw_type & SDCARD_FLAG) {
 #if MCUBOOT_ENVIE_SDCARD
                 block_info[SECONDARY_BLOCK_DEVICE].log_bd = new SlicingBlockDevice(block_info[SECONDARY_BLOCK_DEVICE].raw_bd, block_info[SECONDARY_BLOCK_DEVICE].data_offset, block_info[SECONDARY_BLOCK_DEVICE].update_size);
                 block_info[SCRATCH_BLOCK_DEVICE].log_bd = block_info[SECONDARY_BLOCK_DEVICE].log_bd;
 #else
-                BOOT_LOG_ERR("SDMMCBlockDevice not supported");
+                BOOT_LOG_ERR("SDMMC");
 #endif
             } else if (block_info[SECONDARY_BLOCK_DEVICE].raw_type & QSPI_FLASH_FLAG) {
                 block_info[SECONDARY_BLOCK_DEVICE].log_bd = new SlicingBlockDevice(block_info[SECONDARY_BLOCK_DEVICE].raw_bd, block_info[SECONDARY_BLOCK_DEVICE].data_offset, block_info[SECONDARY_BLOCK_DEVICE].update_size);
                 block_info[SCRATCH_BLOCK_DEVICE].log_bd = block_info[SECONDARY_BLOCK_DEVICE].log_bd;
             } else {
-                BOOT_LOG_ERR("Cannot configure secondary/scratch raw block device");
+                BOOT_LOG_ERR("Config");
             }
         } else
 
@@ -160,12 +156,12 @@ static void initBlockTable(void) {
         if(block_info[SECONDARY_BLOCK_DEVICE].mbr_flag) {
             /* If using the same underlying block device configuration must be the same */
             if(block_info[SECONDARY_BLOCK_DEVICE].storage_type != block_info[SCRATCH_BLOCK_DEVICE].storage_type) {
-                BOOT_LOG_ERR("Secondary and Scratch storage type must be the same");
+                BOOT_LOG_ERR("BD U!S");
             }
 
             /* If using the same underlying block device mbr partition must be the same */
             if(block_info[SECONDARY_BLOCK_DEVICE].data_offset != block_info[SCRATCH_BLOCK_DEVICE].data_offset) {
-                BOOT_LOG_ERR("Secondary and Scratch mbr partition must be the same");
+                BOOT_LOG_ERR("MBR U!S");
             }
 
             block_info[SECONDARY_BLOCK_DEVICE].log_bd = new MBRBlockDevice(block_info[SECONDARY_BLOCK_DEVICE].raw_bd, block_info[SECONDARY_BLOCK_DEVICE].data_offset);
@@ -174,7 +170,7 @@ static void initBlockTable(void) {
             /* Initialize block device */
             err = block_info[SECONDARY_BLOCK_DEVICE].log_bd->init();
             if (err) {
-                BOOT_LOG_ERR("Error initializing common mbr device");
+                BOOT_LOG_ERR("Init");
             }
         } else {
             block_info[SECONDARY_BLOCK_DEVICE].log_bd = block_info[SECONDARY_BLOCK_DEVICE].raw_bd;
@@ -187,7 +183,7 @@ static void initBlockTable(void) {
 #if MCUBOOT_ENVIE_LITTLEFS
                 block_info[SECONDARY_BLOCK_DEVICE].log_fs = new LittleFileSystem("fs");
 #else
-                BOOT_LOG_ERR("LittleFileSystem not supported");
+                BOOT_LOG_ERR("LFS");
 #endif
             } else {
                 block_info[SECONDARY_BLOCK_DEVICE].log_fs = new FATFileSystem("fs");
@@ -197,7 +193,7 @@ static void initBlockTable(void) {
 
             err = block_info[SECONDARY_BLOCK_DEVICE].log_fs->mount(block_info[SECONDARY_BLOCK_DEVICE].log_bd);
             if (err) {
-                BOOT_LOG_ERR("Error mounting fs on common mbr device");
+                BOOT_LOG_ERR("Mount");
             }
 
             /* Setup FileBlockDevice */
@@ -209,47 +205,47 @@ static void initBlockTable(void) {
         /* Declare raw block devices */
         if (block_info[SECONDARY_BLOCK_DEVICE].raw_type & INTERNAL_FLASH_FLAG) {
             //block_info[SECONDARY_BLOCK_DEVICE].raw_bd = new FlashIAPBlockDevice flashIAP_bd(data_offset, update_size);
-            BOOT_LOG_ERR("Secondary block device on internal flash not supported");
+            BOOT_LOG_ERR("U on IAP");
         } else if (block_info[SECONDARY_BLOCK_DEVICE].raw_type & SDCARD_FLAG) {
 #if MCUBOOT_ENVIE_SDCARD
             block_info[SECONDARY_BLOCK_DEVICE].raw_bd = new SDMMCBlockDevice();
 #else
-            BOOT_LOG_ERR("SDMMCBlockDevice not supported");
+            BOOT_LOG_ERR("SDMMC");
 #endif
         } else if (block_info[SECONDARY_BLOCK_DEVICE].raw_type & QSPI_FLASH_FLAG) {
             block_info[SECONDARY_BLOCK_DEVICE].raw_bd = new QSPIFBlockDevice(PD_11, PD_12, PF_7, PD_13, PF_10, PG_6, QSPIF_POLARITY_MODE_1, 40000000);
         } else {
-            BOOT_LOG_ERR("Cannot configure secodary raw block device");
+            BOOT_LOG_ERR("U config");
         }
 
         if (block_info[SCRATCH_BLOCK_DEVICE].raw_type & INTERNAL_FLASH_FLAG) {
-            BOOT_LOG_ERR("Scratch block device on internal flash not supported");
+            BOOT_LOG_ERR("S on IAP");
         } else if (block_info[SCRATCH_BLOCK_DEVICE].raw_type & SDCARD_FLAG) {
 #if MCUBOOT_ENVIE_SDCARD
             block_info[SCRATCH_BLOCK_DEVICE].raw_bd = new SDMMCBlockDevice();
 #else
-            BOOT_LOG_ERR("SDMMCBlockDevice not supported");
+            BOOT_LOG_ERR("SDMMC");
 #endif
         } else if (block_info[SCRATCH_BLOCK_DEVICE].raw_type & QSPI_FLASH_FLAG) {
             block_info[SCRATCH_BLOCK_DEVICE].raw_bd = new QSPIFBlockDevice(PD_11, PD_12, PF_7, PD_13, PF_10, PG_6, QSPIF_POLARITY_MODE_1, 40000000);
         } else {
-            BOOT_LOG_ERR("Cannot configure scratchraw block device");
+            BOOT_LOG_ERR("S config");
         }
 
         /* Setup Raw sliced devices */
         if(block_info[SECONDARY_BLOCK_DEVICE].raw_flag) {
             if (block_info[SECONDARY_BLOCK_DEVICE].raw_type & INTERNAL_FLASH_FLAG) {
-                BOOT_LOG_ERR("Secondary block device on internal flash not supported");
+                BOOT_LOG_ERR("U on IAP");
             } else if (block_info[SECONDARY_BLOCK_DEVICE].raw_type & SDCARD_FLAG) {
 #if MCUBOOT_ENVIE_SDCARD
                 block_info[SECONDARY_BLOCK_DEVICE].log_bd = new SlicingBlockDevice(block_info[SECONDARY_BLOCK_DEVICE].raw_bd, block_info[SECONDARY_BLOCK_DEVICE].data_offset, block_info[SECONDARY_BLOCK_DEVICE].update_size);
 #else
-                BOOT_LOG_ERR("SDMMCBlockDevice not supported");
+                BOOT_LOG_ERR("SDMMC");
 #endif
             } else if (block_info[SECONDARY_BLOCK_DEVICE].raw_type & QSPI_FLASH_FLAG) {
                 block_info[SECONDARY_BLOCK_DEVICE].log_bd = new SlicingBlockDevice(block_info[SECONDARY_BLOCK_DEVICE].raw_bd, block_info[SECONDARY_BLOCK_DEVICE].data_offset, block_info[SECONDARY_BLOCK_DEVICE].update_size);
             } else {
-                BOOT_LOG_ERR("Cannot configure secodary raw block device");
+                BOOT_LOG_ERR("U config");
             }
         } else
 
@@ -261,7 +257,7 @@ static void initBlockTable(void) {
             /* Initialize block device */
             int err = block_info[SECONDARY_BLOCK_DEVICE].log_bd->init();
             if (err) {
-                BOOT_LOG_ERR("Error initializing secondary mbr device");
+                BOOT_LOG_ERR("Init U MBR");
             }
         } else {
             block_info[SECONDARY_BLOCK_DEVICE].log_bd = block_info[SECONDARY_BLOCK_DEVICE].raw_bd;
@@ -270,17 +266,17 @@ static void initBlockTable(void) {
         /* Setup Raw sliced devices */
         if(block_info[SCRATCH_BLOCK_DEVICE].raw_flag) {
             if (block_info[SCRATCH_BLOCK_DEVICE].raw_type & INTERNAL_FLASH_FLAG) {
-                BOOT_LOG_ERR("Scratch block device on internal flash not supported");
+                BOOT_LOG_ERR("S on IAP");
             } else if (block_info[SCRATCH_BLOCK_DEVICE].raw_type & SDCARD_FLAG) {
 #if MCUBOOT_ENVIE_SDCARD
                 block_info[SCRATCH_BLOCK_DEVICE].log_bd = new SlicingBlockDevice(block_info[SCRATCH_BLOCK_DEVICE].raw_bd, block_info[SCRATCH_BLOCK_DEVICE].data_offset, block_info[SCRATCH_BLOCK_DEVICE].update_size);
 #else
-                BOOT_LOG_ERR("SDMMCBlockDevice not supported");
+                BOOT_LOG_ERR("SDMMC");
 #endif
             } else if (block_info[SCRATCH_BLOCK_DEVICE].raw_type & QSPI_FLASH_FLAG) {
                 block_info[SCRATCH_BLOCK_DEVICE].log_bd = new SlicingBlockDevice(block_info[SCRATCH_BLOCK_DEVICE].raw_bd, block_info[SCRATCH_BLOCK_DEVICE].data_offset, block_info[SCRATCH_BLOCK_DEVICE].update_size);
             } else {
-                BOOT_LOG_ERR("Cannot configure scratch raw block device");
+                BOOT_LOG_ERR("S config");
             }
         } else
 
@@ -292,7 +288,7 @@ static void initBlockTable(void) {
             /* Initialize block device */
             err = block_info[SCRATCH_BLOCK_DEVICE].log_bd->init();
             if (err) {
-                BOOT_LOG_ERR("Error initializing scratch mbr device");
+                BOOT_LOG_ERR("Init S MBR");
             }
         } else {
             block_info[SCRATCH_BLOCK_DEVICE].log_bd = block_info[SCRATCH_BLOCK_DEVICE].raw_bd;
@@ -304,7 +300,7 @@ static void initBlockTable(void) {
 #if MCUBOOT_ENVIE_LITTLEFS
                 block_info[SECONDARY_BLOCK_DEVICE].log_fs = new LittleFileSystem("sec");
 #else
-                BOOT_LOG_ERR("LittleFileSystem not supported");
+                BOOT_LOG_ERR("LFS");
 #endif
             } else {
                 block_info[SECONDARY_BLOCK_DEVICE].log_fs = new FATFileSystem("sec");
@@ -312,7 +308,7 @@ static void initBlockTable(void) {
 
             err = block_info[SECONDARY_BLOCK_DEVICE].log_fs->mount(block_info[SECONDARY_BLOCK_DEVICE].log_bd);
             if (err) {
-                BOOT_LOG_ERR("Error mounting secondary fs on common log device");
+                BOOT_LOG_ERR("Mount U on LOG");
             }
 
             /* Setup FileBlockDevice */
@@ -325,7 +321,7 @@ static void initBlockTable(void) {
 #if MCUBOOT_ENVIE_LITTLEFS
                 block_info[SCRATCH_BLOCK_DEVICE].log_fs = new LittleFileSystem("scr");
 #else
-                BOOT_LOG_ERR("LittleFileSystem not supported");
+                BOOT_LOG_ERR("LFS");
 #endif
             } else {
                 block_info[SCRATCH_BLOCK_DEVICE].log_fs = new FATFileSystem("scr");
@@ -333,7 +329,7 @@ static void initBlockTable(void) {
 
             err = block_info[SCRATCH_BLOCK_DEVICE].log_fs->mount(block_info[SCRATCH_BLOCK_DEVICE].log_bd);
             if (err) {
-                BOOT_LOG_ERR("Error mounting scratch fs on common log device");
+                BOOT_LOG_ERR("Mount S on LOG");
             }
 
             /* Setup FileBlockDevice */
