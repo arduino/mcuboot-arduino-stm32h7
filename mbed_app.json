@@ -56,6 +56,7 @@
             "target.printf_lib": "minimal-printf",
             "platform.minimal-printf-enable-floating-point": false,
             "platform.minimal-printf-enable-64-bit": false,
+            "platform.stdio-flush-at-exit": false,
             "platform.stdio-baud-rate": 115200,
             "fat_chan.ff_use_mkfs": 0,
             "fat_chan.ff_use_lfn": 0,
