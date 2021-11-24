@@ -108,6 +108,38 @@ static inline void LED_pulse(DigitalOut* led)
   }
 }
 
+static bool valid_application() {
+  /* Test if user code is programmed starting from USBD_DFU_APP_DEFAULT_ADD
+   * address.
+   */
+  return     (((*(__IO uint32_t *) 0x08040000) & 0xFF000000) == 0x20000000) \
+          || (((*(__IO uint32_t *) 0x08040000) & 0xFF000000) == 0x24000000) \
+          || (((*(__IO uint32_t *) 0x08040000) & 0xFF000000) == 0x30000000) \
+          || (((*(__IO uint32_t *) 0x08040000) & 0xFF000000) == 0x38000000);
+
+}
+
+
+static bool empty_keys() {
+  unsigned int i;
+  extern const unsigned char enc_priv_key[];
+  extern const unsigned int enc_priv_key_len;
+  extern const unsigned char rsa_pub_key[];
+  extern unsigned int rsa_pub_key_len;
+
+  for(i = 0; i < enc_priv_key_len; i++) {
+    if(enc_priv_key[i] != 0xFF)
+      return false;
+  }
+
+  for(i = 0; i < rsa_pub_key_len; i++) {
+    if(rsa_pub_key[i] != 0xFF)
+      return false;
+  }
+
+  return true;
+}
+
 
 int target_init(void) {
   DigitalIn boot_sel(PI_8,PullDown);
@@ -213,17 +245,14 @@ int target_init(void) {
 
   HAL_Delay(10);
 
-  /* Test if user code is programmed starting from USBD_DFU_APP_DEFAULT_ADD
-   * address. TODO check MCUBoot header instead.
-   */
-  //int app_valid = (((*(__IO uint32_t *) 0x08040000) & 0xFF000000) == 0x20000000)
-  //             || (((*(__IO uint32_t *) 0x08040000) & 0xFF000000) == 0x24000000)
-  //             || (((*(__IO uint32_t *) 0x08040000) & 0xFF000000) == 0x30000000)
-  //             || (((*(__IO uint32_t *) 0x08040000) & 0xFF000000) == 0x38000000);
-
-  if (/*app_valid &&*/ magic != 0xDF59 /*&& magic != 0x07AA*/ && boot_sel==0) {
+  if (magic != 0xDF59 && magic != 0x07AA && boot_sel==0) {
     RTCSetBKPRegister(RTC_BKP_DR0, 0);
     HAL_FLASH_Lock();
+    if(valid_application() && empty_keys()) {
+      BOOT_LOG_INF("MCUBoot not configured, but valid image found.");
+      BOOT_LOG_INF("Booting firmware image at 0x%x\n", USBD_DFU_APP_DEFAULT_ADD);
+      mbed_start_application(USBD_DFU_APP_DEFAULT_ADD);
+    }
     BOOT_LOG_DBG("Envie app magic 0x%x", RTCGetBKPRegister(RTC_BKP_DR0));
     swap_ticker.attach(&swap_feedback, 250ms);
     return 0;
