@@ -163,7 +163,10 @@ uint16_t Flash_If_Write(uint8_t * src, uint8_t * dest, uint32_t Len)
   if (isFileBlockFlash((uint32_t)dest)) {
     dest -= FILEBLOCK_BASE_ADDRESS;
     if (Len < dfu_secondary_bd->get_erase_size(0)) {
-      Len = dfu_secondary_bd->get_erase_size(0);
+      uint8_t* srcCopy = (uint8_t*)malloc(dfu_secondary_bd->get_erase_size(0));
+      memcpy(srcCopy, src, Len);
+      memset(&srcCopy[Len], dfu_secondary_bd->get_erase_value(), dfu_secondary_bd->get_erase_size(0) - Len);
+      return dfu_secondary_bd->program(&srcCopy[0],(uint32_t)dest, dfu_secondary_bd->get_erase_size(0));
     }
     return dfu_secondary_bd->program(src, (uint32_t)dest, Len);
   } else if (isExternalFlash((uint32_t)dest)) {
