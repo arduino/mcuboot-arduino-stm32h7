@@ -107,9 +107,9 @@ uint16_t Flash_If_Init(void)
   */
 uint16_t Flash_If_DeInit(void)
 {
-  boot_set_pending(false);
   flash.deinit();
   dfu_secondary_bd->deinit();
+  boot_set_pending(false);
   return 0;
 }
 
