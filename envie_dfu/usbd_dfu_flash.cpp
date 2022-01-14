@@ -34,7 +34,7 @@
 #define FLASH_DESC_STR      "@Internal Flash  2MB   /0x08000000/01*128Ka,15*128Kg"
 //#define BOOTLOADER_DESC_STR    "@Option Bits      /0x52002000/01*1Ka"
 #define QSPI_FLASH_DESC_STR "@Ext RAW  Flash 16MB   /0x90000000/4096*4Kg"
-#define FILE_FLASH_DESC_STR "@Ext File Flash 16MB   /0xA0000000/16*128Kg"
+#define FILE_FLASH_DESC_STR "@Ext File Flash 16MB   /0xA0000000/4096*4Kg"
 
 #define FLASH_ERASE_TIME    (uint16_t)0
 #define FLASH_PROGRAM_TIME  (uint16_t)0
