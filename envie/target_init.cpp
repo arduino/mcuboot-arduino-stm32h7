@@ -124,16 +124,16 @@ static bool empty_keys() {
   unsigned int i;
   extern const unsigned char enc_priv_key[];
   extern const unsigned int enc_priv_key_len;
-  extern const unsigned char rsa_pub_key[];
-  extern unsigned int rsa_pub_key_len;
+  extern const unsigned char ecdsa_pub_key[];
+  extern unsigned int ecdsa_pub_key_len;
 
   for(i = 0; i < enc_priv_key_len; i++) {
     if(enc_priv_key[i] != 0xFF)
       return false;
   }
 
-  for(i = 0; i < rsa_pub_key_len; i++) {
-    if(rsa_pub_key[i] != 0xFF)
+  for(i = 0; i < ecdsa_pub_key_len; i++) {
+    if(ecdsa_pub_key[i] != 0xFF)
       return false;
   }
 
