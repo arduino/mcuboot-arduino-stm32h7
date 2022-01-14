@@ -12,7 +12,7 @@
 #endif
 
 #define BOOTLOADER_CONFIG_MAGIC   0xA0
-#define BOOTLOADER_VERSION        1
+#define BOOTLOADER_VERSION        2
 
 #define PORTENTA_USB_SPEED_HIGH   1
 #define PORTENTA_USB_SPEED_FULL   2
