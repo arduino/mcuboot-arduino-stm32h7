@@ -54,6 +54,7 @@
             "target.features_remove" : ["BLE"],
             "target.device_has_remove": ["USBDEVICE", "EMAC", "CAN", "SPI_ASYNCH", "SPISLAVE", "SPI","SERIAL_FC", "PWMOUT", "ANALOGIN", "ANALOGOUT", "I2CSLAVE", "I2C_ASYNC", "OSPI", "TRNG", "DAC", "CRC", "WATCHDOG", "RTC", "LPTICKER", "SLEEP"],
             "target.printf_lib": "minimal-printf",
+            "target.i2c_timing_value_algo": false,
             "platform.minimal-printf-enable-floating-point": false,
             "platform.minimal-printf-enable-64-bit": false,
             "platform.stdio-flush-at-exit": false,
