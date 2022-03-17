@@ -73,11 +73,39 @@ echo
 echo Generating binaries for OPTA
 mbed compile -c -m OPTA -t GCC_ARM --app=mbed_app_opta.json --profile=custom.json -N mcuboot_opta
 mkdir -p release/OPTA
-mv ./libbootutil.a ./release/OPTA
+cp ./libbootutil.a ./release/OPTA
 cp ./BUILD/OPTA/GCC_ARM-CUSTOM/mcuboot_opta.bin ./release/OPTA/mcuboot_opta.bin
 cp ./BUILD/OPTA/GCC_ARM-CUSTOM/mcuboot_opta_application.elf ./release/OPTA/mcuboot_opta.elf
 xxd -i ./release/OPTA/mcuboot_opta.bin > ./release/OPTA/mcuboot_opta.h
 sed -i "s/unsigned char __release_OPTA_mcuboot_opta_bin/const unsigned char mcuboot_opta_bin/" ./release/OPTA/mcuboot_opta.h
 sed -i "s/__release_OPTA_mcuboot_opta_bin_len/mcuboot_opta_bin_len/" ./release/OPTA/mcuboot_opta.h
 tar -czvf ./release/OPTA.tar.gz -C ./release/ OPTA
+fi
+
+if [[ $1 == "giga" ]] || [[ $1 == "all" ]]; then
+echo
+echo Generating binaries for GIGA
+mbed compile -c -m GIGA -t GCC_ARM --app=mbed_app_giga.json --profile=custom.json -N mcuboot_giga
+mkdir -p release/GIGA
+cp ./libbootutil.a ./release/GIGA
+cp ./BUILD/GIGA/GCC_ARM-CUSTOM/mcuboot_giga.bin ./release/GIGA/mcuboot_giga.bin
+cp ./BUILD/GIGA/GCC_ARM-CUSTOM/mcuboot_giga_application.elf ./release/GIGA/mcuboot_giga.elf
+xxd -i ./release/GIGA/mcuboot_giga.bin > ./release/GIGA/mcuboot_giga.h
+sed -i "s/unsigned char __release_GIGA_mcuboot_giga_bin/const unsigned char mcuboot_giga_bin/" ./release/GIGA/mcuboot_giga.h
+sed -i "s/__release_GIGA_mcuboot_opta_bin_len/mcuboot_giga_bin_len/" ./release/GIGA/mcuboot_giga.h
+tar -czvf ./release/GIGA.tar.gz -C ./release/ GIGA
+fi
+
+if [[ $1 == "gigaw" ]] || [[ $1 == "all" ]]; then
+echo
+echo Generating binaries for GIGA_WiFi
+mbed compile -c -m GIGA -t GCC_ARM --app=mbed_app_giga_wifi.json --profile=custom.json -N mcuboot_giga_wifi
+mkdir -p release/GIGA_WiFi
+mv ./libbootutil.a ./release/GIGA_WiFi
+cp ./BUILD/GIGA/GCC_ARM-CUSTOM/mcuboot_giga_wifi.bin ./release/GIGA_WiFi/mcuboot_giga_wifi.bin
+cp ./BUILD/GIGA/GCC_ARM-CUSTOM/mcuboot_giga_wifi_application.elf ./release/GIGA_WiFi/mcuboot_giga_wifi.elf
+xxd -i ./release/GIGA_WiFi/mcuboot_giga_wifi.bin > ./release/GIGA_WiFi/mcuboot_giga_wifi.h
+sed -i "s/unsigned char __release_GIGA_WiFi_mcuboot_giga_wifi_bin/const unsigned char mcuboot_giga_wifi_bin/" ./release/GIGA_WiFi/mcuboot_giga_wifi.h
+sed -i "s/__release_GIGA_WiFi_mcuboot_giga_wifi_bin_len/mcuboot_giga_wifi_bin_len/" ./release/GIGA_WiFi/mcuboot_giga_wifi.h
+tar -czvf ./release/GIGA_WiFi.tar.gz -C ./release/ GIGA_WiFi
 fi
