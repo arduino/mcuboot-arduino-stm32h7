@@ -15,14 +15,14 @@ volatile const uint8_t bootloader_data[] __attribute__ ((section (".bootloader_v
   BOOTLOADER_CONFIG_MAGIC,
   BOOTLOADER_VERSION,
   CLOCK_SOURCE,
-  PORTENTA_USB_SPEED,
-  PORTENTA_HAS_ETHERNET,
-  PORTENTA_HAS_WIFI,
-  PORTENTA_RAM_SIZE,
-  PORTENTA_QSPI_SIZE,
-  PORTENTA_HAS_VIDEO,
-  PORTENTA_HAS_CRYPTO,
-  PORTENTA_EXTCLOCK,
+  BOARD_USB_SPEED,
+  BOARD_HAS_ETHERNET,
+  BOARD_HAS_WIFI,
+  BOARD_RAM_SIZE,
+  BOARD_QSPI_SIZE,
+  BOARD_HAS_VIDEO,
+  BOARD_HAS_CRYPTO,
+  BOARD_EXTCLOCK,
 };
 
 volatile const uint8_t bootloader_identifier[] __attribute__ ((section (".bootloader_identification"), used)) = "MCUBoot Arduino";

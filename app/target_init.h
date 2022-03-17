@@ -14,43 +14,43 @@
 #define BOOTLOADER_CONFIG_MAGIC   0xA0
 #define BOOTLOADER_VERSION        2
 
-#define PORTENTA_USB_SPEED_HIGH   1
-#define PORTENTA_USB_SPEED_FULL   2
+#define USB_SPEED_HIGH   1
+#define USB_SPEED_FULL   2
 
-#ifndef PORTENTA_USB_SPEED
+#ifndef BOARD_USB_SPEED
 #ifdef USE_USB_HS
-#define PORTENTA_USB_SPEED    PORTENTA_USB_SPEED_HIGH
+#define BOARD_USB_SPEED    USB_SPEED_HIGH
 #else
-#define PORTENTA_USB_SPEED    PORTENTA_USB_SPEED_FULL
+#define BOARD_USB_SPEED    USB_SPEED_FULL
 #endif
 #endif
 
-#ifndef PORTENTA_HAS_ETHERNET
-#define PORTENTA_HAS_ETHERNET   1
+#ifndef BOARD_HAS_ETHERNET
+#define BOARD_HAS_ETHERNET   1
 #endif
 
-#ifndef PORTENTA_HAS_WIFI
-#define PORTENTA_HAS_WIFI       1
+#ifndef BOARD_HAS_WIFI
+#define BOARD_HAS_WIFI       1
 #endif
 
-#ifndef PORTENTA_RAM_SIZE
-#define PORTENTA_RAM_SIZE       8
+#ifndef BOARD_RAM_SIZE
+#define BOARD_RAM_SIZE       8
 #endif
 
-#ifndef PORTENTA_QSPI_SIZE
-#define PORTENTA_QSPI_SIZE      16
+#ifndef BOARD_QSPI_SIZE
+#define BOARD_QSPI_SIZE      16
 #endif
 
-#ifndef PORTENTA_HAS_VIDEO
-#define PORTENTA_HAS_VIDEO      1
+#ifndef BOARD_HAS_VIDEO
+#define BOARD_HAS_VIDEO      1
 #endif
 
-#ifndef PORTENTA_HAS_CRYPTO
-#define PORTENTA_HAS_CRYPTO     1
+#ifndef BOARD_HAS_CRYPTO
+#define BOARD_HAS_CRYPTO     1
 #endif
 
-#ifndef PORTENTA_EXTCLOCK
-#define PORTENTA_EXTCLOCK       25
+#ifndef BOARD_EXTCLOCK
+#define BOARD_EXTCLOCK       25
 #endif
 
 int target_init(void);
