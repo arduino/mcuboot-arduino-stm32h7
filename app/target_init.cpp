@@ -1,4 +1,4 @@
-#if MCUBOOT_AS_ENVIE
+#if  MCUBOOT_APPLICATION_HOOKS
 
 #include "mbed.h"
 #include "target_init.h"
@@ -267,7 +267,7 @@ int target_init(void) {
   }
 }
 
-#if MCUBOOT_ENVIE_DFU
+#if MCUBOOT_APPLICATION_DFU
 USBD_HandleTypeDef USBD_Device;
 extern PCD_HandleTypeDef hpcd;
 extern void init_Memories(void);
@@ -285,7 +285,7 @@ void envie_loop(void) {
 
   //turnDownEthernet();
 
-#if MCUBOOT_ENVIE_DFU
+#if MCUBOOT_APPLICATION_DFU
   init_Memories();
 
   /* Otherwise enters DFU mode to allow user programming his application */
@@ -310,7 +310,7 @@ void envie_loop(void) {
 #endif
 
   while(1) {
-#if MCUBOOT_ENVIE_DFU
+#if MCUBOOT_APPLICATION_DFU
 #ifdef USE_USB_HS
     if (USB_OTG_HS->GINTSTS & USB_OTG_HS->GINTMSK) {
 #else // USE_USB_FS

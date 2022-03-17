@@ -17,7 +17,7 @@
   ******************************************************************************
   */
 
-#if MCUBOOT_AS_ENVIE && MCUBOOT_ENVIE_DFU
+#if  MCUBOOT_APPLICATION_HOOKS && MCUBOOT_APPLICATION_DFU
 
 /* Includes ------------------------------------------------------------------ */
 #include "target_init.h"

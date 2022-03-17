@@ -4,7 +4,7 @@
 #include "stm32h7xx_hal.h"
 #include "stm32h7xx_hal_mdma.h"
 #include "stm32h7xx_hal_qspi.h"
-#if MCUBOOT_ENVIE_DFU
+#if MCUBOOT_APPLICATION_DFU
 #include "usbd_core.h"
 #include "usbd_desc.h"
 #include "usbd_dfu.h"
