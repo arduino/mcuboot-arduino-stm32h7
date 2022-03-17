@@ -55,17 +55,17 @@ DigitalOut green(PK_6, 1);
 DigitalOut blue(PK_7, 1);
 
 Ticker swap_ticker;
-int envie_swap_index = -1;
+int mcuboot_swap_index = -1;
 
 static inline void swap_feedback() {
 
   static int blink_idx = 0;
   static int blink_state = 0;
 
-  if(envie_swap_index >= 0){
+  if(mcuboot_swap_index >= 0){
     switch(blink_state) {
       case 0: {
-        if(blink_idx < envie_swap_index) {
+        if(blink_idx < mcuboot_swap_index) {
           if(blue == 0){
             blue = 1;
           } else {
@@ -81,7 +81,7 @@ static inline void swap_feedback() {
       break;
 
       case 1: {
-        if(blink_idx < (15 - envie_swap_index)) {
+        if(blink_idx < (15 - mcuboot_swap_index)) {
           if(green == 0){
             green = 1;
           } else {
