@@ -20,7 +20,7 @@
 #if  MCUBOOT_APPLICATION_HOOKS && MCUBOOT_APPLICATION_DFU
 
 /* Includes ------------------------------------------------------------------ */
-#include "target_init.h"
+#include "target.h"
 
 /* Private typedef ----------------------------------------------------------- */
 /* Private define ------------------------------------------------------------ */

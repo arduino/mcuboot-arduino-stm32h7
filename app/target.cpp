@@ -19,7 +19,7 @@
 #if  MCUBOOT_APPLICATION_HOOKS
 
 #include "mbed.h"
-#include "target_init.h"
+#include "target.h"
 #include "ota.h"
 #include "rtc.h"
 #include "bootutil/bootutil_log.h"
@@ -295,7 +295,7 @@ extern "C" {
   uint8_t SetSysClock_PLL_HSE(uint8_t bypass, bool lowspeed);
 }
 
-void envie_loop(void) {
+int target_loop(void) {
   RTCSetBKPRegister(RTC_BKP_DR0, 0);
 
   SetSysClock_PLL_HSE(1, false);
@@ -339,6 +339,8 @@ void envie_loop(void) {
 #endif
     LED_pulse(&green);
   }
+
+  return 0;
 }
 
 #endif

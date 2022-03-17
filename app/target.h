@@ -72,6 +72,6 @@
 #endif
 
 int target_init(void);
-void envie_loop(void);
+int target_loop(void);
 
 #endif /* __TARGET_INIT_H */
