@@ -71,7 +71,8 @@
 #define BOARD_EXTCLOCK       25
 #endif
 
-int target_init(void);
+int target_debug_init(void);
 int target_loop(void);
+int target_debug(void);
 
 #endif /* __TARGET_INIT_H */

@@ -57,6 +57,8 @@ DigitalOut blue(PK_7, 1);
 Ticker swap_ticker;
 int mcuboot_swap_index = -1;
 
+bool debug_enabled = false;
+
 static inline void swap_feedback() {
 
   static int blink_idx = 0;
@@ -156,6 +158,12 @@ static bool empty_keys() {
   }
 
   return true;
+}
+
+int target_debug_init(void) {
+  RTCInit();
+  debug_enabled = RTCGetBKPRegister(RTC_BKP_DR7) & 0x00000001;
+  return 0;
 }
 
 
