@@ -55,6 +55,8 @@ DigitalOut red(PK_5, 1);
 DigitalOut green(PK_6, 1);
 DigitalOut blue(PK_7, 1);
 
+DigitalIn boot_sel(PI_8,PullDown);
+
 Ticker swap_ticker;
 
 bool debug_enabled = false;
@@ -102,7 +104,6 @@ static bool valid_application() {
 
 }
 
-
 static bool empty_keys() {
   unsigned int i;
   extern const unsigned char enc_priv_key[];
@@ -125,7 +126,7 @@ static bool empty_keys() {
 
 int target_debug_init(void) {
   RTCInit();
-  debug_enabled = RTCGetBKPRegister(RTC_BKP_DR7) & 0x00000001;
+  debug_enabled = ((RTCGetBKPRegister(RTC_BKP_DR7) & 0x00000001) || boot_sel);
   return 0;
 }
 
@@ -137,10 +138,7 @@ int target_led_off(void) {
   return 0;
 }
 
-
 int target_init(void) {
-  DigitalIn boot_sel(PI_8,PullDown);
-
   int magic = RTCGetBKPRegister(RTC_BKP_DR0);
 
   // in case we have been reset let's wait 500 ms to see if user is trying to stay in bootloader
@@ -240,11 +238,11 @@ int target_init(void) {
 
   HAL_Delay(10);
 
-  if (magic != 0xDF59 && magic != 0x07AA && boot_sel==0) {
+  if (magic != 0xDF59 && magic != 0x07AA) {
     RTCSetBKPRegister(RTC_BKP_DR0, 0);
     HAL_FLASH_Lock();
     if(valid_application() && empty_keys()) {
-      BOOT_LOG_INF("MCUBoot not configured, but valid image found.");
+      BOOT_LOG_INF("MCUboot not configured, but valid image found.");
       BOOT_LOG_INF("Booting firmware image at 0x%x\n", USBD_DFU_APP_DEFAULT_ADD);
       mbed_start_application(USBD_DFU_APP_DEFAULT_ADD);
     }
@@ -252,11 +250,7 @@ int target_init(void) {
     return 0;
 
   } else {
-    if(boot_sel) {
-      return 1;
-    } else  {
-      return 2;
-    }
+    return 1;
   }
 }
 
