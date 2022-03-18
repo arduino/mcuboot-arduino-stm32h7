@@ -5,10 +5,11 @@
  *      Author: gdbeckstein
  */
 
-#if !MCUBOOT_AS_ENVIE
+#if ! MCUBOOT_APPLICATION_HOOKS
 
 #include "BlockDevice.h"
 #include "SlicingBlockDevice.h"
+#include "FlashIAPBlockDevice.h"
 
 #if COMPONENT_SPIF
 #include "SPIFBlockDevice.h"
@@ -86,6 +87,6 @@ mbed::BlockDevice* get_scratch_bd(void) {
     static FlashIAPBlockDevice scratch_bd(MCUBOOT_SCRATCH_START_ADDR, MCUBOOT_SCRATCH_SIZE);
     return &scratch_bd;
 }
-#endif //MCUBOOT_AS_ENVIE
+#endif // MCUBOOT_APPLICATION_HOOKS
 
 

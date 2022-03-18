@@ -17,13 +17,13 @@
   ******************************************************************************
   */
 
-#if MCUBOOT_AS_ENVIE && MCUBOOT_ENVIE_DFU
+#if  MCUBOOT_APPLICATION_HOOKS && MCUBOOT_APPLICATION_DFU
 
 /* Includes ------------------------------------------------------------------ */
 #include "usbd_dfu_flash.h"
 //#include "option_bits.h"
 #include "mbed.h"
-#include "target_init.h"
+#include "target.h"
 #include "QSPIFBlockDevice.h"
 #include "FlashSimBlockDevice.h"
 #include "flash_map_backend/secondary_bd.h"

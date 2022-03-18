@@ -1,9 +1,26 @@
-#if MCUBOOT_AS_ENVIE
+/*
+  Copyright (c) 2022 Arduino SA.  All right reserved.
+
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 2.1 of the License, or (at your option) any later version.
+
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General Public
+  License along with this library; if not, write to the Free Software
+  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+*/
+
+#if  MCUBOOT_APPLICATION_HOOKS
 
 #include "ota.h"
 #include "rtc.h"
 #include "bootutil/bootutil_log.h"
-
 
 #include "SlicingBlockDevice.h"
 #include "FlashIAPBlockDevice.h"
@@ -12,11 +29,11 @@
 #include "FileBlockDevice.h"
 #include "FATFileSystem.h"
 
-#if MCUBOOT_ENVIE_SDCARD
+#if MCUBOOT_APPLICATION_SDCARD
 #include "SDMMCBlockDevice.h"
 #endif
 
-#if MCUBOOT_ENVIE_LITTLEFS
+#if MCUBOOT_APPLICATION_LITTLEFS
 #include "LittleFileSystem.h"
 #endif
 
@@ -118,7 +135,7 @@ static void initBlockTable(void) {
             //block_info[SCRATCH_BLOCK_DEVICE].raw_bd = block_info[SECONDARY_BLOCK_DEVICE].raw_bd;
             BOOT_LOG_ERR("U on IAP");
         } else if (block_info[SECONDARY_BLOCK_DEVICE].raw_type & SDCARD_FLAG) {
-#if MCUBOOT_ENVIE_SDCARD
+#if MCUBOOT_APPLICATION_SDCARD
             block_info[SECONDARY_BLOCK_DEVICE].raw_bd = new SDMMCBlockDevice();
             block_info[SCRATCH_BLOCK_DEVICE].raw_bd = block_info[SECONDARY_BLOCK_DEVICE].raw_bd;
 #else
@@ -138,7 +155,7 @@ static void initBlockTable(void) {
                 //block_info[SCRATCH_BLOCK_DEVICE].raw_bd = block_info[SECONDARY_BLOCK_DEVICE].raw_bd;
                 BOOT_LOG_ERR("U on IAP");
             } else if (block_info[SECONDARY_BLOCK_DEVICE].raw_type & SDCARD_FLAG) {
-#if MCUBOOT_ENVIE_SDCARD
+#if MCUBOOT_APPLICATION_SDCARD
                 block_info[SECONDARY_BLOCK_DEVICE].log_bd = new SlicingBlockDevice(block_info[SECONDARY_BLOCK_DEVICE].raw_bd, block_info[SECONDARY_BLOCK_DEVICE].data_offset, block_info[SECONDARY_BLOCK_DEVICE].update_size);
                 block_info[SCRATCH_BLOCK_DEVICE].log_bd = block_info[SECONDARY_BLOCK_DEVICE].log_bd;
 #else
@@ -180,7 +197,7 @@ static void initBlockTable(void) {
         /* Setup FS */
         if(!block_info[SECONDARY_BLOCK_DEVICE].raw_flag) {
             if((block_info[SECONDARY_BLOCK_DEVICE].storage_type & LITTLEFS_FLAG)) {
-#if MCUBOOT_ENVIE_LITTLEFS
+#if MCUBOOT_APPLICATION_LITTLEFS
                 block_info[SECONDARY_BLOCK_DEVICE].log_fs = new LittleFileSystem("fs");
 #else
                 BOOT_LOG_ERR("LFS");
@@ -207,7 +224,7 @@ static void initBlockTable(void) {
             //block_info[SECONDARY_BLOCK_DEVICE].raw_bd = new FlashIAPBlockDevice flashIAP_bd(data_offset, update_size);
             BOOT_LOG_ERR("U on IAP");
         } else if (block_info[SECONDARY_BLOCK_DEVICE].raw_type & SDCARD_FLAG) {
-#if MCUBOOT_ENVIE_SDCARD
+#if MCUBOOT_APPLICATION_SDCARD
             block_info[SECONDARY_BLOCK_DEVICE].raw_bd = new SDMMCBlockDevice();
 #else
             BOOT_LOG_ERR("SDMMC");
@@ -221,7 +238,7 @@ static void initBlockTable(void) {
         if (block_info[SCRATCH_BLOCK_DEVICE].raw_type & INTERNAL_FLASH_FLAG) {
             BOOT_LOG_ERR("S on IAP");
         } else if (block_info[SCRATCH_BLOCK_DEVICE].raw_type & SDCARD_FLAG) {
-#if MCUBOOT_ENVIE_SDCARD
+#if MCUBOOT_APPLICATION_SDCARD
             block_info[SCRATCH_BLOCK_DEVICE].raw_bd = new SDMMCBlockDevice();
 #else
             BOOT_LOG_ERR("SDMMC");
@@ -237,7 +254,7 @@ static void initBlockTable(void) {
             if (block_info[SECONDARY_BLOCK_DEVICE].raw_type & INTERNAL_FLASH_FLAG) {
                 BOOT_LOG_ERR("U on IAP");
             } else if (block_info[SECONDARY_BLOCK_DEVICE].raw_type & SDCARD_FLAG) {
-#if MCUBOOT_ENVIE_SDCARD
+#if MCUBOOT_APPLICATION_SDCARD
                 block_info[SECONDARY_BLOCK_DEVICE].log_bd = new SlicingBlockDevice(block_info[SECONDARY_BLOCK_DEVICE].raw_bd, block_info[SECONDARY_BLOCK_DEVICE].data_offset, block_info[SECONDARY_BLOCK_DEVICE].update_size);
 #else
                 BOOT_LOG_ERR("SDMMC");
@@ -268,7 +285,7 @@ static void initBlockTable(void) {
             if (block_info[SCRATCH_BLOCK_DEVICE].raw_type & INTERNAL_FLASH_FLAG) {
                 BOOT_LOG_ERR("S on IAP");
             } else if (block_info[SCRATCH_BLOCK_DEVICE].raw_type & SDCARD_FLAG) {
-#if MCUBOOT_ENVIE_SDCARD
+#if MCUBOOT_APPLICATION_SDCARD
                 block_info[SCRATCH_BLOCK_DEVICE].log_bd = new SlicingBlockDevice(block_info[SCRATCH_BLOCK_DEVICE].raw_bd, block_info[SCRATCH_BLOCK_DEVICE].data_offset, block_info[SCRATCH_BLOCK_DEVICE].update_size);
 #else
                 BOOT_LOG_ERR("SDMMC");
@@ -297,7 +314,7 @@ static void initBlockTable(void) {
         /* Setup FS */
         if(!block_info[SECONDARY_BLOCK_DEVICE].raw_flag) {
             if((block_info[SECONDARY_BLOCK_DEVICE].storage_type & LITTLEFS_FLAG)) {
-#if MCUBOOT_ENVIE_LITTLEFS
+#if MCUBOOT_APPLICATION_LITTLEFS
                 block_info[SECONDARY_BLOCK_DEVICE].log_fs = new LittleFileSystem("sec");
 #else
                 BOOT_LOG_ERR("LFS");
@@ -318,7 +335,7 @@ static void initBlockTable(void) {
         /* Setup FS */
         if(!block_info[SCRATCH_BLOCK_DEVICE].raw_flag) {
             if((block_info[SCRATCH_BLOCK_DEVICE].storage_type & LITTLEFS_FLAG)) {
-#if MCUBOOT_ENVIE_LITTLEFS
+#if MCUBOOT_APPLICATION_LITTLEFS
                 block_info[SCRATCH_BLOCK_DEVICE].log_fs = new LittleFileSystem("scr");
 #else
                 BOOT_LOG_ERR("LFS");
@@ -338,13 +355,6 @@ static void initBlockTable(void) {
     }
 }
 
-/*
- * MCUBOOT_AS_ENVIE     -> Secondary Block device defined by getOTAData [SDCARD, QSPI] Internal flash not supported
- *                      -> Scratch Block device defined by getOTAData [SDCARD, QSPI, FLASH]
- *
- *                      -> Secondary Block device on RAW QSPI @0x0000000
- *                      -> Scratch Block device on Internal flash @MCUBOOT_SCRATCH_START_ADDR
- */
 mbed::BlockDevice* get_secondary_bd(void) {
 
     if(!BlockTableLoaded) {
@@ -358,7 +368,6 @@ mbed::BlockDevice* get_secondary_bd(void) {
         return block_info[SECONDARY_BLOCK_DEVICE].file_bd;
     }
 }
-
 
 mbed::BlockDevice* get_scratch_bd(void) {
 

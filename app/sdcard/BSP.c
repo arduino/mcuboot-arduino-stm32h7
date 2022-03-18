@@ -59,7 +59,7 @@
 
   ------------------------------------------------------------------------------*/
 
-#if MCUBOOT_AS_ENVIE && MCUBOOT_ENVIE_SDCARD
+#if  MCUBOOT_APPLICATION_HOOKS && MCUBOOT_APPLICATION_SDCARD
 
 /* Includes ------------------------------------------------------------------*/
 #include "BSP.h"

@@ -1,4 +1,4 @@
-#if MCUBOOT_AS_ENVIE
+#if  MCUBOOT_APPLICATION_HOOKS
 
 #include "rtc.h"
 #include "bootutil/bootutil_log.h"

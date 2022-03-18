@@ -1,7 +1,25 @@
-#if MCUBOOT_AS_ENVIE
+/*
+  Copyright (c) 2022 Arduino SA.  All right reserved.
+
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 2.1 of the License, or (at your option) any later version.
+
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General Public
+  License along with this library; if not, write to the Free Software
+  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+*/
+
+#if  MCUBOOT_APPLICATION_HOOKS
 
 #include "mbed.h"
-#include "target_init.h"
+#include "target.h"
 #include "ota.h"
 #include "rtc.h"
 #include "bootutil/bootutil_log.h"
@@ -15,17 +33,17 @@ volatile const uint8_t bootloader_data[] __attribute__ ((section (".bootloader_v
   BOOTLOADER_CONFIG_MAGIC,
   BOOTLOADER_VERSION,
   CLOCK_SOURCE,
-  PORTENTA_USB_SPEED,
-  PORTENTA_HAS_ETHERNET,
-  PORTENTA_HAS_WIFI,
-  PORTENTA_RAM_SIZE,
-  PORTENTA_QSPI_SIZE,
-  PORTENTA_HAS_VIDEO,
-  PORTENTA_HAS_CRYPTO,
-  PORTENTA_EXTCLOCK,
+  BOARD_USB_SPEED,
+  BOARD_HAS_ETHERNET,
+  BOARD_HAS_WIFI,
+  BOARD_RAM_SIZE,
+  BOARD_QSPI_SIZE,
+  BOARD_HAS_VIDEO,
+  BOARD_HAS_CRYPTO,
+  BOARD_EXTCLOCK,
 };
 
-volatile const uint8_t bootloader_identifier[] __attribute__ ((section (".bootloader_identification"), used)) = "MCUBoot Arduino";
+volatile const uint8_t bootloader_identifier[] __attribute__ ((section (".bootloader_identification"), used)) = "MCUboot Arduino";
 
 static bool double_tap_flag = true;
 volatile uint8_t ledKeepValue = 0;
@@ -267,7 +285,7 @@ int target_init(void) {
   }
 }
 
-#if MCUBOOT_ENVIE_DFU
+#if MCUBOOT_APPLICATION_DFU
 USBD_HandleTypeDef USBD_Device;
 extern PCD_HandleTypeDef hpcd;
 extern void init_Memories(void);
@@ -277,7 +295,7 @@ extern "C" {
   uint8_t SetSysClock_PLL_HSE(uint8_t bypass, bool lowspeed);
 }
 
-void envie_loop(void) {
+int target_loop(void) {
   RTCSetBKPRegister(RTC_BKP_DR0, 0);
 
   SetSysClock_PLL_HSE(1, false);
@@ -285,7 +303,7 @@ void envie_loop(void) {
 
   //turnDownEthernet();
 
-#if MCUBOOT_ENVIE_DFU
+#if MCUBOOT_APPLICATION_DFU
   init_Memories();
 
   /* Otherwise enters DFU mode to allow user programming his application */
@@ -310,7 +328,7 @@ void envie_loop(void) {
 #endif
 
   while(1) {
-#if MCUBOOT_ENVIE_DFU
+#if MCUBOOT_APPLICATION_DFU
 #ifdef USE_USB_HS
     if (USB_OTG_HS->GINTSTS & USB_OTG_HS->GINTMSK) {
 #else // USE_USB_FS
@@ -321,6 +339,8 @@ void envie_loop(void) {
 #endif
     LED_pulse(&green);
   }
+
+  return 0;
 }
 
 #endif

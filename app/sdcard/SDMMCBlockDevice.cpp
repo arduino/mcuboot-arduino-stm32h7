@@ -15,7 +15,7 @@
  *
  */
 
-#if MCUBOOT_AS_ENVIE && MCUBOOT_ENVIE_SDCARD
+#if  MCUBOOT_APPLICATION_HOOKS && MCUBOOT_APPLICATION_SDCARD
 
 #include "SDMMCBlockDevice.h"
 #include "mbed_debug.h"
