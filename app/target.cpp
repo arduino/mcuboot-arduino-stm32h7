@@ -142,7 +142,6 @@ int target_init(void) {
   DigitalIn boot_sel(PI_8,PullDown);
 
   int magic = RTCGetBKPRegister(RTC_BKP_DR0);
-  BOOT_LOG_DBG("Envie magic 0x%x", magic);
 
   // in case we have been reset let's wait 500 ms to see if user is trying to stay in bootloader
   if (ResetReason::get() == RESET_REASON_PIN_RESET) {
@@ -150,7 +149,6 @@ int target_init(void) {
     // flag we need to stay in bootloader.
     RTCSetBKPRegister(RTC_BKP_DR0, 0xDF59);
     HAL_Delay(500);
-    BOOT_LOG_DBG("Envie magic set 0x%x", RTCGetBKPRegister( RTC_BKP_DR0));
   }
 
   DigitalOut usb_reset(PJ_4, 0);
@@ -250,12 +248,10 @@ int target_init(void) {
       BOOT_LOG_INF("Booting firmware image at 0x%x\n", USBD_DFU_APP_DEFAULT_ADD);
       mbed_start_application(USBD_DFU_APP_DEFAULT_ADD);
     }
-    BOOT_LOG_DBG("Envie app magic 0x%x", RTCGetBKPRegister(RTC_BKP_DR0));
     swap_ticker.attach(&swap_feedback, 250ms);
     return 0;
 
   } else {
-    BOOT_LOG_DBG("Envie loop magic 0x%x", RTCGetBKPRegister(RTC_BKP_DR0));
     if(boot_sel) {
       return 1;
     } else  {
