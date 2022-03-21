@@ -23,8 +23,16 @@
 #include "stm32h7xx_hal.h"
 #include "stm32h7xx_hal_rtc.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void RTCInit();
 uint32_t RTCGetBKPRegister(uint32_t BackupRegister);
 uint32_t RTCSetBKPRegister(uint32_t BackupRegister, uint32_t Data);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif //__RTC_H
