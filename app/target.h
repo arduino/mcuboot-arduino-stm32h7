@@ -36,7 +36,7 @@
 #endif
 
 #define BOOTLOADER_CONFIG_MAGIC   0xA0
-#define BOOTLOADER_VERSION        2
+#define BOOTLOADER_VERSION        3
 
 #define USB_SPEED_HIGH   1
 #define USB_SPEED_FULL   2
