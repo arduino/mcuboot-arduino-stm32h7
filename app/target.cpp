@@ -243,8 +243,8 @@ int target_init(void) {
     HAL_FLASH_Lock();
     if(valid_application() && empty_keys()) {
       BOOT_LOG_INF("MCUboot not configured, but valid image found.");
-      BOOT_LOG_INF("Booting firmware image at 0x%x\n", USBD_DFU_APP_DEFAULT_ADD);
-      mbed_start_application(USBD_DFU_APP_DEFAULT_ADD);
+      BOOT_LOG_INF("Booting firmware image at 0x%x\n", APP_DEFAULT_ADD);
+      mbed_start_application(APP_DEFAULT_ADD);
     }
     swap_ticker.attach(&swap_feedback, 250ms);
     return 0;
