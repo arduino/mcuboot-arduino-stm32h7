@@ -29,6 +29,12 @@
 #include "usbd_dfu_flash.h"
 #endif
 
+#if MCUBOOT_APPLICATION_DFU
+#define APP_DEFAULT_ADD USBD_DFU_APP_DEFAULT_ADD
+#else
+#define APP_DEFAULT_ADD 0x08040000
+#endif
+
 #define BOOTLOADER_CONFIG_MAGIC   0xA0
 #define BOOTLOADER_VERSION        2
 

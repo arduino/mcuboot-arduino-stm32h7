@@ -9,7 +9,7 @@
     },
     "target_overrides": {
         "*": {
-            "target.restrict_size": "0x20000",
+            "target.restrict_size": "0x40000",
             "target.c_lib": "small",
             "mcuboot.log-level": "MCUBOOT_LOG_LEVEL_OFF",
             "mbed-trace.enable": false,
@@ -70,9 +70,9 @@
             "mcuboot.max-align": 32,
             "mcuboot.bootstrap": true,
             "mcuboot.application-hooks": true,
-            "mcuboot.application-littlefs": true,
+            "mcuboot.application-littlefs": null,
             "mcuboot.application-sdcard": null,
-            "mcuboot.application-dfu": true,
+            "mcuboot.application-dfu": null,
             "mcuboot.signature-algorithm": "SIGNATURE_TYPE_EC256",
             "mcuboot.encrypt-ec256": true,
             "mcuboot.include-keys": null

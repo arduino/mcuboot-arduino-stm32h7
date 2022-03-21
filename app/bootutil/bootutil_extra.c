@@ -16,23 +16,18 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-#ifndef __RTC_H
-#define __RTC_H
+#include "bootutil_extra.h"
+#include "rtc.h"
 
-#include <stdint.h>
-#include "stm32h7xx_hal.h"
-#include "stm32h7xx_hal_rtc.h"
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-void RTCInit();
-uint32_t RTCGetBKPRegister(uint32_t BackupRegister);
-uint32_t RTCSetBKPRegister(uint32_t BackupRegister, uint32_t Data);
-
-#ifdef __cplusplus
+int boot_set_debug(int enable) {
+  RTCInit();
+  unsigned int rtc_reg = RTCGetBKPRegister(RTC_BKP_DR7);
+  
+  if(enable) {
+    rtc_reg |= 0x00000001;
+  } else {
+    rtc_reg &= ~0x00000001;
+  }
+  
+  return RTCSetBKPRegister(RTC_BKP_DR7, rtc_reg);
 }
-#endif
-
-#endif //__RTC_H
