@@ -37,6 +37,10 @@ PCD_HandleTypeDef hpcd;
 /*******************************************************************************
                        PCD BSP Routines
 *******************************************************************************/
+PCD_HandleTypeDef * HAL_PCD_GetHandle(void)
+{
+  return &hpcd;
+}
 
 /**
   * @brief  Initializes the PCD MSP.

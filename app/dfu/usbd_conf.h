@@ -81,6 +81,7 @@
 #endif
 
 /* Exported functions ------------------------------------------------------- */
+extern PCD_HandleTypeDef * HAL_PCD_GetHandle(void);
 
 #endif /* __USBD_CONF_H */
 

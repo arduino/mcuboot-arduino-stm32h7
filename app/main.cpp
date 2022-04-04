@@ -39,6 +39,8 @@
 #define USE_PLL_HSE_XTAL     0x4  // Use external xtal (X3 on board - not provided by default)
 #define USE_PLL_HSI          0x2  // Use HSI internal clock
 
+extern "C" uint8_t SetSysClock_PLL_HSE(uint8_t bypass, bool lowspeed);
+
 volatile const uint8_t bootloader_data[] __attribute__ ((section (".bootloader_version"), used)) = {
   BOOTLOADER_CONFIG_MAGIC,
   BOOTLOADER_VERSION,
@@ -54,6 +56,10 @@ volatile const uint8_t bootloader_data[] __attribute__ ((section (".bootloader_v
 };
 
 volatile const uint8_t bootloader_identifier[] __attribute__ ((section (".bootloader_identification"), used)) = "MCUboot Arduino";
+
+#if MCUBOOT_APPLICATION_DFU
+USBD_HandleTypeDef USBD_Device;
+#endif
 
 DigitalOut red(BOARD_RED_LED, 1);
 DigitalOut green(BOARD_GREEN_LED, 1);
@@ -118,15 +124,6 @@ static int debug_init(void) {
   return 0;
 }
 
-#if MCUBOOT_APPLICATION_DFU
-USBD_HandleTypeDef USBD_Device;
-extern PCD_HandleTypeDef hpcd;
-#endif
-
-extern "C" {
-  uint8_t SetSysClock_PLL_HSE(uint8_t bypass, bool lowspeed);
-}
-
 static int start_dfu(void) {
   RTCSetBKPRegister(RTC_BKP_DR0, 0);
 
@@ -168,7 +165,7 @@ static int start_dfu(void) {
 #else // USE_USB_FS
     if (USB_OTG_FS->GINTSTS & USB_OTG_FS->GINTMSK) {
 #endif
-      HAL_PCD_IRQHandler(&hpcd);
+      HAL_PCD_IRQHandler(HAL_PCD_GetHandle());
     }
 #endif
     led_pulse(&green);
