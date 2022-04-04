@@ -20,7 +20,7 @@
 
 #include "ota.h"
 #include "rtc.h"
-#include "target.h"
+#include "board.h"
 #include "bootutil/bootutil_log.h"
 
 #include "SlicingBlockDevice.h"

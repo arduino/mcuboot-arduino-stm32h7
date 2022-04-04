@@ -23,7 +23,7 @@
 #include "usbd_dfu_flash.h"
 //#include "option_bits.h"
 #include "mbed.h"
-#include "target.h"
+#include "board.h"
 #include "BlockDevice.h"
 #include "FlashSimBlockDevice.h"
 #include "flash_map_backend/secondary_bd.h"
