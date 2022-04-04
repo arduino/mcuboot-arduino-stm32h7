@@ -201,6 +201,15 @@ int start_secure_application(void) {
   mbed_start_application(address);
 }
 
+static int start_ota(void) {
+  // DR1 contains the backing storage type, DR2 the offset in case of raw device / MBR
+  storageType storage_type = (storageType)RTCGetBKPRegister(RTC_BKP_DR1);
+  uint32_t offset = RTCGetBKPRegister(RTC_BKP_DR2);
+  uint32_t update_size = RTCGetBKPRegister(RTC_BKP_DR3);
+  BOOT_LOG_INF("Start OTA 0x%X 0x%X 0x%X", storage_type, offset, update_size);
+  return tryOTA(storage_type, offset, update_size);
+}
+
 int main(void) {
   debug_init();
 
@@ -243,13 +252,8 @@ int main(void) {
     if (boot_empty_keys()) {
       BOOT_LOG_INF("Secure keys not configured");
       if ( magic == 0x07AA ) {
-        /* Try unsecure OTA */
-        // DR1 contains the backing storage type, DR2 the offset in case of raw device / MBR
-        storageType storage_type = (storageType)RTCGetBKPRegister(RTC_BKP_DR1);
-        uint32_t offset = RTCGetBKPRegister(RTC_BKP_DR2);
-        uint32_t update_size = RTCGetBKPRegister(RTC_BKP_DR3);
-        BOOT_LOG_INF("Start OTA 0x%X 0x%X 0x%X", storage_type, offset, update_size);
-        int ota_result = tryOTA(storage_type, offset, update_size);
+        /* Start OTA */
+        int ota_result = start_ota();
         if (ota_result == 0) {
           // clean reboot with success flag
           BOOT_LOG_INF("Sketch updated");
