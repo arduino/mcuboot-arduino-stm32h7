@@ -396,7 +396,7 @@ mbed::BlockDevice* get_scratch_bd(void) {
 
 mbed::BlockDevice* BlockDevice::get_default_instance()
 {
-    static QSPIFBlockDevice default_bd(PD_11, PD_12, PF_7, PD_13,  PF_10, PG_6, QSPIF_POLARITY_MODE_1, 40000000);
+    static QSPIFBlockDevice default_bd(BOARD_QSPI_SO0, BOARD_QSPI_SO1, BOARD_QSPI_SO2, BOARD_QSPI_SO3,  BOARD_QSPI_SCK, BOARD_QSPI_CS, QSPIF_POLARITY_MODE_1, 40000000);
     return &default_bd;
 }
 

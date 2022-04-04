@@ -54,11 +54,11 @@ volatile uint8_t ledTargetValue = 20;
 volatile int8_t ledDirection = 1;
 volatile int divisor = 0;
 
-DigitalOut red(PK_5, 1);
-DigitalOut green(PK_6, 1);
-DigitalOut blue(PK_7, 1);
+DigitalOut red(BOARD_RED_LED, 1);
+DigitalOut green(BOARD_GREEN_LED, 1);
+DigitalOut blue(BOARD_BLUE_LED, 1);
 
-DigitalIn boot_sel(PI_8,PullDown);
+DigitalIn boot_sel(BOARD_BOOT_SEL,PullDown);
 
 Ticker swap_ticker;
 
@@ -185,16 +185,18 @@ int main(void) {
     HAL_Delay(500);
   }
 
-  DigitalOut usb_reset(PJ_4, 0);
-  DigitalOut video_enable(PJ_2, 0);
-  DigitalOut video_reset(PJ_3, 0);
+  DigitalOut usb_reset(BOARD_USB_RESET, 0);
+#if BOARD_HAS_VIDEO
+  DigitalOut video_enable(BOARD_VIDEO_ENABLE, 0);
+  DigitalOut video_reset(BOARD_VIDEO_RESET, 0);
+#endif
 
   //Ticker pulse;
   //DigitalOut eth_rst(PJ_15, 1);
 
   HAL_FLASH_Unlock();
 
-  I2C i2c(PB_7, PB_6);
+  I2C i2c(BOARD_I2C_SDA, BOARD_I2C_SCL);
 
   char data[2];
 
