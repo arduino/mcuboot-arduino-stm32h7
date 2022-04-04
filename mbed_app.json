@@ -75,7 +75,8 @@
             "mcuboot.application-dfu": true,
             "mcuboot.signature-algorithm": "SIGNATURE_TYPE_EC256",
             "mcuboot.encrypt-ec256": true,
-            "mcuboot.include-keys": null
+            "mcuboot.include-keys": null,
+            "mcuboot.bootloader-build": false
         }
     }
 }
