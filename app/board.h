@@ -16,8 +16,8 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-#ifndef __TARGET_INIT_H
-#define __TARGET_INIT_H
+#ifndef __BOARD_H
+#define __BOARD_H
 
 #define BOARD_APP_DEFAULT_ADD 0x08040000
 
@@ -135,4 +135,4 @@
 #define BOARD_USB_OTG_HS_DIR_ALTERNATE      (GPIO_AF10_OTG2_HS)
 #define BOARD_USB_OTG_HS_DIR_GPIO           (GPIOI)
 
-#endif /* __TARGET_INIT_H */
+#endif /* __BOARD_H */
