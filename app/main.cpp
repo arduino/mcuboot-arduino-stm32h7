@@ -50,10 +50,7 @@ volatile const uint8_t bootloader_data[] __attribute__ ((section (".bootloader_v
 
 volatile const uint8_t bootloader_identifier[] __attribute__ ((section (".bootloader_identification"), used)) = "MCUboot Arduino";
 
-volatile uint8_t ledKeepValue = 0;
-volatile uint8_t ledTargetValue = 20;
-volatile int8_t ledDirection = 1;
-volatile int divisor = 0;
+
 
 DigitalOut red(BOARD_RED_LED, 1);
 DigitalOut green(BOARD_GREEN_LED, 1);
@@ -78,6 +75,11 @@ static void led_swap_feedback() {
 }
 
 static void led_pulse(DigitalOut* led) {
+  static uint8_t ledKeepValue = 0;
+  static uint8_t ledTargetValue = 20;
+  static int8_t ledDirection = 1;
+  static int divisor = 0;
+  
   if (divisor++ % 40) {
     return;
   }
