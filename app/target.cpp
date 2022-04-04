@@ -238,19 +238,45 @@ int target_init(void) {
 
   HAL_Delay(10);
 
-  if (magic != 0xDF59 && magic != 0x07AA) {
-    RTCSetBKPRegister(RTC_BKP_DR0, 0);
-    HAL_FLASH_Lock();
-    if(valid_application() && empty_keys()) {
-      BOOT_LOG_INF("MCUboot not configured, but valid image found.");
-      BOOT_LOG_INF("Booting firmware image at 0x%x\n", APP_DEFAULT_ADD);
-      mbed_start_application(APP_DEFAULT_ADD);
+  if (magic == 0xDF59) {
+    /* Boot stopped by double reset */
+    return 1;
+  }
+
+  if (empty_keys()) {
+    BOOT_LOG_INF("Secure keys not configured");
+    if ( magic == 0x07AA ) {
+      /* Try unsecure OTA */
+      // DR1 contains the backing storage type, DR2 the offset in case of raw device / MBR
+      storageType storage_type = (storageType)RTCGetBKPRegister(RTC_BKP_DR1);
+      uint32_t offset = RTCGetBKPRegister(RTC_BKP_DR2);
+      uint32_t update_size = RTCGetBKPRegister(RTC_BKP_DR3);
+      BOOT_LOG_DBG("Try OTA 0x%x, 0x%x, 0x%x", storage_type, offset, update_size);
+      int ota_result = tryOTA(storage_type, offset, update_size);
+      if (ota_result == 0) {
+        // clean reboot with success flag
+        RTCSetBKPRegister(RTC_BKP_DR0, 0);
+        HAL_FLASH_Lock();
+        // wait for external reboot (watchdog)
+        while (1) {}
+      } else {
+        RTCSetBKPRegister(RTC_BKP_DR0, ota_result);
+      }
     }
-    swap_ticker.attach(&swap_feedback, 250ms);
-    return 0;
+
+    if (valid_application()) {
+      /* Boot Sketch */
+      BOOT_LOG_INF("Booting sketch at 0x%x\n", APP_DEFAULT_ADD);
+      mbed_start_application(APP_DEFAULT_ADD);
+    } else {
+      BOOT_LOG_INF("No sketch found");
+      return 1;
+    }
 
   } else {
-    return 1;
+    /* MCUboot secure boot */
+    swap_ticker.attach(&swap_feedback, 250ms);
+    return 0;
   }
 }
 
