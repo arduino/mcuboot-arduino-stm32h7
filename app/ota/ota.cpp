@@ -26,17 +26,7 @@
 #include "LittleFileSystem.h"
 
 #include "ota.h"
-
-// Debug available
-#ifndef OTA_DEBUG
-#define OTA_DEBUG      0
-#endif
-
-#if OTA_DEBUG
-#define DEBUG_PRINTF(...) printf(__VA_ARGS__)
-#else
-#define DEBUG_PRINTF(...)
-#endif
+#include "bootutil/bootutil_log.h"
 
 BlockDevice* bd = NULL;
 mbed::FileSystem* fs = NULL;
@@ -48,16 +38,16 @@ const uint32_t M4_FLASH_BASE = 0x8100000;
 
 uint32_t getOTABinaryBase(uint32_t firstWord) {
 
-  DEBUG_PRINTF("First OTA binary word: %lx\n", firstWord);
+  BOOT_LOG_DBG("First OTA binary word: %lx", firstWord);
   if ((firstWord & 0xFF000000) == 0x20000000
      || (firstWord & 0xFF000000) == 0x24000000
      || (firstWord & 0xFF000000) == 0x30000000
      || (firstWord & 0xFF000000) == 0x38000000) {
-    DEBUG_PRINTF("Flashing on M7\n");
+    BOOT_LOG_DBG("Flashing on M7");
     return M7_FLASH_BASE;
   }
   if ((firstWord & 0xFF000000) == 0x10000000) {
-    DEBUG_PRINTF("Flashing on M4\n");
+    BOOT_LOG_DBG("Flashing on M4");
     return M4_FLASH_BASE;
   }
   return 0xFFFFFFFF;
@@ -76,9 +66,9 @@ size_t getFilesize(const char* filename) {
 int tryOTA(enum storageType storage_type, uint32_t data_offset, uint32_t update_size) {
   int err;
   flash.init();
-  DEBUG_PRINTF("Configuration: \n");
+  BOOT_LOG_DBG("Configuration: ");
   if (storage_type & INTERNAL_FLASH_FLAG) {
-    DEBUG_PRINTF("  INTERNAL_FLASH \n");
+    BOOT_LOG_DBG("  INTERNAL_FLASH ");
     if (storage_type & (FATFS_FLAG | LITTLEFS_FLAG)) {
       // have a filesystem, use offset as partition start
       bd = new FlashIAPBlockDevice(0x8000000 + data_offset, 2 * 1024 * 1024 - data_offset);
@@ -88,36 +78,36 @@ int tryOTA(enum storageType storage_type, uint32_t data_offset, uint32_t update_
     }
   }
   if (storage_type & QSPI_FLASH_FLAG) {
-    DEBUG_PRINTF("  QSPI_FLASH \n");
+    BOOT_LOG_DBG("  QSPI_FLASH ");
     extern QSPIFBlockDevice qspi_flash;
     bd = &qspi_flash;
   }
   if (storage_type & SDCARD_FLAG) {
-    DEBUG_PRINTF("  SD_FLASH \n");
+    BOOT_LOG_DBG("  SD_FLASH ");
     bd = new SDMMCBlockDevice();
   }
   if (storage_type & MBR_FLAG) {
-    DEBUG_PRINTF("  MBR \n");
+    BOOT_LOG_DBG("  MBR ");
     BlockDevice* physical_block_device = bd;
     bd = new mbed::MBRBlockDevice(physical_block_device, data_offset);
   }
   if (storage_type & LITTLEFS_FLAG) {
-    DEBUG_PRINTF("  LITTLEFS \n");
+    BOOT_LOG_DBG("  LITTLEFS ");
     fs = new LittleFileSystem("fs");
   }
   if (storage_type & FATFS_FLAG) {
-    DEBUG_PRINTF("  FATFS \n");
+    BOOT_LOG_DBG("  FATFS ");
     fs = new FATFileSystem("fs");
   }
   if (fs != NULL) {
     err = fs->mount(bd);
     if (err) {
-      DEBUG_PRINTF("Mount failed\n");
+      BOOT_LOG_DBG("Mount failed");
       return MOUNT_FAILED;
     }
     FILE* update = fopen("/fs/UPDATE.BIN", "rb");
     if (update == NULL) {
-      DEBUG_PRINTF("No OTA file\n");
+      BOOT_LOG_DBG("No OTA file");
       return NO_OTA_FILE;
     }
     uint32_t temp[4];
@@ -125,7 +115,7 @@ int tryOTA(enum storageType storage_type, uint32_t data_offset, uint32_t update_
     fseek(update, 0, SEEK_SET);
     uint32_t base = getOTABinaryBase(temp[0]);
     if (base == 0xFFFFFFFF) {
-      DEBUG_PRINTF("Couldn't decide if M7 or M4\n");
+      BOOT_LOG_DBG("Couldn't decide if M7 or M4");
       return WRONG_OTA_BINARY;
     }
     // Ignore update_size and use file size instead
@@ -135,12 +125,12 @@ int tryOTA(enum storageType storage_type, uint32_t data_offset, uint32_t update_
         sector_size = 4096 * 4;
     }
     uint8_t* buf = (uint8_t*)malloc(sector_size);
-    DEBUG_PRINTF("Sector size: %d\n", sector_size);
+    BOOT_LOG_DBG("Sector size: %d", sector_size);
     for (uint32_t i = 0; i < update_size; i+= sector_size) {
       fread(buf, 1, sector_size, update);
       // erase?
       if (((uint32_t)base + i) % flash.get_sector_size(base) == 0) {
-        DEBUG_PRINTF("Erasing: %x %x\n", (uint32_t)base + i, flash.get_sector_size(base));
+        BOOT_LOG_DBG("Erasing: %x %x", (uint32_t)base + i, flash.get_sector_size(base));
         flash.erase((uint32_t)base + i, flash.get_sector_size(base));
         wait_us(10000);
       }
@@ -151,7 +141,7 @@ int tryOTA(enum storageType storage_type, uint32_t data_offset, uint32_t update_
     // read first chuck of the file to understand if we need to flash the M4 or the M7
     err = bd->init();
     if (err != 0) {
-      DEBUG_PRINTF("Init failed\n");
+      BOOT_LOG_DBG("Init failed");
       return INIT_FAILED;
     }
     int sz = bd->get_program_size();
@@ -162,7 +152,7 @@ int tryOTA(enum storageType storage_type, uint32_t data_offset, uint32_t update_
     bd->read(temp, (uint32_t)data_offset, sz);
     uint32_t base = getOTABinaryBase(temp[0]);
     if (base == 0xFFFFFFFF) {
-      DEBUG_PRINTF("Couldn't decide if M7 or M4\n");
+      BOOT_LOG_DBG("Couldn't decide if M7 or M4");
       return WRONG_OTA_BINARY;
     }
     uint32_t sector_size = flash.get_sector_size(base);
