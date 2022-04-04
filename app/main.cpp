@@ -107,7 +107,7 @@ static bool valid_application() {
 
 }
 
-int target_debug_init(void) {
+static int debug_init(void) {
   RTCInit();
   debug_enabled = ((RTCGetBKPRegister(RTC_BKP_DR7) & 0x00000001) || boot_sel);
   return 0;
@@ -202,7 +202,7 @@ int start_secure_application(void) {
 }
 
 int main(void) {
-  target_debug_init();
+  debug_init();
 
   BOOT_LOG_INF("Starting Arduino bootloader");
 
