@@ -126,7 +126,6 @@ int target_led_off(void) {
 #if MCUBOOT_APPLICATION_DFU
 USBD_HandleTypeDef USBD_Device;
 extern PCD_HandleTypeDef hpcd;
-extern void init_Memories(void);
 #endif
 
 extern "C" {

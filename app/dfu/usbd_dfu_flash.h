@@ -53,6 +53,7 @@ extern USBD_DFU_MediaTypeDef  USBD_DFU_Flash_fops;
 #define FLASH_END_ADDR       (uint32_t)(0x081FFFFF)
 
 /* Exported functions ------------------------------------------------------- */
+extern void init_Memories(void);
 
 #endif /* __USBD_DFU_FLASH_H_ */
 
