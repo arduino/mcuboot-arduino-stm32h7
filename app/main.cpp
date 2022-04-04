@@ -22,6 +22,7 @@
 #include "board.h"
 #include "ota.h"
 #include "rtc.h"
+#include "power.h"
 #include "bootutil/bootutil_extra.h"
 #include "bootutil/bootutil_log.h"
 #include "bootutil/bootutil.h"
@@ -239,75 +240,7 @@ int main(void) {
 
   HAL_FLASH_Unlock();
 
-  I2C i2c(BOARD_I2C_SDA, BOARD_I2C_SCL);
-
-  char data[2];
-
-  // LDO2 to 1.8V
-  data[0]=0x4F;
-  data[1]=0x0;
-  i2c.write(8 << 1, data, sizeof(data));
-  data[0]=0x50;
-  data[1]=0xF;
-  i2c.write(8 << 1, data, sizeof(data));
-
-  // LDO1 to 1.0V
-  data[0]=0x4c;
-  data[1]=0x5;
-  i2c.write(8 << 1, data, sizeof(data));
-  data[0]=0x4d;
-  data[1]=0x3;
-  i2c.write(8 << 1, data, sizeof(data));
-
-  // LDO3 to 1.2V
-  data[0]=0x52;
-  data[1]=0x9;
-  i2c.write(8 << 1, data, sizeof(data));
-  data[0]=0x53;
-  data[1]=0xF;
-  i2c.write(8 << 1, data, sizeof(data));
-
-  HAL_Delay(10);
-
-  data[0]=0x9C;
-  data[1]=(1 << 7);
-  i2c.write(8 << 1, data, sizeof(data));
-
-  // Disable charger led
-  data[0]=0x9E;
-  data[1]=(1 << 5);
-  i2c.write(8 << 1, data, sizeof(data));
-
-  HAL_Delay(10);
-
-  // SW3: set 2A as current limit
-  // Helps keeping the rail up at wifi startup
-  data[0]=0x42;
-  data[1]=(2);
-  i2c.write(8 << 1, data, sizeof(data));
-
-  HAL_Delay(10);
-
-  // Change VBUS INPUT CURRENT LIMIT to 1.5A
-  data[0]=0x94;
-  data[1]=(20 << 3);
-  i2c.write(8 << 1, data, sizeof(data));
-
-#if 1
-  // SW2 to 3.3V (SW2_VOLT)
-  data[0]=0x3B;
-  data[1]=0xF;
-  i2c.write(8 << 1, data, sizeof(data));
-
-  // SW1 to 3.0V (SW1_VOLT)
-  data[0]=0x35;
-  data[1]=0xF;
-  i2c.write(8 << 1, data, sizeof(data));
-
-  //data[0]=0x36;
-  //data[1]=(2);
-  //i2c.write(8 << 1, data, sizeof(data));
-#endif
+  power_init();
 
   HAL_Delay(10);
 
