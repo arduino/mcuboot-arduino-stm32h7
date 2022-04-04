@@ -50,7 +50,6 @@ volatile const uint8_t bootloader_data[] __attribute__ ((section (".bootloader_v
 
 volatile const uint8_t bootloader_identifier[] __attribute__ ((section (".bootloader_identification"), used)) = "MCUboot Arduino";
 
-static bool double_tap_flag = true;
 volatile uint8_t ledKeepValue = 0;
 volatile uint8_t ledTargetValue = 20;
 volatile int8_t ledDirection = 1;
@@ -75,11 +74,6 @@ static inline void LED_pulse(DigitalOut* led)
 {
   if (divisor++ % 40) {
     return;
-  }
-
-  if (HAL_GetTick() > 500 && double_tap_flag && RTCGetBKPRegister(RTC_BKP_DR0) == 0xDF59) {
-    RTCSetBKPRegister(RTC_BKP_DR0, 0);
-    double_tap_flag = false;
   }
 
   if (ledKeepValue == 0) {
