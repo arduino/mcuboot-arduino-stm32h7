@@ -19,7 +19,7 @@
 #if  MCUBOOT_APPLICATION_HOOKS
 
 #include "mbed.h"
-#include "target.h"
+#include "board.h"
 #include "ota.h"
 #include "rtc.h"
 #include "bootutil/bootutil_log.h"
