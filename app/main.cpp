@@ -34,10 +34,12 @@
 #include "usbd_dfu_flash.h"
 #endif
 
-// clock source is selected with CLOCK_SOURCE in json config
-#define USE_PLL_HSE_EXTC     0x8  // Use external clock (ST Link MCO)
-#define USE_PLL_HSE_XTAL     0x4  // Use external xtal (X3 on board - not provided by default)
-#define USE_PLL_HSI          0x2  // Use HSI internal clock
+/*
+ * CLOCK_SOURCE is configured with "target.clock_source" in mbed_app.json file
+ */
+ #define USE_PLL_HSE_EXTC     0x8  // Use external clock (ST Link MCO)
+ #define USE_PLL_HSE_XTAL     0x4  // Use external xtal (X3 on board - not provided by default)
+ #define USE_PLL_HSI          0x2  // Use HSI internal clock
 
 extern "C" uint8_t SetSysClock_PLL_HSE(uint8_t bypass, bool lowspeed);
 
