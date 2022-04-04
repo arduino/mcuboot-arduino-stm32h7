@@ -132,7 +132,7 @@ extern "C" {
   uint8_t SetSysClock_PLL_HSE(uint8_t bypass, bool lowspeed);
 }
 
-int target_loop(void) {
+static int start_dfu(void) {
   RTCSetBKPRegister(RTC_BKP_DR0, 0);
 
   SetSysClock_PLL_HSE(1, false);
@@ -358,7 +358,7 @@ int main(void) {
       start_secure_application();
     }
   }
-  target_loop();
+  start_dfu();
 
   return 0;
 }
