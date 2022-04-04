@@ -22,6 +22,7 @@
 #define __USBD_CONF_H
 
 /* Includes ------------------------------------------------------------------*/
+#include "board.h"
 #include "stm32h7xx_hal.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -40,7 +41,7 @@
 /* DFU Class Config */
 #define USBD_DFU_MAX_ITF_NUM                   4
 #define USBD_DFU_XFER_SIZE                     4096   /* Max DFU Packet Size = 4096 bytes */
-#define USBD_DFU_APP_DEFAULT_ADD               0x08040000 /* The first sector (32 KB) is reserved for DFU code */
+#define USBD_DFU_APP_DEFAULT_ADD               BOARD_APP_DEFAULT_ADD /* The first sector (32 KB) is reserved for DFU code */
 #define USBD_DFU_MAX_NB_OF_SECTORS             16 /* Max number of sectors */
 
 #define CDC_CLASS_DESC_SIZE                    (8 + 58)

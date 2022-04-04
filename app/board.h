@@ -19,21 +19,7 @@
 #ifndef __TARGET_INIT_H
 #define __TARGET_INIT_H
 
-#include "stm32h7xx_hal.h"
-#include "stm32h7xx_hal_mdma.h"
-#include "stm32h7xx_hal_qspi.h"
-#if MCUBOOT_APPLICATION_DFU
-#include "usbd_core.h"
-#include "usbd_desc.h"
-#include "usbd_dfu.h"
-#include "usbd_dfu_flash.h"
-#endif
-
-#if MCUBOOT_APPLICATION_DFU
-#define APP_DEFAULT_ADD USBD_DFU_APP_DEFAULT_ADD
-#else
-#define APP_DEFAULT_ADD 0x08040000
-#endif
+#define BOARD_APP_DEFAULT_ADD 0x08040000
 
 #define BOOTLOADER_CONFIG_MAGIC   0xA0
 #define BOOTLOADER_VERSION        4

@@ -29,6 +29,11 @@
 #include "bootutil/image.h"
 #include "mbedtls/platform.h"
 
+#if MCUBOOT_APPLICATION_DFU
+#include "usbd_desc.h"
+#include "usbd_dfu_flash.h"
+#endif
+
 // clock source is selected with CLOCK_SOURCE in json config
 #define USE_PLL_HSE_EXTC     0x8  // Use external clock (ST Link MCO)
 #define USE_PLL_HSE_XTAL     0x4  // Use external xtal (X3 on board - not provided by default)
@@ -268,9 +273,9 @@ int main(void) {
 
       if (valid_application()) {
         /* Boot Sketch */
-        BOOT_LOG_INF("Booting sketch at 0x%x\n", APP_DEFAULT_ADD);
+        BOOT_LOG_INF("Booting sketch at 0x%x\n", BOARD_APP_DEFAULT_ADD);
         RTCSetBKPRegister(RTC_BKP_DR0, 0);
-        mbed_start_application(APP_DEFAULT_ADD);
+        mbed_start_application(BOARD_APP_DEFAULT_ADD);
       } else {
         BOOT_LOG_INF("No sketch found");
       }
