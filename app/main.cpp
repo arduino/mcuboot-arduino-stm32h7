@@ -50,16 +50,12 @@ volatile const uint8_t bootloader_data[] __attribute__ ((section (".bootloader_v
 
 volatile const uint8_t bootloader_identifier[] __attribute__ ((section (".bootloader_identification"), used)) = "MCUboot Arduino";
 
-
-
 DigitalOut red(BOARD_RED_LED, 1);
 DigitalOut green(BOARD_GREEN_LED, 1);
 DigitalOut blue(BOARD_BLUE_LED, 1);
-
 DigitalIn boot_sel(BOARD_BOOT_SEL,PullDown);
 
 Ticker swap_ticker;
-
 bool debug_enabled = false;
 
 static void led_swap_feedback_off(void) {
@@ -116,8 +112,6 @@ int target_debug_init(void) {
   debug_enabled = ((RTCGetBKPRegister(RTC_BKP_DR7) & 0x00000001) || boot_sel);
   return 0;
 }
-
-
 
 #if MCUBOOT_APPLICATION_DFU
 USBD_HandleTypeDef USBD_Device;
@@ -179,7 +173,6 @@ static int start_dfu(void) {
 }
 
 int start_secure_application(void) {
-
   int rc;
 
   BOOT_LOG_INF("Starting MCUboot");
@@ -209,7 +202,6 @@ int start_secure_application(void) {
 }
 
 int main(void) {
-
   target_debug_init();
 
   BOOT_LOG_INF("Starting Arduino bootloader");
