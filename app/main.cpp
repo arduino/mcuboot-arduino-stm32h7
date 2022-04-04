@@ -65,13 +65,19 @@ Ticker swap_ticker;
 
 bool debug_enabled = false;
 
-static inline void swap_feedback() {
+static void led_swap_feedback_off(void) {
+  swap_ticker.detach();
+  red = 1;
+  green = 1;
+  blue = 1;
+}
+
+static void led_swap_feedback() {
   blue = !blue;
   red = !red;
 }
 
-static inline void LED_pulse(DigitalOut* led)
-{
+static void led_pulse(DigitalOut* led) {
   if (divisor++ % 40) {
     return;
   }
@@ -109,13 +115,7 @@ int target_debug_init(void) {
   return 0;
 }
 
-int target_led_off(void) {
-  swap_ticker.detach();
-  red = 1;
-  green = 1;
-  blue = 1;
-  return 0;
-}
+
 
 #if MCUBOOT_APPLICATION_DFU
 USBD_HandleTypeDef USBD_Device;
@@ -132,7 +132,7 @@ static int start_dfu(void) {
   SetSysClock_PLL_HSE(1, false);
   SystemCoreClockUpdate();
 
-  target_led_off();
+  led_swap_feedback_off();
 
   //turnDownEthernet();
 
@@ -170,7 +170,7 @@ static int start_dfu(void) {
       HAL_PCD_IRQHandler(&hpcd);
     }
 #endif
-    LED_pulse(&green);
+    led_pulse(&green);
   }
 
   return 0;
@@ -197,7 +197,7 @@ int start_secure_application(void) {
     return -1;
   }
 
-  target_led_off();
+  led_swap_feedback_off();
 
   // Run the application in the primary slot
   // Add header size offset to calculate the actual start address of application
@@ -279,7 +279,7 @@ int main(void) {
 
     } else {
       /* MCUboot secure boot */
-      swap_ticker.attach(&swap_feedback, 250ms);
+      swap_ticker.attach(&led_swap_feedback, 250ms);
       RTCSetBKPRegister(RTC_BKP_DR0, 0);
       start_secure_application();
     }
