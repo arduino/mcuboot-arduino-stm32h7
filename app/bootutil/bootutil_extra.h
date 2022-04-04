@@ -21,4 +21,14 @@
 
 int boot_set_debug(int enable);
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+int boot_empty_keys();
+
+#ifdef __cplusplus
+}
+#endif
+
 #endif //__BOOTUTIL_EXTRA_H

@@ -149,10 +149,4 @@
 #define BOARD_USB_OTG_HS_DIR_ALTERNATE      (GPIO_AF10_OTG2_HS)
 #define BOARD_USB_OTG_HS_DIR_GPIO           (GPIOI)
 
-int target_debug_init(void);
-int target_loop(void);
-int target_debug(void);
-int target_led_off(void);
-int target_empty_keys(void);
-
 #endif /* __TARGET_INIT_H */

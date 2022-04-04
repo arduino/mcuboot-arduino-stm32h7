@@ -21,6 +21,7 @@
 #include "ota.h"
 #include "rtc.h"
 #include "board.h"
+#include "bootutil/bootutil_extra.h"
 #include "bootutil/bootutil_log.h"
 
 #include "SlicingBlockDevice.h"
@@ -362,7 +363,7 @@ static void initBlockTable(void) {
 
 mbed::BlockDevice* get_secondary_bd(void) {
 
-    if(!target_empty_keys()) {
+    if(!boot_empty_keys()) {
         if(!BlockTableLoaded) {
             initBlockTable();
             BlockTableLoaded = true;
@@ -379,7 +380,7 @@ mbed::BlockDevice* get_secondary_bd(void) {
 
 mbed::BlockDevice* get_scratch_bd(void) {
 
-    if(!target_empty_keys()) {
+    if(!boot_empty_keys()) {
         if(!BlockTableLoaded) {
             initBlockTable();
             BlockTableLoaded = true;

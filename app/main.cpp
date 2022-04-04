@@ -22,6 +22,7 @@
 #include "board.h"
 #include "ota.h"
 #include "rtc.h"
+#include "bootutil/bootutil_extra.h"
 #include "bootutil/bootutil_log.h"
 #include "bootutil/bootutil.h"
 #include "bootutil/image.h"
@@ -107,24 +108,6 @@ static bool valid_application() {
 
 }
 
-int target_empty_keys() {
-  unsigned int i;
-  uint8_t* encript_key = (uint8_t*)(0x08000300);
-  uint8_t* signing_key = (uint8_t*)(0x08000400);
-
-  for(i = 0; i < 256; i++) {
-    if(encript_key[i] != 0xFF)
-      return 0;
-  }
-
-  for(i = 0; i < 256; i++) {
-    if(signing_key[i] != 0xFF)
-      return 0;
-  }
-
-  return 1;
-}
-
 int target_debug_init(void) {
   RTCInit();
   debug_enabled = ((RTCGetBKPRegister(RTC_BKP_DR7) & 0x00000001) || boot_sel);
@@ -136,6 +119,66 @@ int target_led_off(void) {
   red = 1;
   green = 1;
   blue = 1;
+  return 0;
+}
+
+#if MCUBOOT_APPLICATION_DFU
+USBD_HandleTypeDef USBD_Device;
+extern PCD_HandleTypeDef hpcd;
+extern void init_Memories(void);
+#endif
+
+extern "C" {
+  uint8_t SetSysClock_PLL_HSE(uint8_t bypass, bool lowspeed);
+}
+
+int target_loop(void) {
+  RTCSetBKPRegister(RTC_BKP_DR0, 0);
+
+  SetSysClock_PLL_HSE(1, false);
+  SystemCoreClockUpdate();
+
+  target_led_off();
+
+  //turnDownEthernet();
+
+#if MCUBOOT_APPLICATION_DFU
+  init_Memories();
+
+  /* Otherwise enters DFU mode to allow user programming his application */
+  /* Init Device Library */
+  USBD_Init(&USBD_Device, &DFU_Desc, 0);
+
+  /* Add Supported Class */
+  USBD_RegisterClass(&USBD_Device, USBD_DFU_CLASS);
+
+  /* Add DFU Media interface */
+  USBD_DFU_RegisterMedia(&USBD_Device, &USBD_DFU_Flash_fops);
+
+  /* Start Device Process */
+  USBD_Start(&USBD_Device);
+
+  /* Set USBHS Interrupt to the lowest priority */
+  // HAL_NVIC_SetPriority(OTG_HS_IRQn, 1, 0);
+
+  /* Enable USBHS Interrupt */
+  HAL_NVIC_DisableIRQ(OTG_HS_IRQn);
+  HAL_NVIC_DisableIRQ(OTG_FS_IRQn);
+#endif
+
+  while(1) {
+#if MCUBOOT_APPLICATION_DFU
+#ifdef USE_USB_HS
+    if (USB_OTG_HS->GINTSTS & USB_OTG_HS->GINTMSK) {
+#else // USE_USB_FS
+    if (USB_OTG_FS->GINTSTS & USB_OTG_FS->GINTMSK) {
+#endif
+      HAL_PCD_IRQHandler(&hpcd);
+    }
+#endif
+    LED_pulse(&green);
+  }
+
   return 0;
 }
 
@@ -277,7 +320,7 @@ int main(void) {
   HAL_Delay(10);
 
   if (magic != 0xDF59) {
-    if (target_empty_keys()) {
+    if (boot_empty_keys()) {
       BOOT_LOG_INF("Secure keys not configured");
       if ( magic == 0x07AA ) {
         /* Try unsecure OTA */
@@ -316,66 +359,6 @@ int main(void) {
     }
   }
   target_loop();
-
-  return 0;
-}
-
-#if MCUBOOT_APPLICATION_DFU
-USBD_HandleTypeDef USBD_Device;
-extern PCD_HandleTypeDef hpcd;
-extern void init_Memories(void);
-#endif
-
-extern "C" {
-  uint8_t SetSysClock_PLL_HSE(uint8_t bypass, bool lowspeed);
-}
-
-int target_loop(void) {
-  RTCSetBKPRegister(RTC_BKP_DR0, 0);
-
-  SetSysClock_PLL_HSE(1, false);
-  SystemCoreClockUpdate();
-
-  target_led_off();
-
-  //turnDownEthernet();
-
-#if MCUBOOT_APPLICATION_DFU
-  init_Memories();
-
-  /* Otherwise enters DFU mode to allow user programming his application */
-  /* Init Device Library */
-  USBD_Init(&USBD_Device, &DFU_Desc, 0);
-
-  /* Add Supported Class */
-  USBD_RegisterClass(&USBD_Device, USBD_DFU_CLASS);
-
-  /* Add DFU Media interface */
-  USBD_DFU_RegisterMedia(&USBD_Device, &USBD_DFU_Flash_fops);
-
-  /* Start Device Process */
-  USBD_Start(&USBD_Device);
-
-  /* Set USBHS Interrupt to the lowest priority */
-  // HAL_NVIC_SetPriority(OTG_HS_IRQn, 1, 0);
-
-  /* Enable USBHS Interrupt */
-  HAL_NVIC_DisableIRQ(OTG_HS_IRQn);
-  HAL_NVIC_DisableIRQ(OTG_FS_IRQn);
-#endif
-
-  while(1) {
-#if MCUBOOT_APPLICATION_DFU
-#ifdef USE_USB_HS
-    if (USB_OTG_HS->GINTSTS & USB_OTG_HS->GINTMSK) {
-#else // USE_USB_FS
-    if (USB_OTG_FS->GINTSTS & USB_OTG_FS->GINTMSK) {
-#endif
-      HAL_PCD_IRQHandler(&hpcd);
-    }
-#endif
-    LED_pulse(&green);
-  }
 
   return 0;
 }
