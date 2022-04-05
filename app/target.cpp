@@ -106,18 +106,16 @@ static bool valid_application() {
 
 int target_empty_keys() {
   unsigned int i;
-  extern const unsigned char enc_priv_key[];
-  extern const unsigned int enc_priv_key_len;
-  extern const unsigned char ecdsa_pub_key[];
-  extern unsigned int ecdsa_pub_key_len;
+  uint8_t* encript_key = (uint8_t*)(0x08000300);
+  uint8_t* signing_key = (uint8_t*)(0x08000400);
 
-  for(i = 0; i < enc_priv_key_len; i++) {
-    if(enc_priv_key[i] != 0xFF)
+  for(i = 0; i < 256; i++) {
+    if(encript_key[i] != 0xFF)
       return 0;
   }
 
-  for(i = 0; i < ecdsa_pub_key_len; i++) {
-    if(ecdsa_pub_key[i] != 0xFF)
+  for(i = 0; i < 256; i++) {
+    if(signing_key[i] != 0xFF)
       return 0;
   }
 
