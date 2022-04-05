@@ -17,7 +17,7 @@
 */
 
 #include "mbed.h"
-#include "QSPIFBlockDevice.h"
+#include "BlockDevice.h"
 #include "FlashIAPBlockDevice.h"
 #include "MBRBlockDevice.h"
 #include "SDMMCBlockDevice.h"
@@ -79,8 +79,7 @@ int tryOTA(enum storageType storage_type, uint32_t data_offset, uint32_t update_
   }
   if (storage_type & QSPI_FLASH_FLAG) {
     BOOT_LOG_DBG("  QSPI_FLASH ");
-    extern QSPIFBlockDevice qspi_flash;
-    bd = &qspi_flash;
+    bd = mbed::BlockDevice::get_default_instance();
   }
   if (storage_type & SDCARD_FLAG) {
 #if MCUBOOT_APPLICATION_SDCARD
