@@ -83,8 +83,12 @@ int tryOTA(enum storageType storage_type, uint32_t data_offset, uint32_t update_
     bd = &qspi_flash;
   }
   if (storage_type & SDCARD_FLAG) {
+#if MCUBOOT_APPLICATION_SDCARD
     BOOT_LOG_DBG("  SD_FLASH ");
     bd = new SDMMCBlockDevice();
+#else
+    BOOT_LOG_ERR("  SD NOT SUPPORTED");
+#endif
   }
   if (storage_type & MBR_FLAG) {
     BOOT_LOG_DBG("  MBR ");
