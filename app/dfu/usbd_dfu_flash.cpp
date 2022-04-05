@@ -80,7 +80,9 @@ bool Flash_If_Init_requested = false;
 void init_Memories() {
   flash.init();
   qspi_flash->init();
-  dfu_secondary_bd->init();
+  if (dfu_secondary_bd != nullptr) {
+    dfu_secondary_bd->init();
+  }
   snprintf(BOOTLOADER_DESC_STR, sizeof(BOOTLOADER_DESC_STR), "@MCUBoot version %d /0x00000000/0*4Kg", BOOTLOADER_VERSION);
 }
 
@@ -107,8 +109,10 @@ uint16_t Flash_If_Init(void)
 uint16_t Flash_If_DeInit(void)
 {
   flash.deinit();
-  dfu_secondary_bd->deinit();
-  boot_set_pending(false);
+  if (dfu_secondary_bd != nullptr) {
+    dfu_secondary_bd->deinit();
+    boot_set_pending(false);
+  }
   return 0;
 }
 
@@ -127,7 +131,9 @@ static bool isFileBlockFlash(uint32_t Add) {
   */
 uint16_t Flash_If_Erase(uint32_t Add)
 {
-  if (isFileBlockFlash(Add)) {
+  if (isFileBlockFlash(Add) && dfu_secondary_bd == nullptr) {
+    return -1;
+  } else if (isFileBlockFlash(Add) && dfu_secondary_bd != nullptr) {
     Add -= FILEBLOCK_BASE_ADDRESS;
     return dfu_secondary_bd->erase(Add, dfu_secondary_bd->get_erase_size(Add));
   } else if (isExternalFlash(Add)) {
@@ -159,7 +165,9 @@ void delayed_write(struct writeInfo* info) {
   */
 uint16_t Flash_If_Write(uint8_t * src, uint8_t * dest, uint32_t Len)
 {
-  if (isFileBlockFlash((uint32_t)dest)) {
+  if (isFileBlockFlash((uint32_t)dest) && dfu_secondary_bd == nullptr) {
+    return -1;
+  } else if (isFileBlockFlash((uint32_t)dest) && dfu_secondary_bd != nullptr) {
     dest -= FILEBLOCK_BASE_ADDRESS;
     if (Len < dfu_secondary_bd->get_erase_size(0)) {
       uint8_t* srcCopy = (uint8_t*)malloc(dfu_secondary_bd->get_erase_size(0));
@@ -198,7 +206,9 @@ uint8_t *Flash_If_Read(uint8_t * src, uint8_t * dest, uint32_t Len)
   uint32_t i = 0;
   uint8_t *psrc = src;
 
-  if (isFileBlockFlash((uint32_t)src)) {
+  if (isFileBlockFlash((uint32_t)src) && dfu_secondary_bd == nullptr) {
+    Len = 0;
+  } else if (isFileBlockFlash((uint32_t)src) && dfu_secondary_bd != nullptr) {
     src -= FILEBLOCK_BASE_ADDRESS;
     dfu_secondary_bd->read(dest, (uint32_t)src, Len);
   } else if (isExternalFlash((uint32_t)src)) {
