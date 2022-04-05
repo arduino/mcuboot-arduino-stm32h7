@@ -251,10 +251,11 @@ int target_init(void) {
       storageType storage_type = (storageType)RTCGetBKPRegister(RTC_BKP_DR1);
       uint32_t offset = RTCGetBKPRegister(RTC_BKP_DR2);
       uint32_t update_size = RTCGetBKPRegister(RTC_BKP_DR3);
-      BOOT_LOG_DBG("Try OTA 0x%x, 0x%x, 0x%x", storage_type, offset, update_size);
+      BOOT_LOG_INF("Start OTA 0x%X 0x%X 0x%X", storage_type, offset, update_size);
       int ota_result = tryOTA(storage_type, offset, update_size);
       if (ota_result == 0) {
         // clean reboot with success flag
+        BOOT_LOG_INF("Sketch updated");
         RTCSetBKPRegister(RTC_BKP_DR0, 0);
         HAL_FLASH_Lock();
         // wait for external reboot (watchdog)
