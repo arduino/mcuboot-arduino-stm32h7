@@ -20,6 +20,7 @@
 
 #include "ota.h"
 #include "rtc.h"
+#include "target.h"
 #include "bootutil/bootutil_log.h"
 
 #include "SlicingBlockDevice.h"
@@ -361,30 +362,36 @@ static void initBlockTable(void) {
 
 mbed::BlockDevice* get_secondary_bd(void) {
 
-    if(!BlockTableLoaded) {
-        initBlockTable();
-        BlockTableLoaded = true;
-    }
+    if(!target_empty_keys()) {
+        if(!BlockTableLoaded) {
+            initBlockTable();
+            BlockTableLoaded = true;
+        }
 
-    if(block_info[SECONDARY_BLOCK_DEVICE].raw_flag) {
-        return block_info[SECONDARY_BLOCK_DEVICE].log_bd;
-    } else {
-        return block_info[SECONDARY_BLOCK_DEVICE].file_bd;
+        if(block_info[SECONDARY_BLOCK_DEVICE].raw_flag) {
+            return block_info[SECONDARY_BLOCK_DEVICE].log_bd;
+        } else {
+            return block_info[SECONDARY_BLOCK_DEVICE].file_bd;
+        }
     }
+    return nullptr;
 }
 
 mbed::BlockDevice* get_scratch_bd(void) {
 
-    if(!BlockTableLoaded) {
-        initBlockTable();
-        BlockTableLoaded = true;
-    }
+    if(!target_empty_keys()) {
+        if(!BlockTableLoaded) {
+            initBlockTable();
+            BlockTableLoaded = true;
+        }
 
-    if(block_info[SCRATCH_BLOCK_DEVICE].raw_flag) {
-        return block_info[SCRATCH_BLOCK_DEVICE].log_bd;;
-    } else {
-        return block_info[SCRATCH_BLOCK_DEVICE].file_bd;
+        if(block_info[SCRATCH_BLOCK_DEVICE].raw_flag) {
+            return block_info[SCRATCH_BLOCK_DEVICE].log_bd;;
+        } else {
+            return block_info[SCRATCH_BLOCK_DEVICE].file_bd;
+        }
     }
+    return nullptr;
 }
 
 mbed::BlockDevice* BlockDevice::get_default_instance()
