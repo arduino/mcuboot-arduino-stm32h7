@@ -53,7 +53,7 @@ uint8_t *Flash_If_Read(uint8_t * src, uint8_t * dest, uint32_t Len);
 uint16_t Flash_If_DeInit(void);
 uint16_t Flash_If_GetStatus(uint32_t Add, uint8_t Cmd, uint8_t * buffer);
 
-FlashIAP flash;
+extern FlashIAP flash;
 mbed::BlockDevice* qspi_flash = mbed::BlockDevice::get_default_instance();
 mbed::BlockDevice* dfu_secondary_bd = get_secondary_bd();
 

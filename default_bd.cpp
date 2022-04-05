@@ -393,6 +393,8 @@ mbed::BlockDevice* BlockDevice::get_default_instance()
     return &default_bd;
 }
 
+FlashIAP flash;
+
 #else // MCUBOOT_APPLICATION_HOOKS
 
 #include "BlockDevice.h"
