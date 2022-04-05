@@ -104,7 +104,7 @@ static bool valid_application() {
 
 }
 
-static bool empty_keys() {
+int target_empty_keys() {
   unsigned int i;
   extern const unsigned char enc_priv_key[];
   extern const unsigned int enc_priv_key_len;
@@ -113,15 +113,15 @@ static bool empty_keys() {
 
   for(i = 0; i < enc_priv_key_len; i++) {
     if(enc_priv_key[i] != 0xFF)
-      return false;
+      return 0;
   }
 
   for(i = 0; i < ecdsa_pub_key_len; i++) {
     if(ecdsa_pub_key[i] != 0xFF)
-      return false;
+      return 0;
   }
 
-  return true;
+  return 1;
 }
 
 int target_debug_init(void) {
@@ -243,7 +243,7 @@ int target_init(void) {
     return 1;
   }
 
-  if (empty_keys()) {
+  if (target_empty_keys()) {
     BOOT_LOG_INF("Secure keys not configured");
     if ( magic == 0x07AA ) {
       /* Try unsecure OTA */
