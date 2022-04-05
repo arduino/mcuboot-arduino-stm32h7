@@ -2,7 +2,7 @@
 mbed compile -c -m PORTENTA_H7_M7 -t GCC_ARM --app=mbed_app_bootutil.json
 echo
 echo Generating library
-find ./BUILD/PORTENTA_H7_M7/GCC_ARM/ \( -name "FileBlockDevice.o" -o -name "rtc.o" -o -name "default_bd.o" -o -name "bootutil_extra.o" -o -name "flash_map_backend.o" -o -name "bootutil_public.o" \) | xargs arm-none-eabi-ar -csr libbootutil.a
+find ./BUILD/PORTENTA_H7_M7/GCC_ARM/ \( -name "FileBlockDevice.o" -o -name "BSP.o" -o -name "SDMMCBlockDevice.o" -o -name "target.o" -o -name "rtc.o" -o -name "default_bd.o" -o -name "bootutil_extra.o" -o -name "flash_map_backend.o" -o -name "bootutil_public.o" \) | xargs arm-none-eabi-ar -csr libbootutil.a
 echo -n "Library: "
 find ./ -name "libbootutil.a"
 echo
