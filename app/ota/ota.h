@@ -72,8 +72,6 @@ struct BlockTableData {
 #define NO_OTA_FILE          (-3)
 #define INIT_FAILED          (-4)
 
-#define FILEBD_READ_SIZE      0x1
-#define FILEBD_WRITE_SIZE     0x1
-#define FILEBD_ERASE_SIZE     0x1000
+int tryOTA(enum storageType storage_type, uint32_t data_offset, uint32_t update_size);
 
 #endif //__OTA_H

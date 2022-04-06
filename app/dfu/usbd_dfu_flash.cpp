@@ -24,7 +24,7 @@
 //#include "option_bits.h"
 #include "mbed.h"
 #include "target.h"
-#include "QSPIFBlockDevice.h"
+#include "BlockDevice.h"
 #include "FlashSimBlockDevice.h"
 #include "flash_map_backend/secondary_bd.h"
 #include "bootutil/bootutil.h"
@@ -42,7 +42,6 @@
 /* Private macro ------------------------------------------------------------- */
 /* Private variables --------------------------------------------------------- */
 /* Private function prototypes ----------------------------------------------- */
-
 char BOOTLOADER_DESC_STR[48];
 
 
@@ -54,8 +53,8 @@ uint8_t *Flash_If_Read(uint8_t * src, uint8_t * dest, uint32_t Len);
 uint16_t Flash_If_DeInit(void);
 uint16_t Flash_If_GetStatus(uint32_t Add, uint8_t Cmd, uint8_t * buffer);
 
-FlashIAP flash;
-QSPIFBlockDevice qspi_flash(PD_11, PD_12, PF_7, PD_13, PF_10, PG_6, QSPIF_POLARITY_MODE_1, 40000000);
+extern FlashIAP flash;
+mbed::BlockDevice* qspi_flash = mbed::BlockDevice::get_default_instance();
 mbed::BlockDevice* dfu_secondary_bd = get_secondary_bd();
 
 const uint32_t QSPIFLASH_BASE_ADDRESS   =  0x90000000;
@@ -80,8 +79,10 @@ bool Flash_If_Init_requested = false;
 
 void init_Memories() {
   flash.init();
-  qspi_flash.init();
-  dfu_secondary_bd->init();
+  qspi_flash->init();
+  if (dfu_secondary_bd != nullptr) {
+    dfu_secondary_bd->init();
+  }
   snprintf(BOOTLOADER_DESC_STR, sizeof(BOOTLOADER_DESC_STR), "@MCUBoot version %d /0x00000000/0*4Kg", BOOTLOADER_VERSION);
 }
 
@@ -108,8 +109,10 @@ uint16_t Flash_If_Init(void)
 uint16_t Flash_If_DeInit(void)
 {
   flash.deinit();
-  dfu_secondary_bd->deinit();
-  boot_set_pending(false);
+  if (dfu_secondary_bd != nullptr) {
+    dfu_secondary_bd->deinit();
+    boot_set_pending(false);
+  }
   return 0;
 }
 
@@ -128,12 +131,14 @@ static bool isFileBlockFlash(uint32_t Add) {
   */
 uint16_t Flash_If_Erase(uint32_t Add)
 {
-  if (isFileBlockFlash(Add)) {
+  if (isFileBlockFlash(Add) && dfu_secondary_bd == nullptr) {
+    return -1;
+  } else if (isFileBlockFlash(Add) && dfu_secondary_bd != nullptr) {
     Add -= FILEBLOCK_BASE_ADDRESS;
     return dfu_secondary_bd->erase(Add, dfu_secondary_bd->get_erase_size(Add));
   } else if (isExternalFlash(Add)) {
     Add -= QSPIFLASH_BASE_ADDRESS;
-    return qspi_flash.erase(Add, qspi_flash.get_erase_size(Add));
+    return qspi_flash->erase(Add, qspi_flash->get_erase_size(Add));
   } else {
     return flash.erase(Add, flash.get_sector_size(Add));
   }
@@ -160,7 +165,9 @@ void delayed_write(struct writeInfo* info) {
   */
 uint16_t Flash_If_Write(uint8_t * src, uint8_t * dest, uint32_t Len)
 {
-  if (isFileBlockFlash((uint32_t)dest)) {
+  if (isFileBlockFlash((uint32_t)dest) && dfu_secondary_bd == nullptr) {
+    return -1;
+  } else if (isFileBlockFlash((uint32_t)dest) && dfu_secondary_bd != nullptr) {
     dest -= FILEBLOCK_BASE_ADDRESS;
     if (Len < dfu_secondary_bd->get_erase_size(0)) {
       uint8_t* srcCopy = (uint8_t*)malloc(dfu_secondary_bd->get_erase_size(0));
@@ -171,10 +178,10 @@ uint16_t Flash_If_Write(uint8_t * src, uint8_t * dest, uint32_t Len)
     return dfu_secondary_bd->program(src, (uint32_t)dest, Len);
   } else if (isExternalFlash((uint32_t)dest)) {
     dest -= QSPIFLASH_BASE_ADDRESS;
-    if (Len < qspi_flash.get_erase_size(0)) {
-      Len = qspi_flash.get_erase_size(0);
+    if (Len < qspi_flash->get_erase_size(0)) {
+      Len = qspi_flash->get_erase_size(0);
     }
-    return qspi_flash.program(src, (uint32_t)dest, Len);
+    return qspi_flash->program(src, (uint32_t)dest, Len);
   } else {
     uint8_t* srcCopy = (uint8_t*)malloc(Len);
     memcpy(srcCopy, src, Len);
@@ -199,12 +206,14 @@ uint8_t *Flash_If_Read(uint8_t * src, uint8_t * dest, uint32_t Len)
   uint32_t i = 0;
   uint8_t *psrc = src;
 
-  if (isFileBlockFlash((uint32_t)src)) {
+  if (isFileBlockFlash((uint32_t)src) && dfu_secondary_bd == nullptr) {
+    Len = 0;
+  } else if (isFileBlockFlash((uint32_t)src) && dfu_secondary_bd != nullptr) {
     src -= FILEBLOCK_BASE_ADDRESS;
     dfu_secondary_bd->read(dest, (uint32_t)src, Len);
   } else if (isExternalFlash((uint32_t)src)) {
     src -= QSPIFLASH_BASE_ADDRESS;
-    qspi_flash.read(dest, (uint32_t)src, Len);
+    qspi_flash->read(dest, (uint32_t)src, Len);
   } else {
     for (i = 0; i < Len; i++)
     {

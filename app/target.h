@@ -81,5 +81,6 @@ int target_debug_init(void);
 int target_loop(void);
 int target_debug(void);
 int target_led_off(void);
+int target_empty_keys(void);
 
 #endif /* __TARGET_INIT_H */

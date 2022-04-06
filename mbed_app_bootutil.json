@@ -71,7 +71,7 @@
             "mcuboot.bootstrap": true,
             "mcuboot.application-hooks": true,
             "mcuboot.application-littlefs": null,
-            "mcuboot.application-sdcard": null,
+            "mcuboot.application-sdcard": true,
             "mcuboot.application-dfu": null,
             "mcuboot.signature-algorithm": "SIGNATURE_TYPE_EC256",
             "mcuboot.encrypt-ec256": true,
