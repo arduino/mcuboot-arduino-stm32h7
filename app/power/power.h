@@ -16,19 +16,9 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-#ifndef __BOOTUTIL_EXTRA_H
-#define __BOOTUTIL_EXTRA_H
+#ifndef __POWER_H
+#define __POWER_H
 
-int boot_set_debug(int enable);
+void power_init();
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-int boot_empty_keys();
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif //__BOOTUTIL_EXTRA_H
+#endif //__POWER_H

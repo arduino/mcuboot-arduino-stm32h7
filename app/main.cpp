@@ -22,15 +22,26 @@
 #include "board.h"
 #include "ota.h"
 #include "rtc.h"
+#include "power.h"
+#include "bootutil/bootutil_extra.h"
 #include "bootutil/bootutil_log.h"
 #include "bootutil/bootutil.h"
 #include "bootutil/image.h"
 #include "mbedtls/platform.h"
 
-// clock source is selected with CLOCK_SOURCE in json config
-#define USE_PLL_HSE_EXTC     0x8  // Use external clock (ST Link MCO)
-#define USE_PLL_HSE_XTAL     0x4  // Use external xtal (X3 on board - not provided by default)
-#define USE_PLL_HSI          0x2  // Use HSI internal clock
+#if MCUBOOT_APPLICATION_DFU
+#include "usbd_desc.h"
+#include "usbd_dfu_flash.h"
+#endif
+
+/*
+ * CLOCK_SOURCE is configured with "target.clock_source" in mbed_app.json file
+ */
+ #define USE_PLL_HSE_EXTC     0x8  // Use external clock (ST Link MCO)
+ #define USE_PLL_HSE_XTAL     0x4  // Use external xtal (X3 on board - not provided by default)
+ #define USE_PLL_HSI          0x2  // Use HSI internal clock
+
+extern "C" uint8_t SetSysClock_PLL_HSE(uint8_t bypass, bool lowspeed);
 
 volatile const uint8_t bootloader_data[] __attribute__ ((section (".bootloader_version"), used)) = {
   BOOTLOADER_CONFIG_MAGIC,
@@ -48,36 +59,38 @@ volatile const uint8_t bootloader_data[] __attribute__ ((section (".bootloader_v
 
 volatile const uint8_t bootloader_identifier[] __attribute__ ((section (".bootloader_identification"), used)) = "MCUboot Arduino";
 
-static bool double_tap_flag = true;
-volatile uint8_t ledKeepValue = 0;
-volatile uint8_t ledTargetValue = 20;
-volatile int8_t ledDirection = 1;
-volatile int divisor = 0;
+#if MCUBOOT_APPLICATION_DFU
+USBD_HandleTypeDef USBD_Device;
+#endif
 
-DigitalOut red(PK_5, 1);
-DigitalOut green(PK_6, 1);
-DigitalOut blue(PK_7, 1);
-
-DigitalIn boot_sel(PI_8,PullDown);
+DigitalOut red(BOARD_RED_LED, 1);
+DigitalOut green(BOARD_GREEN_LED, 1);
+DigitalOut blue(BOARD_BLUE_LED, 1);
+DigitalIn boot_sel(BOARD_BOOT_SEL,PullDown);
 
 Ticker swap_ticker;
-
 bool debug_enabled = false;
 
-static inline void swap_feedback() {
+static void led_swap_feedback_off(void) {
+  swap_ticker.detach();
+  red = 1;
+  green = 1;
+  blue = 1;
+}
+
+static void led_swap_feedback() {
   blue = !blue;
   red = !red;
 }
 
-static inline void LED_pulse(DigitalOut* led)
-{
+static void led_pulse(DigitalOut* led) {
+  static uint8_t ledKeepValue = 0;
+  static uint8_t ledTargetValue = 20;
+  static int8_t ledDirection = 1;
+  static int divisor = 0;
+  
   if (divisor++ % 40) {
     return;
-  }
-
-  if (HAL_GetTick() > 500 && double_tap_flag && RTCGetBKPRegister(RTC_BKP_DR0) == 0xDF59) {
-    RTCSetBKPRegister(RTC_BKP_DR0, 0);
-    double_tap_flag = false;
   }
 
   if (ledKeepValue == 0) {
@@ -107,234 +120,19 @@ static bool valid_application() {
 
 }
 
-int target_empty_keys() {
-  unsigned int i;
-  uint8_t* encript_key = (uint8_t*)(0x08000300);
-  uint8_t* signing_key = (uint8_t*)(0x08000400);
-
-  for(i = 0; i < 256; i++) {
-    if(encript_key[i] != 0xFF)
-      return 0;
-  }
-
-  for(i = 0; i < 256; i++) {
-    if(signing_key[i] != 0xFF)
-      return 0;
-  }
-
-  return 1;
-}
-
-int target_debug_init(void) {
+static int debug_init(void) {
   RTCInit();
   debug_enabled = ((RTCGetBKPRegister(RTC_BKP_DR7) & 0x00000001) || boot_sel);
   return 0;
 }
 
-int target_led_off(void) {
-  swap_ticker.detach();
-  red = 1;
-  green = 1;
-  blue = 1;
-  return 0;
-}
-
-int start_secure_application(void) {
-
-  int rc;
-
-  BOOT_LOG_INF("Starting MCUboot");
-
-  // Initialize mbedtls crypto for use by MCUboot
-  mbedtls_platform_context unused_ctx;
-  rc = mbedtls_platform_setup(&unused_ctx);
-  if(rc != 0) {
-    BOOT_LOG_ERR("Failed to setup Mbed TLS, error: %d", rc);
-    return -1;
-  }
-
-  struct boot_rsp rsp;
-  rc = boot_go(&rsp);
-  if(rc != 0) {
-    BOOT_LOG_ERR("Failed to locate firmware image, error: %d\n", rc);
-    return -1;
-  }
-
-  target_led_off();
-
-  // Run the application in the primary slot
-  // Add header size offset to calculate the actual start address of application
-  uint32_t address = rsp.br_image_off + rsp.br_hdr->ih_hdr_size;
-  BOOT_LOG_INF("Booting firmware image at 0x%x\n", address);
-  mbed_start_application(address);
-}
-
-int main(void) {
-
-  target_debug_init();
-
-  BOOT_LOG_INF("Starting Arduino bootloader");
-
-  int magic = RTCGetBKPRegister(RTC_BKP_DR0);
-
-  // in case we have been reset let's wait 500 ms to see if user is trying to stay in bootloader
-  if (ResetReason::get() == RESET_REASON_PIN_RESET) {
-    // now that we've been reset let's set magic. resetting with this set will
-    // flag we need to stay in bootloader.
-    RTCSetBKPRegister(RTC_BKP_DR0, 0xDF59);
-    HAL_Delay(500);
-  }
-
-  DigitalOut usb_reset(PJ_4, 0);
-  DigitalOut video_enable(PJ_2, 0);
-  DigitalOut video_reset(PJ_3, 0);
-
-  //Ticker pulse;
-  //DigitalOut eth_rst(PJ_15, 1);
-
-  HAL_FLASH_Unlock();
-
-  I2C i2c(PB_7, PB_6);
-
-  char data[2];
-
-  // LDO2 to 1.8V
-  data[0]=0x4F;
-  data[1]=0x0;
-  i2c.write(8 << 1, data, sizeof(data));
-  data[0]=0x50;
-  data[1]=0xF;
-  i2c.write(8 << 1, data, sizeof(data));
-
-  // LDO1 to 1.0V
-  data[0]=0x4c;
-  data[1]=0x5;
-  i2c.write(8 << 1, data, sizeof(data));
-  data[0]=0x4d;
-  data[1]=0x3;
-  i2c.write(8 << 1, data, sizeof(data));
-
-  // LDO3 to 1.2V
-  data[0]=0x52;
-  data[1]=0x9;
-  i2c.write(8 << 1, data, sizeof(data));
-  data[0]=0x53;
-  data[1]=0xF;
-  i2c.write(8 << 1, data, sizeof(data));
-
-  HAL_Delay(10);
-
-  data[0]=0x9C;
-  data[1]=(1 << 7);
-  i2c.write(8 << 1, data, sizeof(data));
-
-  // Disable charger led
-  data[0]=0x9E;
-  data[1]=(1 << 5);
-  i2c.write(8 << 1, data, sizeof(data));
-
-  HAL_Delay(10);
-
-  // SW3: set 2A as current limit
-  // Helps keeping the rail up at wifi startup
-  data[0]=0x42;
-  data[1]=(2);
-  i2c.write(8 << 1, data, sizeof(data));
-
-  HAL_Delay(10);
-
-  // Change VBUS INPUT CURRENT LIMIT to 1.5A
-  data[0]=0x94;
-  data[1]=(20 << 3);
-  i2c.write(8 << 1, data, sizeof(data));
-
-#if 1
-  // SW2 to 3.3V (SW2_VOLT)
-  data[0]=0x3B;
-  data[1]=0xF;
-  i2c.write(8 << 1, data, sizeof(data));
-
-  // SW1 to 3.0V (SW1_VOLT)
-  data[0]=0x35;
-  data[1]=0xF;
-  i2c.write(8 << 1, data, sizeof(data));
-
-  //data[0]=0x36;
-  //data[1]=(2);
-  //i2c.write(8 << 1, data, sizeof(data));
-#endif
-
-  HAL_Delay(10);
-
-  usb_reset = 1;
-  HAL_Delay(10);
-  usb_reset = 0;
-  HAL_Delay(10);
-  usb_reset = 1;
-
-  HAL_Delay(10);
-
-  if (magic != 0xDF59) {
-    if (target_empty_keys()) {
-      BOOT_LOG_INF("Secure keys not configured");
-      if ( magic == 0x07AA ) {
-        /* Try unsecure OTA */
-        // DR1 contains the backing storage type, DR2 the offset in case of raw device / MBR
-        storageType storage_type = (storageType)RTCGetBKPRegister(RTC_BKP_DR1);
-        uint32_t offset = RTCGetBKPRegister(RTC_BKP_DR2);
-        uint32_t update_size = RTCGetBKPRegister(RTC_BKP_DR3);
-        BOOT_LOG_INF("Start OTA 0x%X 0x%X 0x%X", storage_type, offset, update_size);
-        int ota_result = tryOTA(storage_type, offset, update_size);
-        if (ota_result == 0) {
-          // clean reboot with success flag
-          BOOT_LOG_INF("Sketch updated");
-          RTCSetBKPRegister(RTC_BKP_DR0, 0);
-          HAL_FLASH_Lock();
-          // wait for external reboot (watchdog)
-          while (1) {}
-        } else {
-          RTCSetBKPRegister(RTC_BKP_DR0, ota_result);
-        }
-      }
-
-      if (valid_application()) {
-        /* Boot Sketch */
-        BOOT_LOG_INF("Booting sketch at 0x%x\n", APP_DEFAULT_ADD);
-        RTCSetBKPRegister(RTC_BKP_DR0, 0);
-        mbed_start_application(APP_DEFAULT_ADD);
-      } else {
-        BOOT_LOG_INF("No sketch found");
-      }
-
-    } else {
-      /* MCUboot secure boot */
-      swap_ticker.attach(&swap_feedback, 250ms);
-      RTCSetBKPRegister(RTC_BKP_DR0, 0);
-      start_secure_application();
-    }
-  }
-  target_loop();
-
-  return 0;
-}
-
-#if MCUBOOT_APPLICATION_DFU
-USBD_HandleTypeDef USBD_Device;
-extern PCD_HandleTypeDef hpcd;
-extern void init_Memories(void);
-#endif
-
-extern "C" {
-  uint8_t SetSysClock_PLL_HSE(uint8_t bypass, bool lowspeed);
-}
-
-int target_loop(void) {
+static int start_dfu(void) {
   RTCSetBKPRegister(RTC_BKP_DR0, 0);
 
   SetSysClock_PLL_HSE(1, false);
   SystemCoreClockUpdate();
 
-  target_led_off();
+  led_swap_feedback_off();
 
   //turnDownEthernet();
 
@@ -369,11 +167,126 @@ int target_loop(void) {
 #else // USE_USB_FS
     if (USB_OTG_FS->GINTSTS & USB_OTG_FS->GINTMSK) {
 #endif
-      HAL_PCD_IRQHandler(&hpcd);
+      HAL_PCD_IRQHandler(HAL_PCD_GetHandle());
     }
 #endif
-    LED_pulse(&green);
+    led_pulse(&green);
   }
+
+  return 0;
+}
+
+int start_secure_application(void) {
+  int rc;
+
+  BOOT_LOG_INF("Starting MCUboot");
+
+  // Initialize mbedtls crypto for use by MCUboot
+  mbedtls_platform_context unused_ctx;
+  rc = mbedtls_platform_setup(&unused_ctx);
+  if(rc != 0) {
+    BOOT_LOG_ERR("Failed to setup Mbed TLS, error: %d", rc);
+    return -1;
+  }
+
+  struct boot_rsp rsp;
+  rc = boot_go(&rsp);
+  if(rc != 0) {
+    BOOT_LOG_ERR("Failed to locate firmware image, error: %d\n", rc);
+    return -1;
+  }
+
+  led_swap_feedback_off();
+
+  // Run the application in the primary slot
+  // Add header size offset to calculate the actual start address of application
+  uint32_t address = rsp.br_image_off + rsp.br_hdr->ih_hdr_size;
+  BOOT_LOG_INF("Booting firmware image at 0x%x\n", address);
+  mbed_start_application(address);
+}
+
+static int start_ota(void) {
+  // DR1 contains the backing storage type, DR2 the offset in case of raw device / MBR
+  storageType storage_type = (storageType)RTCGetBKPRegister(RTC_BKP_DR1);
+  uint32_t offset = RTCGetBKPRegister(RTC_BKP_DR2);
+  uint32_t update_size = RTCGetBKPRegister(RTC_BKP_DR3);
+  BOOT_LOG_INF("Start OTA 0x%X 0x%X 0x%X", storage_type, offset, update_size);
+  return tryOTA(storage_type, offset, update_size);
+}
+
+int main(void) {
+  debug_init();
+
+  BOOT_LOG_INF("Starting Arduino bootloader");
+
+  int magic = RTCGetBKPRegister(RTC_BKP_DR0);
+
+  // in case we have been reset let's wait 500 ms to see if user is trying to stay in bootloader
+  if (ResetReason::get() == RESET_REASON_PIN_RESET) {
+    // now that we've been reset let's set magic. resetting with this set will
+    // flag we need to stay in bootloader.
+    RTCSetBKPRegister(RTC_BKP_DR0, 0xDF59);
+    HAL_Delay(500);
+  }
+
+  DigitalOut usb_reset(BOARD_USB_RESET, 0);
+#if BOARD_HAS_VIDEO
+  DigitalOut video_enable(BOARD_VIDEO_ENABLE, 0);
+  DigitalOut video_reset(BOARD_VIDEO_RESET, 0);
+#endif
+
+  //Ticker pulse;
+  //DigitalOut eth_rst(PJ_15, 1);
+
+  HAL_FLASH_Unlock();
+
+  power_init();
+
+  HAL_Delay(10);
+
+  usb_reset = 1;
+  HAL_Delay(10);
+  usb_reset = 0;
+  HAL_Delay(10);
+  usb_reset = 1;
+
+  HAL_Delay(10);
+
+  if (magic != 0xDF59) {
+    if (boot_empty_keys()) {
+      BOOT_LOG_INF("Secure keys not configured");
+      if ( magic == 0x07AA ) {
+        /* Start OTA */
+        int ota_result = start_ota();
+        if (ota_result == 0) {
+          // clean reboot with success flag
+          BOOT_LOG_INF("Sketch updated");
+          RTCSetBKPRegister(RTC_BKP_DR0, 0);
+          HAL_FLASH_Lock();
+          // wait for external reboot (watchdog)
+          while (1) {}
+        } else {
+          RTCSetBKPRegister(RTC_BKP_DR0, ota_result);
+        }
+      }
+
+      if (valid_application()) {
+        /* Boot Sketch */
+        BOOT_LOG_INF("Booting sketch at 0x%x\n", BOARD_APP_DEFAULT_ADD);
+        RTCSetBKPRegister(RTC_BKP_DR0, 0);
+        mbed_start_application(BOARD_APP_DEFAULT_ADD);
+      } else {
+        BOOT_LOG_INF("No sketch found");
+      }
+
+    } else {
+      /* MCUboot secure boot */
+      swap_ticker.attach(&led_swap_feedback, 250ms);
+      RTCSetBKPRegister(RTC_BKP_DR0, 0);
+      start_secure_application();
+    }
+  }
+  start_dfu();
 
   return 0;
 }

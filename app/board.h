@@ -16,24 +16,10 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-#ifndef __TARGET_INIT_H
-#define __TARGET_INIT_H
+#ifndef __BOARD_H
+#define __BOARD_H
 
-#include "stm32h7xx_hal.h"
-#include "stm32h7xx_hal_mdma.h"
-#include "stm32h7xx_hal_qspi.h"
-#if MCUBOOT_APPLICATION_DFU
-#include "usbd_core.h"
-#include "usbd_desc.h"
-#include "usbd_dfu.h"
-#include "usbd_dfu_flash.h"
-#endif
-
-#if MCUBOOT_APPLICATION_DFU
-#define APP_DEFAULT_ADD USBD_DFU_APP_DEFAULT_ADD
-#else
-#define APP_DEFAULT_ADD 0x08040000
-#endif
+#define BOARD_APP_DEFAULT_ADD 0x08040000
 
 #define BOOTLOADER_CONFIG_MAGIC   0xA0
 #define BOOTLOADER_VERSION        4
@@ -77,10 +63,76 @@
 #define BOARD_EXTCLOCK       25
 #endif
 
-int target_debug_init(void);
-int target_loop(void);
-int target_debug(void);
-int target_led_off(void);
-int target_empty_keys(void);
+#define BOARD_GREEN_LED                     PK_6
+#define BOARD_RED_LED                       PK_5
+#define BOARD_BLUE_LED                      PK_7
 
-#endif /* __TARGET_INIT_H */
+#define BOARD_BOOT_SEL                      PI_8
+#define BOARD_USB_RESET                     PJ_4
+
+#ifdef BOARD_HAS_VIDEO
+#define BOARD_VIDEO_ENABLE                  PJ_2
+#define BOARD_VIDEO_RESET                   PJ_3
+#endif
+
+#define BOARD_I2C_SCL                       PB_6
+#define BOARD_I2C_SDA                       PB_7
+
+#define BOARD_USBD_VID                      0x2341
+#define BOARD_USBD_PID                      0x035B
+
+#define BOARD_USBD_STRING                   "Portenta H7 MCUboot"
+
+#define BOARD_QSPI_SO0                      PD_11
+#define BOARD_QSPI_SO1                      PD_12
+#define BOARD_QSPI_SO2                      PF_7
+#define BOARD_QSPI_SO3                      PD_13
+#define BOARD_QSPI_SCK                      PF_10
+#define BOARD_QSPI_CS                       PG_6
+
+#define BOARD_USB_OTG_FS_DM_DP_PIN          (GPIO_PIN_11 | GPIO_PIN_12)
+#define BOARD_USB_OTG_FS_DM_DP_MODE         (GPIO_MODE_AF_PP)
+#define BOARD_USB_OTG_FS_DM_DP_PULL         (GPIO_NOPULL)
+#define BOARD_USB_OTG_FS_DM_DP_SPEED        (GPIO_SPEED_FREQ_VERY_HIGH)
+#define BOARD_USB_OTG_FS_DM_DP_ALTERNATE    (GPIO_AF10_OTG1_FS)
+#define BOARD_USB_OTG_FS_DM_DP_GPIO         (GPIOA)
+
+#define BOARD_USB_OTG_HS_CLK_PIN            (GPIO_PIN_5)
+#define BOARD_USB_OTG_HS_CLK_MODE           (GPIO_MODE_AF_PP)
+#define BOARD_USB_OTG_HS_CLK_PULL           (GPIO_NOPULL)
+#define BOARD_USB_OTG_HS_CLK_SPEED          (GPIO_SPEED_FREQ_VERY_HIGH)
+#define BOARD_USB_OTG_HS_CLK_ALTERNATE      (GPIO_AF10_OTG2_HS)
+#define BOARD_USB_OTG_HS_CLK_GPIO           (GPIOA)
+
+#define BOARD_USB_OTG_HS_D0_PIN             (GPIO_PIN_3)
+#define BOARD_USB_OTG_HS_D0_MODE            (GPIO_MODE_AF_PP)
+#define BOARD_USB_OTG_HS_D0_PULL            (GPIO_NOPULL)
+#define BOARD_USB_OTG_HS_D0_SPEED           (GPIO_SPEED_FREQ_VERY_HIGH)
+#define BOARD_USB_OTG_HS_D0_ALTERNATE       (GPIO_AF10_OTG2_HS)
+#define BOARD_USB_OTG_HS_D0_GPIO            (GPIOA)
+
+#define BOARD_USB_OTG_HS_D1_D7_PIN          (GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_5 | GPIO_PIN_10 | GPIO_PIN_11 | GPIO_PIN_12 | GPIO_PIN_13)
+#define BOARD_USB_OTG_HS_D1_D7_MODE         (GPIO_MODE_AF_PP)
+#define BOARD_USB_OTG_HS_D1_D7_PULL         (GPIO_NOPULL)
+#define BOARD_USB_OTG_HS_D1_D7_ALTERNATE    (GPIO_AF10_OTG2_HS)
+#define BOARD_USB_OTG_HS_D1_D7_GPIO         (GPIOB)
+
+#define BOARD_USB_OTG_HS_STP_PIN            (GPIO_PIN_0)
+#define BOARD_USB_OTG_HS_STP_MODE           (GPIO_MODE_AF_PP)
+#define BOARD_USB_OTG_HS_STP_PULL           (GPIO_NOPULL)
+#define BOARD_USB_OTG_HS_STP_ALTERNATE      (GPIO_AF10_OTG2_HS)
+#define BOARD_USB_OTG_HS_STP_GPIO           (GPIOC)
+
+#define BOARD_USB_OTG_HS_NXT_PIN            (GPIO_PIN_4)
+#define BOARD_USB_OTG_HS_NXT_MODE           (GPIO_MODE_AF_PP)
+#define BOARD_USB_OTG_HS_NXT_PULL           (GPIO_NOPULL)
+#define BOARD_USB_OTG_HS_NXT_ALTERNATE      (GPIO_AF10_OTG2_HS)
+#define BOARD_USB_OTG_HS_NXT_GPIO           (GPIOH)
+
+#define BOARD_USB_OTG_HS_DIR_PIN            (GPIO_PIN_11)
+#define BOARD_USB_OTG_HS_DIR_MODE           (GPIO_MODE_AF_PP)
+#define BOARD_USB_OTG_HS_DIR_PULL           (GPIO_NOPULL)
+#define BOARD_USB_OTG_HS_DIR_ALTERNATE      (GPIO_AF10_OTG2_HS)
+#define BOARD_USB_OTG_HS_DIR_GPIO           (GPIOI)
+
+#endif /* __BOARD_H */

@@ -21,6 +21,9 @@
 
 /* Includes ------------------------------------------------------------------ */
 #include "board.h"
+#include "usbd_core.h"
+#include "usbd_desc.h"
+#include "usbd_conf.h"
 
 /* Private typedef ----------------------------------------------------------- */
 /* Private define ------------------------------------------------------------ */
@@ -34,6 +37,10 @@ PCD_HandleTypeDef hpcd;
 /*******************************************************************************
                        PCD BSP Routines
 *******************************************************************************/
+PCD_HandleTypeDef * HAL_PCD_GetHandle(void)
+{
+  return &hpcd;
+}
 
 /**
   * @brief  Initializes the PCD MSP.
@@ -49,12 +56,12 @@ void HAL_PCD_MspInit(PCD_HandleTypeDef * hpcd)
     __HAL_RCC_GPIOA_CLK_ENABLE();
 
     /* Configure DM DP Pins */
-    GPIO_InitStruct.Pin = (GPIO_PIN_11 | GPIO_PIN_12);
-    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-    GPIO_InitStruct.Alternate = GPIO_AF10_OTG1_FS;
-    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+    GPIO_InitStruct.Pin = BOARD_USB_OTG_FS_DM_DP_PIN;
+    GPIO_InitStruct.Mode = BOARD_USB_OTG_FS_DM_DP_MODE;
+    GPIO_InitStruct.Pull = BOARD_USB_OTG_FS_DM_DP_PULL;
+    GPIO_InitStruct.Speed = BOARD_USB_OTG_FS_DM_DP_SPEED;
+    GPIO_InitStruct.Alternate = BOARD_USB_OTG_FS_DM_DP_ALTERNATE;
+    HAL_GPIO_Init(BOARD_USB_OTG_FS_DM_DP_GPIO, &GPIO_InitStruct);
 
     RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
 
@@ -103,49 +110,48 @@ void HAL_PCD_MspInit(PCD_HandleTypeDef * hpcd)
     __GPIOI_CLK_ENABLE();
 
     /* CLK */
-    GPIO_InitStruct.Pin = GPIO_PIN_5;
-    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-    GPIO_InitStruct.Alternate = GPIO_AF10_OTG2_HS;
-    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+    GPIO_InitStruct.Pin = BOARD_USB_OTG_HS_CLK_PIN;
+    GPIO_InitStruct.Mode = BOARD_USB_OTG_HS_CLK_MODE;
+    GPIO_InitStruct.Pull = BOARD_USB_OTG_HS_CLK_PULL;
+    GPIO_InitStruct.Speed = BOARD_USB_OTG_HS_CLK_SPEED;
+    GPIO_InitStruct.Alternate = BOARD_USB_OTG_HS_CLK_ALTERNATE;
+    HAL_GPIO_Init(BOARD_USB_OTG_HS_CLK_GPIO, &GPIO_InitStruct);
 
     /* D0 */
-    GPIO_InitStruct.Pin = GPIO_PIN_3;
-    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-    GPIO_InitStruct.Alternate = GPIO_AF10_OTG2_HS;
-    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+    GPIO_InitStruct.Pin = BOARD_USB_OTG_HS_D0_PIN;
+    GPIO_InitStruct.Mode = BOARD_USB_OTG_HS_D0_MODE;
+    GPIO_InitStruct.Pull = BOARD_USB_OTG_HS_D0_PULL;
+    GPIO_InitStruct.Speed = BOARD_USB_OTG_HS_D0_SPEED;
+    GPIO_InitStruct.Alternate = BOARD_USB_OTG_HS_D0_ALTERNATE;
+    HAL_GPIO_Init(BOARD_USB_OTG_HS_D0_GPIO, &GPIO_InitStruct);
 
     /* D1 D2 D3 D4 D5 D6 D7 */
-    GPIO_InitStruct.Pin = GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_5 |
-      GPIO_PIN_10 | GPIO_PIN_11 | GPIO_PIN_12 | GPIO_PIN_13;
-    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Alternate = GPIO_AF10_OTG2_HS;
-    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+    GPIO_InitStruct.Pin = BOARD_USB_OTG_HS_D1_D7_PIN;
+    GPIO_InitStruct.Mode = BOARD_USB_OTG_HS_D1_D7_MODE;
+    GPIO_InitStruct.Pull = BOARD_USB_OTG_HS_D1_D7_PULL;
+    GPIO_InitStruct.Alternate = BOARD_USB_OTG_HS_D1_D7_ALTERNATE;
+    HAL_GPIO_Init(BOARD_USB_OTG_HS_D1_D7_GPIO, &GPIO_InitStruct);
 
     /* STP */
-    GPIO_InitStruct.Pin = GPIO_PIN_0;
-    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Alternate = GPIO_AF10_OTG2_HS;
-    HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+    GPIO_InitStruct.Pin = BOARD_USB_OTG_HS_STP_PIN;
+    GPIO_InitStruct.Mode = BOARD_USB_OTG_HS_STP_MODE;
+    GPIO_InitStruct.Pull = BOARD_USB_OTG_HS_STP_PULL;
+    GPIO_InitStruct.Alternate = BOARD_USB_OTG_HS_STP_ALTERNATE;
+    HAL_GPIO_Init(BOARD_USB_OTG_HS_STP_GPIO, &GPIO_InitStruct);
 
     /* NXT */
-    GPIO_InitStruct.Pin = GPIO_PIN_4;
-    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Alternate = GPIO_AF10_OTG2_HS;
-    HAL_GPIO_Init(GPIOH, &GPIO_InitStruct);
+    GPIO_InitStruct.Pin = BOARD_USB_OTG_HS_NXT_PIN;
+    GPIO_InitStruct.Mode = BOARD_USB_OTG_HS_NXT_MODE;
+    GPIO_InitStruct.Pull = BOARD_USB_OTG_HS_NXT_PULL;
+    GPIO_InitStruct.Alternate = BOARD_USB_OTG_HS_NXT_ALTERNATE;
+    HAL_GPIO_Init(BOARD_USB_OTG_HS_NXT_GPIO, &GPIO_InitStruct);
 
     /* DIR */
-    GPIO_InitStruct.Pin = GPIO_PIN_11;
-    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Alternate = GPIO_AF10_OTG2_HS;
-    HAL_GPIO_Init(GPIOI, &GPIO_InitStruct);
+    GPIO_InitStruct.Pin = BOARD_USB_OTG_HS_DIR_PIN;
+    GPIO_InitStruct.Mode = BOARD_USB_OTG_HS_DIR_MODE;
+    GPIO_InitStruct.Pull = BOARD_USB_OTG_HS_DIR_PULL;
+    GPIO_InitStruct.Alternate = BOARD_USB_OTG_HS_DIR_ALTERNATE;
+    HAL_GPIO_Init(BOARD_USB_OTG_HS_DIR_GPIO, &GPIO_InitStruct);
     __HAL_RCC_USB1_OTG_HS_ULPI_CLK_ENABLE();
 
     /* Enable USB HS Clocks */

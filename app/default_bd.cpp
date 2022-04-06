@@ -21,6 +21,7 @@
 #include "ota.h"
 #include "rtc.h"
 #include "board.h"
+#include "bootutil/bootutil_extra.h"
 #include "bootutil/bootutil_log.h"
 
 #include "SlicingBlockDevice.h"
@@ -362,7 +363,7 @@ static void initBlockTable(void) {
 
 mbed::BlockDevice* get_secondary_bd(void) {
 
-    if(!target_empty_keys()) {
+    if(!boot_empty_keys()) {
         if(!BlockTableLoaded) {
             initBlockTable();
             BlockTableLoaded = true;
@@ -379,7 +380,7 @@ mbed::BlockDevice* get_secondary_bd(void) {
 
 mbed::BlockDevice* get_scratch_bd(void) {
 
-    if(!target_empty_keys()) {
+    if(!boot_empty_keys()) {
         if(!BlockTableLoaded) {
             initBlockTable();
             BlockTableLoaded = true;
@@ -396,7 +397,7 @@ mbed::BlockDevice* get_scratch_bd(void) {
 
 mbed::BlockDevice* BlockDevice::get_default_instance()
 {
-    static QSPIFBlockDevice default_bd(PD_11, PD_12, PF_7, PD_13,  PF_10, PG_6, QSPIF_POLARITY_MODE_1, 40000000);
+    static QSPIFBlockDevice default_bd(BOARD_QSPI_SO0, BOARD_QSPI_SO1, BOARD_QSPI_SO2, BOARD_QSPI_SO3,  BOARD_QSPI_SCK, BOARD_QSPI_CS, QSPIF_POLARITY_MODE_1, 40000000);
     return &default_bd;
 }
 

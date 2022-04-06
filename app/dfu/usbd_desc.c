@@ -20,18 +20,19 @@
 #if  MCUBOOT_APPLICATION_HOOKS && MCUBOOT_APPLICATION_DFU
 
 /* Includes ------------------------------------------------------------------ */
+#include "board.h"
 #include "usbd_core.h"
 #include "usbd_desc.h"
 #include "usbd_conf.h"
 
 /* Private typedef ----------------------------------------------------------- */
 /* Private define ------------------------------------------------------------ */
-#define USBD_VID                      0x2341
-#define USBD_PID                      0x035B
+#define USBD_VID                      BOARD_USBD_VID
+#define USBD_PID                      BOARD_USBD_PID
 #define USBD_LANGID_STRING            0x409
 #define USBD_MANUFACTURER_STRING      "Arduino SA"
-#define USBD_PRODUCT_HS_STRING        "Portenta MCUBoot"
-#define USBD_PRODUCT_FS_STRING        "Portenta MCUBoot"
+#define USBD_PRODUCT_HS_STRING        BOARD_USBD_STRING
+#define USBD_PRODUCT_FS_STRING        BOARD_USBD_STRING
 #define USBD_CONFIGURATION_HS_STRING  "DFU Config"
 #define USBD_INTERFACE_HS_STRING      "DFU Interface"
 #define USBD_CONFIGURATION_FS_STRING  "DFU Config"

@@ -31,3 +31,21 @@ int boot_set_debug(int enable) {
   
   return RTCSetBKPRegister(RTC_BKP_DR7, rtc_reg);
 }
+
+int boot_empty_keys() {
+  unsigned int i;
+  uint8_t* encript_key = (uint8_t*)(0x08000300);
+  uint8_t* signing_key = (uint8_t*)(0x08000400);
+
+  for(i = 0; i < 256; i++) {
+    if(encript_key[i] != 0xFF)
+      return 0;
+  }
+
+  for(i = 0; i < 256; i++) {
+    if(signing_key[i] != 0xFF)
+      return 0;
+  }
+
+  return 1;
+}
