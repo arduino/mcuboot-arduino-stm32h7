@@ -5,7 +5,9 @@
 MCUboot bootloader porting for Arduino [Mbed OS](https://os.mbed.com/docs/mbed-os/latest/introduction/index.html) based boards.
 
 The following boards are supported:
- * [PORTENTA_H7](https://store.arduino.cc/products/portenta-h7)
+ * [Portenta H7](https://store.arduino.cc/products/portenta-h7)
+ * [Portenta H7 Lite](https://store.arduino.cc/products/portenta-h7-lite)
+ * [Portenta H7 Lite Connected]((https://store.arduino.cc/products/portenta-h7-lite))
 
 ## :grey_question: What
 MCUboot provides secure boot for 32-bit microcontrollers. For a detailed description on what MCUboot does and how it works please read the [official documentaion](https://docs.mcuboot.com/).
