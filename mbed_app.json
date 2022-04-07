@@ -45,7 +45,9 @@
             "mcuboot.signature-algorithm": "SIGNATURE_TYPE_EC256",
             "mcuboot.encrypt-ec256": true,
             "mcuboot.include-keys": null,
-            "mcuboot.bootloader-build": false
+            "mcuboot.bootloader-build": false,
+            "mcuboot.encrypt-scratch": true,
+            "mcuboot.swap-buf-size": 131072
         }
     }
 }
