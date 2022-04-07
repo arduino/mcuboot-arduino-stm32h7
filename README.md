@@ -122,7 +122,7 @@ Additional flags are needed for [Lite](generate_rel.sh#L24), [Lite Connected](ge
  - MCUboot idle: The board green LED will fade-in fade-out
 
 2. Serial
- - MCUboot debug prints are disabled by default. They can be enabled putting `BT_SEL` (`PI8`) pin `HIGH` or calling `MCUboot::bootDebug(1);` in your Sketch.
+ - MCUboot debug prints are disabled by default. They can be enabled putting `BT_SEL` (`PI8`) pin `HIGH` if available or calling `MCUboot::bootDebug(1);` in your Sketch.
 
 ## :mag_right: Other resources
 
