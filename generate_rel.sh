@@ -34,9 +34,20 @@ echo
 echo Generating binaries for PORTENTA H7 Lite Connected
 mbed compile -c -m PORTENTA_H7_M7 -t GCC_ARM --profile=release --profile mbed-os/tools/profiles/extensions/lto.json -DBOARD_HAS_VIDEO=0 -N mcuboot_portenta_h7_lite_connected
 mkdir -p release/PORTENTA_H7_Lite_Connected
-mv ./libbootutil.a ./release/PORTENTA_H7_Lite_Connected
+cp ./libbootutil.a ./release/PORTENTA_H7_Lite_Connected
 cp ./BUILD/PORTENTA_H7_M7/GCC_ARM-RELEASE/mcuboot_portenta_h7_lite_connected.bin ./release/PORTENTA_H7_Lite_Connected/mcuboot_portenta_h7_lite_connected.bin
 cp ./BUILD/PORTENTA_H7_M7/GCC_ARM-RELEASE/mcuboot_portenta_h7_lite_connected_application.elf ./release/PORTENTA_H7_Lite_Connected/mcuboot_portenta_h7_lite_connected.elf
 xxd -i ./release/PORTENTA_H7_Lite_Connected/mcuboot_portenta_h7_lite_connected.bin > ./release/PORTENTA_H7_Lite_Connected/mcuboot_portenta_h7_lite_connected.h
 sed -i "s/unsigned char __release_PORTENTA_H7_mcuboot_portenta_h7_lite_connected_bin/const unsigned char mcuboot_portenta_h7_lite_connected_bin/" ./release/PORTENTA_H7_Lite_Connected/mcuboot_portenta_h7_lite_connected.h
 sed -i "s/__release_PORTENTA_H7_mcuboot_portenta_h7_lite_connected_bin_len/mcuboot_portenta_h7_lite_connected_bin_len/" ./release/PORTENTA_H7_Lite_Connected/mcuboot_portenta_h7_lite_connected.h
+
+echo
+echo Generating binaries for NICLA VISION
+mbed compile -c -m NICLA_VISION -t GCC_ARM --profile=release --profile mbed-os/tools/profiles/extensions/lto.json -N mcuboot_nicla_vision
+mkdir -p release/NICLA_VISION
+mv ./libbootutil.a ./release/NICLA_VISION
+cp ./BUILD/NICLA_VISION/GCC_ARM-RELEASE/mcuboot_nicla_vision.bin ./release/NICLA_VISION/mcuboot_nicla_vision.bin
+cp ./BUILD/NICLA_VISION/GCC_ARM-RELEASE/mcuboot_nicla_vision_application.elf ./release/NICLA_VISION/mcuboot_nicla_vision.elf
+xxd -i ./release/NICLA_VISION/mcuboot_nicla_vision.bin > ./release/NICLA_VISION/mcuboot_nicla_vision.h
+sed -i "s/unsigned char __release_NICLA_VISION_mcuboot_nicla_vision_bin/const unsigned char mcuboot_nicla_vision_bin/" ./release/NICLA_VISION/mcuboot_nicla_vision.h
+sed -i "s/__release_NICLA_VISION_mcuboot_nicla_vision_bin_len/mcuboot_nicla_vision_bin_len/" ./release/NICLA_VISION/mcuboot_nicla_vision.h
