@@ -15,37 +15,6 @@
             "mbed-trace.enable": false,
             "mbed-trace.fea-ipv6": false
         },
-        "NRF52840_DK": {
-            "target.features_remove": ["CRYPTOCELL310"],
-            "target.macros_remove": ["MBEDTLS_CONFIG_HW_SUPPORT"],
-            "mcuboot.primary-slot-address": "0x20000",
-            "mcuboot.slot-size": "0xC0000",
-            "mcuboot.scratch-address": "0xE0000",
-            "mcuboot.scratch-size": "0x20000",
-            "mcuboot.max-img-sectors": "0x180",
-            "mcuboot.read-granularity": 4,
-            "qspif.QSPI_MIN_PROG_SIZE": 4
-        },
-        "EP_AGORA": {
-            "target.features_remove": ["CRYPTOCELL310"],
-            "target.macros_remove": ["MBEDTLS_CONFIG_HW_SUPPORT"],
-            "mcuboot.primary-slot-address": "0x20000",
-            "mcuboot.slot-size": "0xC0000",
-            "mcuboot.scratch-address": "0xE0000",
-            "mcuboot.scratch-size": "0x20000",
-            "mcuboot.max-img-sectors": "0x180",
-            "mcuboot.read-granularity": 4,
-            "qspif.QSPI_MIN_PROG_SIZE": 4
-        },
-        "DISCO_L475VG_IOT01A": {
-            "mcuboot.primary-slot-address": "0x8020000",
-            "mcuboot.slot-size": "0xC0000",
-            "mcuboot.scratch-address": "0x80E0000",
-            "mcuboot.scratch-size": "0x20000",
-            "mcuboot.max-img-sectors": "0x180",
-            "mcuboot.read-granularity": 1,
-            "qspif.QSPI_MIN_PROG_SIZE": 1
-        },
         "PORTENTA_H7_M7": {
             "target.clock_source": "USE_PLL_HSE_EXTC",
             "target.use-mpu": false,
