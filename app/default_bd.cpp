@@ -395,11 +395,13 @@ mbed::BlockDevice* get_scratch_bd(void) {
     return nullptr;
 }
 
+#if !defined(BOOTUTIL_LIBARY_BUILD)
 mbed::BlockDevice* BlockDevice::get_default_instance()
 {
     static QSPIFBlockDevice default_bd(BOARD_QSPI_SO0, BOARD_QSPI_SO1, BOARD_QSPI_SO2, BOARD_QSPI_SO3,  BOARD_QSPI_SCK, BOARD_QSPI_CS, QSPIF_POLARITY_MODE_1, 40000000);
     return &default_bd;
 }
+#endif
 
 FlashIAP flash;
 
