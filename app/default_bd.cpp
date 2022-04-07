@@ -148,7 +148,7 @@ static void initBlockTable(void) {
             BOOT_LOG_ERR("SDMMC");
 #endif
         } else if (block_info[SECONDARY_BLOCK_DEVICE].raw_type & QSPI_FLASH_FLAG) {
-            block_info[SECONDARY_BLOCK_DEVICE].raw_bd = new QSPIFBlockDevice(PD_11, PD_12, PF_7, PD_13, PF_10, PG_6, QSPIF_POLARITY_MODE_1, 40000000);
+            block_info[SECONDARY_BLOCK_DEVICE].raw_bd = mbed::BlockDevice::get_default_instance();
             block_info[SCRATCH_BLOCK_DEVICE].raw_bd = block_info[SECONDARY_BLOCK_DEVICE].raw_bd;
         } else {
             BOOT_LOG_ERR("Config");
@@ -236,7 +236,7 @@ static void initBlockTable(void) {
             BOOT_LOG_ERR("SDMMC");
 #endif
         } else if (block_info[SECONDARY_BLOCK_DEVICE].raw_type & QSPI_FLASH_FLAG) {
-            block_info[SECONDARY_BLOCK_DEVICE].raw_bd = new QSPIFBlockDevice(PD_11, PD_12, PF_7, PD_13, PF_10, PG_6, QSPIF_POLARITY_MODE_1, 40000000);
+            block_info[SECONDARY_BLOCK_DEVICE].raw_bd = mbed::BlockDevice::get_default_instance();
         } else {
             BOOT_LOG_ERR("U config");
         }
@@ -250,7 +250,7 @@ static void initBlockTable(void) {
             BOOT_LOG_ERR("SDMMC");
 #endif
         } else if (block_info[SCRATCH_BLOCK_DEVICE].raw_type & QSPI_FLASH_FLAG) {
-            block_info[SCRATCH_BLOCK_DEVICE].raw_bd = new QSPIFBlockDevice(PD_11, PD_12, PF_7, PD_13, PF_10, PG_6, QSPIF_POLARITY_MODE_1, 40000000);
+            block_info[SCRATCH_BLOCK_DEVICE].raw_bd = mbed::BlockDevice::get_default_instance();
         } else {
             BOOT_LOG_ERR("S config");
         }
