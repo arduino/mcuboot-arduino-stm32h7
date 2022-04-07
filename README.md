@@ -106,10 +106,13 @@ Bootloader
 ```
 
 ### Build MCUboot from source
+The following command will setup the mbed environment and clone the needed repositories before compile for Portenta H7.
+
 ```
 mbed config root . && mbed deploy
 mbed compile -m PORTENTA_H7_M7 -t GCC_ARM --profile=release --profile mbed-os/tools/profiles/extensions/lto.json
 ```
+Additional flags are needed for [Lite](generate_rel.sh#L24) and [Lite Connected](generate_rel.sh#L35) boards.
 
 ### Debug
 
