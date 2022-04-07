@@ -39,7 +39,7 @@
             "mcuboot.max-align": 32,
             "mcuboot.bootstrap": true,
             "mcuboot.application-hooks": true,
-            "mcuboot.application-littlefs": null,
+            "mcuboot.application-littlefs": true,
             "mcuboot.application-sdcard": true,
             "mcuboot.application-dfu": null,
             "mcuboot.signature-algorithm": "SIGNATURE_TYPE_EC256",
