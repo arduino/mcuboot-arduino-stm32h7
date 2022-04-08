@@ -20,6 +20,7 @@
 #include "board.h"
 #include "mbed.h"
 
+#if defined TARGET_PORTENTA_H7_M7
 static void portenta_power_init() {
   I2C i2c(BOARD_I2C_SDA, BOARD_I2C_SCL);
 
@@ -85,8 +86,46 @@ static void portenta_power_init() {
   data[1]=0xF;
   i2c.write(8 << 1, data, sizeof(data));
 }
+#endif
 
+#if defined TARGET_NICLA_VISION
+static void nicla_vision_power_init() {
+  I2C i2c(BOARD_I2C_SDA, BOARD_I2C_SCL);
+
+  char data[2];
+
+  data[0]=0x9C;
+  data[1]=(1 << 7);
+  i2c.write(8 << 1, data, sizeof(data));
+
+  // Disable charger led
+  data[0]=0x9E;
+  data[1]=(1 << 5);
+  i2c.write(8 << 1, data, sizeof(data));
+
+  HAL_Delay(10);
+
+  // SW3: set 2A as current limit
+  // Helps keeping the rail up at wifi startup
+  data[0]=0x42;
+  data[1]=(2);
+  i2c.write(8 << 1, data, sizeof(data));
+
+  HAL_Delay(10);
+
+  // Change VBUS INPUT CURRENT LIMIT to 1.5A
+  data[0]=0x94;
+  data[1]=(20 << 3);
+  i2c.write(8 << 1, data, sizeof(data));
+}
+#endif
 
 void power_init() {
+#if defined TARGET_PORTENTA_H7_M7
   portenta_power_init();
+#elif defined TARGET_NICLA_VISION
+  nicla_vision_power_init();
+#else
+
+#endif
 }

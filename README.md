@@ -7,7 +7,8 @@ MCUboot bootloader porting for Arduino [Mbed OS](https://os.mbed.com/docs/mbed-o
 The following boards are supported:
  * [Portenta H7](https://store.arduino.cc/products/portenta-h7)
  * [Portenta H7 Lite](https://store.arduino.cc/products/portenta-h7-lite)
- * [Portenta H7 Lite Connected]((https://store.arduino.cc/products/portenta-h7-lite))
+ * [Portenta H7 Lite Connected](https://store.arduino.cc/products/portenta-h7-lite)
+ * [Nicla Vision](https://store.arduino.cc/products/nicla-vision)
 
 ## :grey_question: What
 MCUboot provides secure boot for 32-bit microcontrollers. For a detailed description on what MCUboot does and how it works please read the [official documentaion](https://docs.mcuboot.com/).
@@ -112,7 +113,7 @@ The following command will setup the mbed environment and clone the needed repos
 mbed config root . && mbed deploy
 mbed compile -m PORTENTA_H7_M7 -t GCC_ARM --profile=release --profile mbed-os/tools/profiles/extensions/lto.json
 ```
-Additional flags are needed for [Lite](generate_rel.sh#L24) and [Lite Connected](generate_rel.sh#L35) boards.
+Additional flags are needed for [Lite](generate_rel.sh#L24), [Lite Connected](generate_rel.sh#L35) and [Nicla Vision](generate_rel.sh#L46) boards.
 
 ### Debug
 
@@ -121,7 +122,7 @@ Additional flags are needed for [Lite](generate_rel.sh#L24) and [Lite Connected]
  - MCUboot idle: The board green LED will fade-in fade-out
 
 2. Serial
- - MCUboot debug prints are disabled by default. They can be enabled putting `BT_SEL` (`PI8`) pin `HIGH` or calling `MCUboot::bootDebug(1);` in your Sketch.
+ - MCUboot debug prints are disabled by default. They can be enabled putting `BT_SEL` (`PI8`) pin `HIGH` if available or calling `MCUboot::bootDebug(1);` in your Sketch.
 
 ## :mag_right: Other resources
 

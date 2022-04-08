@@ -66,7 +66,11 @@ USBD_HandleTypeDef USBD_Device;
 DigitalOut red(BOARD_RED_LED, 1);
 DigitalOut green(BOARD_GREEN_LED, 1);
 DigitalOut blue(BOARD_BLUE_LED, 1);
+#if defined(TARGET_NICLA_VISION)
+bool boot_sel = false;
+#else
 DigitalIn boot_sel(BOARD_BOOT_SEL,PullDown);
+#endif
 
 Ticker swap_ticker;
 bool debug_enabled = false;

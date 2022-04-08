@@ -454,7 +454,7 @@ __weak void BSP_SD_ReadCpltCallback(void)
 
 }
 
-void SDMMC2_IRQHandler(void)
+__weak void SDMMC2_IRQHandler(void)
 {
   BSP_SD_IRQHandler();
 }
