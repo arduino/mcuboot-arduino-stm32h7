@@ -121,6 +121,12 @@ int FileBlockDevice::program(const void *buffer, bd_addr_t addr, bd_size_t size)
         return BD_ERROR_DEVICE_ERROR;
     }
 
+    err = fflush(_file[0]);
+    if (err != 0u) {
+        printf("E-Program:flush\n");
+        return BD_ERROR_DEVICE_ERROR;
+    }
+
     return BD_ERROR_OK;
 }
 
@@ -146,6 +152,12 @@ int FileBlockDevice::erase(bd_addr_t addr, bd_size_t size)
             printf("E-Erase:handle %d count 0x%zx\n", _file[0], count);
             return BD_ERROR_DEVICE_ERROR;
         }
+    }
+
+    int err = fflush(_file[0]);
+    if (err != 0u) {
+        printf("E-Erase:flush\n");
+        return BD_ERROR_DEVICE_ERROR;
     }
 
     return BD_ERROR_OK;
