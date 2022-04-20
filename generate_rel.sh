@@ -53,7 +53,7 @@ fi
 if [[ $1 == "nicla" ]] || [[ $1 == "all" ]]; then
 echo
 echo Generating binaries for NICLA VISION
-mbed compile -c -m NICLA_VISION -t GCC_ARM --profile=release --profile mbed-os/tools/profiles/extensions/lto.json -N mcuboot_nicla_vision
+mbed compile -c -m NICLA_VISION -t GCC_ARM --profile=release --profile mbed-os/tools/profiles/extensions/lto.json -DBOARD_RAM_SIZE=0 -N mcuboot_nicla_vision
 mkdir -p release/NICLA_VISION
 mv ./libbootutil.a ./release/NICLA_VISION
 cp ./BUILD/NICLA_VISION/GCC_ARM-RELEASE/mcuboot_nicla_vision.bin ./release/NICLA_VISION/mcuboot_nicla_vision.bin
