@@ -31,14 +31,14 @@ If signing and encryption keys are not stored in flash alongside MCUboot, the Sk
 
 ## :gear: How
 ### Switch to MCUboot
-* Run this [Sketch](https://github.com/arduino/ArduinoCore-mbed/blob/master/libraries/STM32H747_System/examples/STM32H747_updateBootloader/STM32H747_updateBootloader.ino) to upload the latest released binary into your board
+* Run this [Sketch](https://github.com/arduino/ArduinoCore-mbed/blob/master/libraries/STM32H747_System/examples/STM32H747_manageBootloader/STM32H747_manageBootloader.ino) to upload the latest released binary into your board
 * Flash the bootloader binary file with your preferred debugger @ flash address `0x08000000`
 
 ### Enable signature and encryption
 By default signature verification and encryption support are disabled. To enable them you have to write your signature and encryption keys inside your board.
 In this project MCUboot is configured to support `ecdsa-p256` keys for both signature and encryption.
 
-To write the default keys in flash you can use this [Sketch](https://github.com/arduino/ArduinoCore-mbed/blob/master/libraries/STM32H747_System/examples/STM32H747_updateBootloader/STM32H747_updateBootloader.ino)
+To write the default keys in flash you can use this [Sketch](https://github.com/arduino/ArduinoCore-mbed/blob/master/libraries/STM32H747_System/examples/STM32H747_manageBootloader/STM32H747_manageBootloader.ino)
 
 :warning: WARNING :warning: The default keys are public therefore is not safe to use them for production, they are included only for evaluation purpose.
 
@@ -58,7 +58,7 @@ To get this data from the generated pem files with imgtool:
 imgtool getpub -k ecsdsa-p256-signing-key.pem 
 imgtool getpriv -k ecsdsa-p256-encrypt-key.pem
 ```
-Copy and paste the key data in this [Sketch](https://github.com/arduino/ArduinoCore-mbed/blob/master/libraries/STM32H747_System/examples/STM32H747_updateBootloader/STM32H747_updateBootloader.ino) and run it to flash the keys alongside the bootloader.
+Copy and paste the key data in this [Sketch](https://github.com/arduino/ArduinoCore-mbed/blob/master/libraries/STM32H747_System/examples/STM32H747_manageBootloader/STM32H747_manageBootloader.ino) and run it to flash the keys alongside the bootloader.
 
 ### Create a signed and encrypted update Sketch
 To create a signed and encrypted Sketch an additional step is needed after the Sketch binary is generated. This additional step is done passing the binary through `imgtool`. The flags used by the board to create a secure Sketch are defined [here](https://github.com/arduino/ArduinoCore-mbed/blob/fa628e35011a92fb7e54fa6bfd9a69be33173bf8/boards.txt#L79-L86). The resulting command resembles as follows:
