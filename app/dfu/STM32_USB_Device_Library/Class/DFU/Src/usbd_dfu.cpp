@@ -305,7 +305,7 @@ __ALIGN_BEGIN static uint8_t USBD_DFU_CfgDesc[USB_DFU_CONFIG_DESC_SIZ] __ALIGN_E
     0x83,                  // bEndpointAddress
     0x03,                           // bmAttributes: Interrupt
     8,    // wMaxPacketSize:
-    8,
+    0,
     0x9,                           // bInterval: polling interval in frames of 1ms
 
     //--------------------------------------------------------------------------
