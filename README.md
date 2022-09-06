@@ -111,7 +111,7 @@ The following command will setup the mbed environment and clone the needed repos
 
 ```
 mbed config root . && mbed deploy
-mbed compile -m PORTENTA_H7_M7 -t GCC_ARM --profile=release --profile mbed-os/tools/profiles/extensions/lto.json
+mbed compile -m PORTENTA_H7_M7 -t GCC_ARM --profile=release --profile custom.json
 ```
 Additional flags are needed for [Lite](generate_rel.sh#L24), [Lite Connected](generate_rel.sh#L35) and [Nicla Vision](generate_rel.sh#L46) boards.
 
