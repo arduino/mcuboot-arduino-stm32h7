@@ -224,9 +224,11 @@ int main(void) {
   BOOT_LOG_INF("Starting Arduino bootloader");
 
   int magic = RTCGetBKPRegister(RTC_BKP_DR0);
+  int reset = ResetReason::get();
+  RTCSetBKPRegister(RTC_BKP_DR8, reset);
 
   // in case we have been reset let's wait 500 ms to see if user is trying to stay in bootloader
-  if (ResetReason::get() == RESET_REASON_PIN_RESET) {
+  if (reset == RESET_REASON_PIN_RESET) {
     // now that we've been reset let's set magic. resetting with this set will
     // flag we need to stay in bootloader.
     RTCSetBKPRegister(RTC_BKP_DR0, 0xDF59);
