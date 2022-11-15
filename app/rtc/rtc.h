@@ -20,8 +20,7 @@
 #define __RTC_H
 
 #include <stdint.h>
-#include "stm32h7xx_hal.h"
-#include "stm32h7xx_hal_rtc.h"
+#include "rtc_api_hal.h"
 
 #ifdef __cplusplus
 extern "C" {
