@@ -28,6 +28,7 @@
 #include "FlashSimBlockDevice.h"
 #include "flash_map_backend/secondary_bd.h"
 #include "bootutil/bootutil.h"
+#include "bootutil/bootutil_extra.h"
 
 /* Private typedef ----------------------------------------------------------- */
 /* Private define ------------------------------------------------------------ */
@@ -60,7 +61,21 @@ mbed::BlockDevice* dfu_secondary_bd = get_secondary_bd();
 const uint32_t QSPIFLASH_BASE_ADDRESS   =  0x90000000;
 const uint32_t FILEBLOCK_BASE_ADDRESS   =  0xA0000000;
 
-USBD_DFU_MediaTypeDef USBD_DFU_Flash_fops = {
+USBD_DFU_MediaTypeDef USBD_DFU_Flash_fops_default = {
+  {
+		  (uint8_t *) FLASH_DESC_STR,
+		  (uint8_t *) QSPI_FLASH_DESC_STR,
+      (uint8_t *) BOOTLOADER_DESC_STR
+  },
+  Flash_If_Init,
+  Flash_If_DeInit,
+  Flash_If_Erase,
+  Flash_If_Write,
+  Flash_If_Read,
+  Flash_If_GetStatus,
+};
+
+USBD_DFU_MediaTypeDef USBD_DFU_Flash_fops_MCUboot = {
   {
 		  (uint8_t *) FLASH_DESC_STR,
 		  (uint8_t *) QSPI_FLASH_DESC_STR,
@@ -83,7 +98,11 @@ void init_Memories() {
   if (dfu_secondary_bd != nullptr) {
     dfu_secondary_bd->init();
   }
-  snprintf(BOOTLOADER_DESC_STR, sizeof(BOOTLOADER_DESC_STR), "@MCUBoot version %d /0x00000000/0*4Kg", BOOTLOADER_VERSION);
+  if(boot_empty_keys()) {
+    snprintf(BOOTLOADER_DESC_STR, sizeof(BOOTLOADER_DESC_STR), "@Arduino boot v.%d /0x00000000/0*4Kg", BOOTLOADER_VERSION);
+  } else {
+    snprintf(BOOTLOADER_DESC_STR, sizeof(BOOTLOADER_DESC_STR), "@MCUboot v.%d /0x00000000/0*4Kg", BOOTLOADER_VERSION);
+  }
 }
 
 Thread writeThread(osPriorityHigh);
