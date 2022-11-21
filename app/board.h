@@ -204,8 +204,69 @@
   #define BOARD_USB_OTG_HS_DIR_ALTERNATE      (GPIO_AF10_OTG2_HS)
   #define BOARD_USB_OTG_HS_DIR_GPIO           (GPIOC)
 
-#else
+#elif defined TARGET_OPTA
+  #define BOARD_GREEN_LED                     PH_12
+  #define BOARD_RED_LED                       PH_11
+  #define BOARD_BLUE_LED                      PE_5
 
+  #define BOARD_ETH_RESET                     PJ_15
+
+  #define BOARD_USBD_VID                      0x2341
+  #define BOARD_USBD_PID                      0x0364
+
+  #define BOARD_USBD_STRING                   "Opta"
+
+  #define BOARD_QSPI_SO0                      PD_11
+  #define BOARD_QSPI_SO1                      PD_12
+  #define BOARD_QSPI_SO2                      PE_2
+  #define BOARD_QSPI_SO3                      PD_13
+  #define BOARD_QSPI_SCK                      PB_2
+  #define BOARD_QSPI_CS                       PG_6
+
+  #define BOARD_USB_OTG_FS_DM_DP_PIN          (GPIO_PIN_11 | GPIO_PIN_12)
+  #define BOARD_USB_OTG_FS_DM_DP_MODE         (GPIO_MODE_AF_PP)
+  #define BOARD_USB_OTG_FS_DM_DP_PULL         (GPIO_PULLUP)
+  #define BOARD_USB_OTG_FS_DM_DP_SPEED        (GPIO_SPEED_FREQ_VERY_HIGH)
+  #define BOARD_USB_OTG_FS_DM_DP_ALTERNATE    (GPIO_AF10_OTG1_FS)
+  #define BOARD_USB_OTG_FS_DM_DP_GPIO         (GPIOA)
+
+  #define BOARD_USB_OTG_HS_CLK_PIN            (GPIO_PIN_5)
+  #define BOARD_USB_OTG_HS_CLK_MODE           (GPIO_MODE_AF_PP)
+  #define BOARD_USB_OTG_HS_CLK_PULL           (GPIO_NOPULL)
+  #define BOARD_USB_OTG_HS_CLK_SPEED          (GPIO_SPEED_FREQ_VERY_HIGH)
+  #define BOARD_USB_OTG_HS_CLK_ALTERNATE      (GPIO_AF10_OTG2_HS)
+  #define BOARD_USB_OTG_HS_CLK_GPIO           (GPIOA)
+
+  #define BOARD_USB_OTG_HS_D0_PIN             (GPIO_PIN_3)
+  #define BOARD_USB_OTG_HS_D0_MODE            (GPIO_MODE_AF_PP)
+  #define BOARD_USB_OTG_HS_D0_PULL            (GPIO_NOPULL)
+  #define BOARD_USB_OTG_HS_D0_SPEED           (GPIO_SPEED_FREQ_VERY_HIGH)
+  #define BOARD_USB_OTG_HS_D0_ALTERNATE       (GPIO_AF10_OTG2_HS)
+  #define BOARD_USB_OTG_HS_D0_GPIO            (GPIOA)
+
+  #define BOARD_USB_OTG_HS_D1_D7_PIN          (GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_5 | GPIO_PIN_10 | GPIO_PIN_11 | GPIO_PIN_12 | GPIO_PIN_13)
+  #define BOARD_USB_OTG_HS_D1_D7_MODE         (GPIO_MODE_AF_PP)
+  #define BOARD_USB_OTG_HS_D1_D7_PULL         (GPIO_NOPULL)
+  #define BOARD_USB_OTG_HS_D1_D7_ALTERNATE    (GPIO_AF10_OTG2_HS)
+  #define BOARD_USB_OTG_HS_D1_D7_GPIO         (GPIOB)
+
+  #define BOARD_USB_OTG_HS_STP_PIN            (GPIO_PIN_0)
+  #define BOARD_USB_OTG_HS_STP_MODE           (GPIO_MODE_AF_PP)
+  #define BOARD_USB_OTG_HS_STP_PULL           (GPIO_NOPULL)
+  #define BOARD_USB_OTG_HS_STP_ALTERNATE      (GPIO_AF10_OTG2_HS)
+  #define BOARD_USB_OTG_HS_STP_GPIO           (GPIOC)
+
+  #define BOARD_USB_OTG_HS_NXT_PIN            (GPIO_PIN_3)
+  #define BOARD_USB_OTG_HS_NXT_MODE           (GPIO_MODE_AF_PP)
+  #define BOARD_USB_OTG_HS_NXT_PULL           (GPIO_NOPULL)
+  #define BOARD_USB_OTG_HS_NXT_ALTERNATE      (GPIO_AF10_OTG2_HS)
+  #define BOARD_USB_OTG_HS_NXT_GPIO           (GPIOC)
+
+  #define BOARD_USB_OTG_HS_DIR_PIN            (GPIO_PIN_2)
+  #define BOARD_USB_OTG_HS_DIR_MODE           (GPIO_MODE_AF_PP)
+  #define BOARD_USB_OTG_HS_DIR_PULL           (GPIO_NOPULL)
+  #define BOARD_USB_OTG_HS_DIR_ALTERNATE      (GPIO_AF10_OTG2_HS)
+  #define BOARD_USB_OTG_HS_DIR_GPIO           (GPIOC)
 #endif
 
 #endif /* __BOARD_H */
