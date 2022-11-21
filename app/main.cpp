@@ -243,9 +243,6 @@ int main(void) {
   DigitalOut eth_reset(BOARD_ETH_RESET, 1);
 #endif
 
-  //Ticker pulse;
-  //DigitalOut eth_rst(PJ_15, 1);
-
   HAL_FLASH_Unlock();
 
   power_init();
