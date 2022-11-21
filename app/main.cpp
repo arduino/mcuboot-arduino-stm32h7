@@ -69,9 +69,9 @@ volatile const uint8_t bootloader_identifier[] __attribute__ ((section (".bootlo
 USBD_HandleTypeDef USBD_Device;
 #endif
 
-DigitalOut red(BOARD_RED_LED, 1);
-DigitalOut green(BOARD_GREEN_LED, 1);
-DigitalOut blue(BOARD_BLUE_LED, 1);
+DigitalOut red(BOARD_RED_LED, BOARD_LED_OFF);
+DigitalOut green(BOARD_GREEN_LED, BOARD_LED_OFF);
+DigitalOut blue(BOARD_BLUE_LED, BOARD_LED_OFF);
 
 #if defined (BOARD_BOOT_SEL)
 DigitalIn boot_sel(BOARD_BOOT_SEL,PullDown);
@@ -84,9 +84,9 @@ bool debug_enabled = false;
 
 static void led_swap_feedback_off(void) {
   swap_ticker.detach();
-  red = 1;
-  green = 1;
-  blue = 1;
+  red = BOARD_LED_OFF;
+  green = BOARD_LED_OFF;
+  blue = BOARD_LED_OFF;
 }
 
 static void led_swap_feedback() {
