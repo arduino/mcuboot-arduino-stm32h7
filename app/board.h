@@ -74,6 +74,7 @@
   #define BOARD_BLUE_LED                      PK_7
 
   #define BOARD_USB_RESET                     PJ_4
+  #define BOARD_ETH_RESET                     PJ_15
   #define BOARD_BOOT_SEL                      PI_8
 
   #define BOARD_I2C_SCL                       PB_6
