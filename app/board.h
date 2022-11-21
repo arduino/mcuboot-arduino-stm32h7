@@ -73,6 +73,8 @@
   #define BOARD_RED_LED                       PK_5
   #define BOARD_BLUE_LED                      PK_7
 
+  #define BOARD_LED_OFF                       1
+
   #define BOARD_USB_RESET                     PJ_4
   #define BOARD_ETH_RESET                     PJ_15
   #define BOARD_BOOT_SEL                      PI_8
@@ -142,6 +144,8 @@
   #define BOARD_RED_LED                       PE_3
   #define BOARD_BLUE_LED                      PF_4
 
+  #define BOARD_LED_OFF                       1
+
   #define BOARD_USB_RESET                     PA_2
 
   #define BOARD_I2C_SCL                       PF_1
@@ -208,6 +212,8 @@
   #define BOARD_GREEN_LED                     PH_12
   #define BOARD_RED_LED                       PH_11
   #define BOARD_BLUE_LED                      PE_5
+
+  #define BOARD_LED_OFF                       0
 
   #define BOARD_ETH_RESET                     PJ_15
 
