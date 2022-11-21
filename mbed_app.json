@@ -111,6 +111,22 @@
                 "SE050"
             ],
             "mcuboot.application-sdcard": null
+        },
+        "OPTA": {
+            "target.clock_source": "USE_PLL_HSE_EXTC",
+            "target.use-mpu": false,
+            "target.macros_add": [
+                "USE_USB_FS",
+                "LOWSPEED=1",
+                "BOARD_HAS_VIDEO=0"
+            ],
+            "target.usb_speed": "USE_USB_OTG_FS",
+            "target.components_remove" : [
+                "WHD",
+                "4343W_FS",
+                "CYW43XXX"
+            ],
+            "mcuboot.application-sdcard": null
         }
     }
 }
