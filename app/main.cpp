@@ -239,6 +239,10 @@ int main(void) {
   DigitalOut video_reset(BOARD_VIDEO_RESET, 0);
 #endif
 
+#if defined (BOARD_ETH_RESET)
+  DigitalOut eth_reset(BOARD_ETH_RESET, 1);
+#endif
+
   //Ticker pulse;
   //DigitalOut eth_rst(PJ_15, 1);
 
