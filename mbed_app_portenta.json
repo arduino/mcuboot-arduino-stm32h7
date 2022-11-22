@@ -1,0 +1,97 @@
+{
+    "requires": [
+        "bare-metal",
+        "mbedtls",
+        "mcuboot",
+        "flashiap-block-device",
+        "spif-driver",
+        "qspif",
+        "mbed-trace",
+        "filesystem",
+        "fat_chan",
+        "littlefs",
+        "rtos",
+        "cmsis-cmsis5-rtos2",
+        "events"
+    ],
+    "macros": [
+        "MBED_FAULT_HANDLER_DISABLED",
+        "MBEDTLS_USER_CONFIG_FILE=\"mbedtls_config.h\""
+    ],
+    "config": {
+        "serial-bootloader-enable": {
+            "help": "Build bootloader with serial update support",
+            "value": 0
+        }
+    },
+    "target_overrides": {
+        "PORTENTA_H7_M7": {
+            "target.restrict_size": "0x20000",
+            "target.c_lib": "small",
+            "target.printf_lib": "minimal-printf",
+            "target.i2c_timing_value_algo": false,
+            "target.extra_labels_remove" : ["CORDIO"],
+            "target.features_remove" : ["BLE"],
+            "target.device_has_remove": [
+                "USBDEVICE",
+                "EMAC",
+                "CAN",
+                "SPI_ASYNCH",
+                "SPISLAVE",
+                "SPI",
+                "SERIAL_FC",
+                "PWMOUT",
+                "ANALOGIN",
+                "ANALOGOUT",
+                "I2CSLAVE",
+                "I2C_ASYNC",
+                "OSPI",
+                "TRNG",
+                "DAC",
+                "CRC",
+                "WATCHDOG",
+                "RTC",
+                "LPTICKER",
+                "SLEEP"
+            ],
+            "target.clock_source": "USE_PLL_HSE_EXTC",
+            "target.use-mpu": false,
+            "target.macros_add": [
+                "USE_USB_HS",
+                "LOWSPEED=1"
+            ],
+            "target.components_remove" : [
+                "WHD",
+                "4343W_FS",
+                "CYW43XXX"
+            ],
+            "platform.minimal-printf-enable-floating-point": false,
+            "platform.minimal-printf-enable-64-bit": false,
+            "platform.stdio-flush-at-exit": false,
+            "platform.stdio-baud-rate": 115200,
+            "fat_chan.ff_use_mkfs": 0,
+            "fat_chan.ff_use_lfn": 0,
+            "fat_chan.ff_fs_rpath": 0,
+            "mcuboot.log-level": "MCUBOOT_LOG_LEVEL_INFO",
+            "mcuboot.primary-slot-address": "0x8020000",
+            "mcuboot.slot-size": "0x1E0000",
+            "mcuboot.scratch-address": "0x9000000",
+            "mcuboot.scratch-size": "0x20000",
+            "mcuboot.max-img-sectors": "0x3C0",
+            "mcuboot.max-align": 32,
+            "mcuboot.bootstrap": true,
+            "mcuboot.application-hooks": true,
+            "mcuboot.application-littlefs": true,
+            "mcuboot.application-dfu": true,
+            "mcuboot.application-sdcard": true,
+            "mcuboot.signature-algorithm": "SIGNATURE_TYPE_EC256",
+            "mcuboot.encrypt-ec256": true,
+            "mcuboot.include-keys": null,
+            "mcuboot.bootloader-build": false,
+            "mcuboot.encrypt-scratch": true,
+            "mcuboot.swap-buf-size": 131072,
+            "mbed-trace.enable": false,
+            "mbed-trace.fea-ipv6": false
+        }
+    }
+}
