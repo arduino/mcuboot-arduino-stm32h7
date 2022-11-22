@@ -100,17 +100,15 @@
             "target.use-mpu": false,
             "target.macros_add": [
                 "USE_USB_HS",
-                "LOWSPEED=1"
+                "LOWSPEED=1",
+                "BOARD_HAS_VIDEO=0",
+                "BOARD_HAS_ETHERNET=0"
             ],
             "target.components_remove" : [
                 "WHD",
                 "4343W_FS",
                 "CYW43XXX",
                 "SE050"
-            ],
-            "target.macros_add":[
-                "BOARD_HAS_VIDEO=0",
-                "BOARD_HAS_ETHERNET=0"
             ],
             "mcuboot.application-sdcard": null
         }
