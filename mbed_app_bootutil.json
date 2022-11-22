@@ -18,7 +18,9 @@
         "MBED_FAULT_HANDLER_DISABLED",
         "USE_USB_HS",
         "LOWSPEED=1",
-        "MBEDTLS_USER_CONFIG_FILE=\"mbedtls_config.h\""],
+        "MBEDTLS_USER_CONFIG_FILE=\"mbedtls_config.h\"",
+        "BOOTUTIL_LIBARY_BUILD=1"
+    ],
     "config": {
         "serial-bootloader-enable": {
             "help": "Build bootloader with serial update support",
