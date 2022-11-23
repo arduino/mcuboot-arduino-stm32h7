@@ -60,7 +60,8 @@
                 "USE_USB_HS",
                 "LOWSPEED=1",
                 "BOARD_HAS_VIDEO=0",
-                "BOARD_HAS_ETHERNET=0"
+                "BOARD_HAS_ETHERNET=0",
+                "BOARD_RAM_SIZE=0"
             ],
             "target.components_remove" : [
                 "WHD",
