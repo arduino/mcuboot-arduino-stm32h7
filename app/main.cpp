@@ -151,11 +151,7 @@ static int start_dfu(void) {
   USBD_RegisterClass(&USBD_Device, USBD_DFU_CLASS);
 
   /* Add DFU Media interface */
-  if(boot_empty_keys()) {
-    USBD_DFU_RegisterMedia(&USBD_Device, &USBD_DFU_Flash_fops_default);
-  } else {
-    USBD_DFU_RegisterMedia(&USBD_Device, &USBD_DFU_Flash_fops_MCUboot);
-  }
+  USBD_DFU_RegisterMedia(&USBD_Device, &USBD_DFU_Flash_fops);
 
   /* Start Device Process */
   USBD_Start(&USBD_Device);

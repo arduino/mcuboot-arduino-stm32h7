@@ -61,21 +61,7 @@ mbed::BlockDevice* dfu_secondary_bd = get_secondary_bd();
 const uint32_t QSPIFLASH_BASE_ADDRESS   =  0x90000000;
 const uint32_t FILEBLOCK_BASE_ADDRESS   =  0xA0000000;
 
-USBD_DFU_MediaTypeDef USBD_DFU_Flash_fops_default = {
-  {
-		  (uint8_t *) FLASH_DESC_STR,
-		  (uint8_t *) QSPI_FLASH_DESC_STR,
-      (uint8_t *) BOOTLOADER_DESC_STR
-  },
-  Flash_If_Init,
-  Flash_If_DeInit,
-  Flash_If_Erase,
-  Flash_If_Write,
-  Flash_If_Read,
-  Flash_If_GetStatus,
-};
-
-USBD_DFU_MediaTypeDef USBD_DFU_Flash_fops_MCUboot = {
+USBD_DFU_MediaTypeDef USBD_DFU_Flash_fops = {
   {
 		  (uint8_t *) FLASH_DESC_STR,
 		  (uint8_t *) QSPI_FLASH_DESC_STR,
