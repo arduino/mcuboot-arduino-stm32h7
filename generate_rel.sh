@@ -3,7 +3,7 @@ rm -rf release
 rm -rf BUILD
 
 if [[ $1 == "library" ]] || [[ $1 == "all" ]]; then
-mbed compile -c -m PORTENTA_H7_M7 -t GCC_ARM --app=mbed_app_bootutil.json -DBOOTUTIL_LIBARY_BUILD=1
+mbed compile -c -m PORTENTA_H7_M7 -t GCC_ARM --app=mbed_app_bootutil.json
 echo
 echo Generating bootutil library
 find ./BUILD/PORTENTA_H7_M7/GCC_ARM/ \( -name "FileBlockDevice.o" -o -name "BSP.o" -o -name "SDMMCBlockDevice.o" -o -name "rtc.o" -o -name "default_bd.o" -o -name "bootutil_extra.o" -o -name "flash_map_backend.o" -o -name "bootutil_public.o" \) | xargs arm-none-eabi-ar -csr libbootutil.a
@@ -14,7 +14,7 @@ fi
 if [[ $1 == "portenta" ]] || [[ $1 == "all" ]]; then
 echo
 echo Generating binaries for PORTENTA H7
-mbed compile -c -m PORTENTA_H7_M7 -t GCC_ARM --profile=release --profile mbed-os/tools/profiles/extensions/lto.json -N mcuboot_portenta_h7
+mbed compile -c -m PORTENTA_H7_M7 -t GCC_ARM --app=mbed_app_portenta.json --profile=release --profile custom.json -N mcuboot_portenta_h7
 mkdir -p release/PORTENTA_H7
 cp ./libbootutil.a ./release/PORTENTA_H7
 cp ./BUILD/PORTENTA_H7_M7/GCC_ARM-RELEASE/mcuboot_portenta_h7.bin ./release/PORTENTA_H7/mcuboot_portenta_h7.bin
@@ -28,7 +28,7 @@ fi
 if [[ $1 == "lite" ]] || [[ $1 == "all" ]]; then
 echo
 echo Generating binaries for PORTENTA H7 Lite
-mbed compile -c -m PORTENTA_H7_M7 -t GCC_ARM --profile=release --profile mbed-os/tools/profiles/extensions/lto.json -DBOARD_HAS_VIDEO=0 -DBOARD_HAS_WIFI=0 -N mcuboot_portenta_h7_lite
+mbed compile -c -m PORTENTA_H7_M7 -t GCC_ARM --app=mbed_app_portenta_lite.json --profile=release --profile custom.json -N mcuboot_portenta_h7_lite
 mkdir -p release/PORTENTA_H7_Lite
 cp ./libbootutil.a ./release/PORTENTA_H7_Lite
 cp ./BUILD/PORTENTA_H7_M7/GCC_ARM-RELEASE/mcuboot_portenta_h7_lite.bin ./release/PORTENTA_H7_Lite/mcuboot_portenta_h7_lite.bin
@@ -42,7 +42,7 @@ fi
 if [[ $1 == "connected" ]] || [[ $1 == "all" ]]; then
 echo
 echo Generating binaries for PORTENTA H7 Lite Connected
-mbed compile -c -m PORTENTA_H7_M7 -t GCC_ARM --profile=release --profile mbed-os/tools/profiles/extensions/lto.json -DBOARD_HAS_VIDEO=0 -N mcuboot_portenta_h7_lite_connected
+mbed compile -c -m PORTENTA_H7_M7 -t GCC_ARM --app=mbed_app_portenta_lite_connected.json --profile=release --profile custom.json -N mcuboot_portenta_h7_lite_connected
 mkdir -p release/PORTENTA_H7_Lite_Connected
 cp ./libbootutil.a ./release/PORTENTA_H7_Lite_Connected
 cp ./BUILD/PORTENTA_H7_M7/GCC_ARM-RELEASE/mcuboot_portenta_h7_lite_connected.bin ./release/PORTENTA_H7_Lite_Connected/mcuboot_portenta_h7_lite_connected.bin
@@ -56,7 +56,7 @@ fi
 if [[ $1 == "nicla" ]] || [[ $1 == "all" ]]; then
 echo
 echo Generating binaries for NICLA VISION
-mbed compile -c -m NICLA_VISION -t GCC_ARM --profile=release --profile mbed-os/tools/profiles/extensions/lto.json -DBOARD_RAM_SIZE=0 -N mcuboot_nicla_vision
+mbed compile -c -m NICLA_VISION -t GCC_ARM --app=mbed_app_nicla_vision.json --profile=release --profile custom.json -N mcuboot_nicla_vision
 mkdir -p release/NICLA_VISION
 mv ./libbootutil.a ./release/NICLA_VISION
 cp ./BUILD/NICLA_VISION/GCC_ARM-RELEASE/mcuboot_nicla_vision.bin ./release/NICLA_VISION/mcuboot_nicla_vision.bin
