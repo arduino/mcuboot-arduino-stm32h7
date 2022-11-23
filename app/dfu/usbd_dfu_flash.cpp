@@ -28,14 +28,12 @@
 #include "FlashSimBlockDevice.h"
 #include "flash_map_backend/secondary_bd.h"
 #include "bootutil/bootutil.h"
-#include "bootutil/bootutil_extra.h"
 
 /* Private typedef ----------------------------------------------------------- */
 /* Private define ------------------------------------------------------------ */
 #define FLASH_DESC_STR      "@Internal Flash  2MB   /0x08000000/01*128Ka,15*128Kg"
 //#define BOOTLOADER_DESC_STR    "@Option Bits      /0x52002000/01*1Ka"
 #define QSPI_FLASH_DESC_STR "@Ext RAW  Flash 16MB   /0x90000000/4096*4Kg"
-#define FILE_FLASH_DESC_STR "@Ext File Flash 16MB   /0xA0000000/4096*4Kg"
 
 #define FLASH_ERASE_TIME    (uint16_t)0
 #define FLASH_PROGRAM_TIME  (uint16_t)0
@@ -44,6 +42,7 @@
 /* Private variables --------------------------------------------------------- */
 /* Private function prototypes ----------------------------------------------- */
 char BOOTLOADER_DESC_STR[48];
+char FILE_FLASH_DESC_STR[48] = "@Ext File Flash 16MB   /0xA0000000/4096*4Kg";
 
 
 /* Extern function prototypes ------------------------------------------------ */
@@ -83,12 +82,11 @@ void init_Memories() {
   qspi_flash->init();
   if (dfu_secondary_bd != nullptr) {
     dfu_secondary_bd->init();
-  }
-  if(boot_empty_keys()) {
-    snprintf(BOOTLOADER_DESC_STR, sizeof(BOOTLOADER_DESC_STR), "@Arduino  boot  v.%02d   /0x00000000/0*4Kg", BOOTLOADER_VERSION);
-  } else {
     snprintf(BOOTLOADER_DESC_STR, sizeof(BOOTLOADER_DESC_STR), "@MCUboot        v.%02d   /0x00000000/0*4Kg", BOOTLOADER_VERSION);
-  }
+  } else {
+    snprintf(BOOTLOADER_DESC_STR, sizeof(BOOTLOADER_DESC_STR), "@Arduino  boot  v.%02d   /0x00000000/0*4Kg", BOOTLOADER_VERSION);
+    snprintf(FILE_FLASH_DESC_STR, sizeof(FILE_FLASH_DESC_STR), "@Ext File Flash  0MB   /0x00000000/0*4Kg");
+  } 
 }
 
 Thread writeThread(osPriorityHigh);
