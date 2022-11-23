@@ -48,8 +48,7 @@
 #define ADDR_FLASH_SECTOR_7_BANK2     ((uint32_t)0x081E0000) /* Base @ of Sector 7, 128 Kbytes */
 
 /* Exported macro ------------------------------------------------------------*/
-extern USBD_DFU_MediaTypeDef  USBD_DFU_Flash_fops_default;
-extern USBD_DFU_MediaTypeDef  USBD_DFU_Flash_fops_MCUboot;
+extern USBD_DFU_MediaTypeDef  USBD_DFU_Flash_fops;
 #define FLASH_BASE_ADDR      (uint32_t)(FLASH_BASE)
 #define FLASH_END_ADDR       (uint32_t)(0x081FFFFF)
 
