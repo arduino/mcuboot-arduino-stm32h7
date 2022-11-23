@@ -11,6 +11,8 @@ echo -n "Library: "
 find ./ -name "libbootutil.a"
 fi
 
+set -e
+
 if [[ $1 == "portenta" ]] || [[ $1 == "all" ]]; then
 echo
 echo Generating binaries for PORTENTA H7
