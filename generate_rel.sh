@@ -22,6 +22,7 @@ cp ./BUILD/PORTENTA_H7_M7/GCC_ARM-RELEASE/mcuboot_portenta_h7_application.elf ./
 xxd -i ./release/PORTENTA_H7/mcuboot_portenta_h7.bin > ./release/PORTENTA_H7/mcuboot_portenta_h7.h
 sed -i "s/unsigned char __release_PORTENTA_H7_mcuboot_portenta_h7_bin/const unsigned char mcuboot_portenta_h7_bin/" ./release/PORTENTA_H7/mcuboot_portenta_h7.h
 sed -i "s/__release_PORTENTA_H7_mcuboot_portenta_h7_bin_len/mcuboot_portenta_h7_bin_len/" ./release/PORTENTA_H7/mcuboot_portenta_h7.h
+tar -czvf ./release/PORTENTA_H7.tar.gz -C ./release/ PORTENTA_H7
 fi
 
 if [[ $1 == "lite" ]] || [[ $1 == "all" ]]; then
@@ -35,6 +36,7 @@ cp ./BUILD/PORTENTA_H7_M7/GCC_ARM-RELEASE/mcuboot_portenta_h7_lite_application.e
 xxd -i ./release/PORTENTA_H7_Lite/mcuboot_portenta_h7_lite.bin > ./release/PORTENTA_H7_Lite/mcuboot_portenta_h7_lite.h
 sed -i "s/unsigned char __release_PORTENTA_H7_mcuboot_portenta_h7_lite_bin/const unsigned char mcuboot_portenta_h7_lite_bin/" ./release/PORTENTA_H7_Lite/mcuboot_portenta_h7_lite.h
 sed -i "s/__release_PORTENTA_H7_mcuboot_portenta_h7_lite_bin_len/mcuboot_portenta_h7_lite_bin_len/" ./release/PORTENTA_H7_Lite/mcuboot_portenta_h7_lite.h
+tar -czvf ./release/PORTENTA_H7_Lite.tar.gz -C ./release/ PORTENTA_H7_Lite
 fi
 
 if [[ $1 == "connected" ]] || [[ $1 == "all" ]]; then
@@ -48,6 +50,7 @@ cp ./BUILD/PORTENTA_H7_M7/GCC_ARM-RELEASE/mcuboot_portenta_h7_lite_connected_app
 xxd -i ./release/PORTENTA_H7_Lite_Connected/mcuboot_portenta_h7_lite_connected.bin > ./release/PORTENTA_H7_Lite_Connected/mcuboot_portenta_h7_lite_connected.h
 sed -i "s/unsigned char __release_PORTENTA_H7_mcuboot_portenta_h7_lite_connected_bin/const unsigned char mcuboot_portenta_h7_lite_connected_bin/" ./release/PORTENTA_H7_Lite_Connected/mcuboot_portenta_h7_lite_connected.h
 sed -i "s/__release_PORTENTA_H7_mcuboot_portenta_h7_lite_connected_bin_len/mcuboot_portenta_h7_lite_connected_bin_len/" ./release/PORTENTA_H7_Lite_Connected/mcuboot_portenta_h7_lite_connected.h
+tar -czvf ./release/PORTENTA_H7_Lite_Connected.tar.gz -C ./release/ PORTENTA_H7_Lite_Connected
 fi
 
 if [[ $1 == "nicla" ]] || [[ $1 == "all" ]]; then
@@ -61,4 +64,5 @@ cp ./BUILD/NICLA_VISION/GCC_ARM-RELEASE/mcuboot_nicla_vision_application.elf ./r
 xxd -i ./release/NICLA_VISION/mcuboot_nicla_vision.bin > ./release/NICLA_VISION/mcuboot_nicla_vision.h
 sed -i "s/unsigned char __release_NICLA_VISION_mcuboot_nicla_vision_bin/const unsigned char mcuboot_nicla_vision_bin/" ./release/NICLA_VISION/mcuboot_nicla_vision.h
 sed -i "s/__release_NICLA_VISION_mcuboot_nicla_vision_bin_len/mcuboot_nicla_vision_bin_len/" ./release/NICLA_VISION/mcuboot_nicla_vision.h
+tar -czvf ./release/NICLA_VISION.tar.gz -C ./release/ NICLA_VISION
 fi
