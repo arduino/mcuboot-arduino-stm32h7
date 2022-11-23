@@ -133,7 +133,7 @@ static bool valid_application() {
 
 static int debug_init(void) {
   RTCInit();
-  debug_enabled = ((RTCGetBKPRegister(RTC_BKP_DR7) & 0x00000001) || boot_sel);
+  debug_enabled = ((RTCGetBKPRegister(RTC_BKP_DR7) & 0x00000001) || true);
   return 0;
 }
 
