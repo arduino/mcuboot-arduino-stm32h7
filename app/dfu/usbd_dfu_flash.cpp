@@ -85,9 +85,9 @@ void init_Memories() {
     dfu_secondary_bd->init();
   }
   if(boot_empty_keys()) {
-    snprintf(BOOTLOADER_DESC_STR, sizeof(BOOTLOADER_DESC_STR), "@Arduino boot v.%d /0x00000000/0*4Kg", BOOTLOADER_VERSION);
+    snprintf(BOOTLOADER_DESC_STR, sizeof(BOOTLOADER_DESC_STR), "@Arduino  boot  v.%02d   /0x00000000/0*4Kg", BOOTLOADER_VERSION);
   } else {
-    snprintf(BOOTLOADER_DESC_STR, sizeof(BOOTLOADER_DESC_STR), "@MCUboot v.%d /0x00000000/0*4Kg", BOOTLOADER_VERSION);
+    snprintf(BOOTLOADER_DESC_STR, sizeof(BOOTLOADER_DESC_STR), "@MCUboot        v.%02d   /0x00000000/0*4Kg", BOOTLOADER_VERSION);
   }
 }
 
