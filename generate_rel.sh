@@ -59,11 +59,25 @@ echo
 echo Generating binaries for NICLA VISION
 mbed compile -c -m NICLA_VISION -t GCC_ARM --app=mbed_app_nicla_vision.json --profile=custom.json -N mcuboot_nicla_vision
 mkdir -p release/NICLA_VISION
-mv ./libbootutil.a ./release/NICLA_VISION
+cp ./libbootutil.a ./release/NICLA_VISION
 cp ./BUILD/NICLA_VISION/GCC_ARM-CUSTOM/mcuboot_nicla_vision.bin ./release/NICLA_VISION/mcuboot_nicla_vision.bin
 cp ./BUILD/NICLA_VISION/GCC_ARM-CUSTOM/mcuboot_nicla_vision_application.elf ./release/NICLA_VISION/mcuboot_nicla_vision.elf
 xxd -i ./release/NICLA_VISION/mcuboot_nicla_vision.bin > ./release/NICLA_VISION/mcuboot_nicla_vision.h
 sed -i "s/unsigned char __release_NICLA_VISION_mcuboot_nicla_vision_bin/const unsigned char mcuboot_nicla_vision_bin/" ./release/NICLA_VISION/mcuboot_nicla_vision.h
 sed -i "s/__release_NICLA_VISION_mcuboot_nicla_vision_bin_len/mcuboot_nicla_vision_bin_len/" ./release/NICLA_VISION/mcuboot_nicla_vision.h
 tar -czvf ./release/NICLA_VISION.tar.gz -C ./release/ NICLA_VISION
+fi
+
+if [[ $1 == "opta" ]] || [[ $1 == "all" ]]; then
+echo
+echo Generating binaries for OPTA
+mbed compile -c -m OPTA -t GCC_ARM --app=mbed_app_opta.json --profile=custom.json -N mcuboot_opta
+mkdir -p release/OPTA
+mv ./libbootutil.a ./release/OPTA
+cp ./BUILD/OPTA/GCC_ARM-CUSTOM/mcuboot_opta.bin ./release/OPTA/mcuboot_opta.bin
+cp ./BUILD/OPTA/GCC_ARM-CUSTOM/mcuboot_opta_application.elf ./release/OPTA/mcuboot_opta.elf
+xxd -i ./release/OPTA/mcuboot_opta.bin > ./release/OPTA/mcuboot_opta.h
+sed -i "s/unsigned char __release_OPTA_mcuboot_opta_bin/const unsigned char mcuboot_opta_bin/" ./release/OPTA/mcuboot_opta.h
+sed -i "s/__release_OPTA_mcuboot_opta_bin_len/mcuboot_opta_bin_len/" ./release/OPTA/mcuboot_opta.h
+tar -czvf ./release/OPTA.tar.gz -C ./release/ OPTA
 fi
