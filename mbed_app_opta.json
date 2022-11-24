@@ -59,7 +59,8 @@
             "target.macros_add": [
                 "USE_USB_FS",
                 "LOWSPEED=1",
-                "BOARD_HAS_VIDEO=0"
+                "BOARD_HAS_VIDEO=0",
+                "BOARD_RAM_SIZE=0"
             ],
             "target.usb_speed": "USE_USB_OTG_FS",
             "target.components_remove" : [
