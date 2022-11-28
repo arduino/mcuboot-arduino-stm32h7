@@ -241,8 +241,9 @@ int main(void) {
   DigitalOut video_reset(BOARD_VIDEO_RESET, 0);
 #endif
 
-  //Ticker pulse;
-  //DigitalOut eth_rst(PJ_15, 1);
+#if defined (BOARD_ETH_RESET)
+  DigitalOut eth_reset(BOARD_ETH_RESET, 1);
+#endif
 
   HAL_FLASH_Unlock();
 
