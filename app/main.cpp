@@ -41,7 +41,13 @@
  #define USE_PLL_HSE_XTAL     0x4  // Use external xtal (X3 on board - not provided by default)
  #define USE_PLL_HSI          0x2  // Use HSI internal clock
 
+#if ((CLOCK_SOURCE) & USE_PLL_HSI)
+extern "C" uint8_t SetSysClock_PLL_HSI(void);
+#elif ((CLOCK_SOURCE) & USE_PLL_HSE_EXTC)
 extern "C" uint8_t SetSysClock_PLL_HSE(uint8_t bypass, bool lowspeed);
+#else
+
+#endif
 
 volatile const uint8_t bootloader_data[] __attribute__ ((section (".bootloader_version"), used)) = {
   BOOTLOADER_CONFIG_MAGIC,
@@ -63,13 +69,14 @@ volatile const uint8_t bootloader_identifier[] __attribute__ ((section (".bootlo
 USBD_HandleTypeDef USBD_Device;
 #endif
 
-DigitalOut red(BOARD_RED_LED, 1);
-DigitalOut green(BOARD_GREEN_LED, 1);
-DigitalOut blue(BOARD_BLUE_LED, 1);
-#if defined(TARGET_NICLA_VISION)
-bool boot_sel = false;
-#else
+DigitalOut red(BOARD_RED_LED, BOARD_LED_OFF);
+DigitalOut green(BOARD_GREEN_LED, BOARD_LED_OFF);
+DigitalOut blue(BOARD_BLUE_LED, BOARD_LED_OFF);
+
+#if defined (BOARD_BOOT_SEL)
 DigitalIn boot_sel(BOARD_BOOT_SEL,PullDown);
+#else
+bool boot_sel = false;
 #endif
 
 Ticker swap_ticker;
@@ -77,9 +84,9 @@ bool debug_enabled = false;
 
 static void led_swap_feedback_off(void) {
   swap_ticker.detach();
-  red = 1;
-  green = 1;
-  blue = 1;
+  red = BOARD_LED_OFF;
+  green = BOARD_LED_OFF;
+  blue = BOARD_LED_OFF;
 }
 
 static void led_swap_feedback() {
@@ -133,7 +140,14 @@ static int debug_init(void) {
 static int start_dfu(void) {
   RTCSetBKPRegister(RTC_BKP_DR0, 0);
 
+#if ((CLOCK_SOURCE) & USE_PLL_HSI)
+  SetSysClock_PLL_HSI();
+#elif ((CLOCK_SOURCE) & USE_PLL_HSE_EXTC)
   SetSysClock_PLL_HSE(1, false);
+#else
+
+#endif
+
   SystemCoreClockUpdate();
 
   led_swap_feedback_off();
@@ -235,8 +249,11 @@ int main(void) {
     HAL_Delay(500);
   }
 
+#if defined (BOARD_USB_RESET)
   DigitalOut usb_reset(BOARD_USB_RESET, 0);
-#if BOARD_HAS_VIDEO
+#endif
+
+#if defined (BOARD_HAS_VIDEO) && (BOARD_HAS_VIDEO)
   DigitalOut video_enable(BOARD_VIDEO_ENABLE, 0);
   DigitalOut video_reset(BOARD_VIDEO_RESET, 0);
 #endif
@@ -248,16 +265,16 @@ int main(void) {
   HAL_FLASH_Unlock();
 
   power_init();
-
   HAL_Delay(10);
 
+#if defined (BOARD_USB_RESET)
   usb_reset = 1;
   HAL_Delay(10);
   usb_reset = 0;
   HAL_Delay(10);
   usb_reset = 1;
-
   HAL_Delay(10);
+#endif
 
   if (magic != 0xDF59) {
     if (boot_empty_keys()) {
