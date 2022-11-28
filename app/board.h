@@ -83,7 +83,7 @@
   #define BOARD_USBD_VID                      0x2341
   #define BOARD_USBD_PID                      0x035B
 
-  #define BOARD_USBD_STRING                   "Portenta H7 MCUboot"
+  #define BOARD_USBD_STRING                   "Portenta H7"
 
   #define BOARD_QSPI_SO0                      PD_11
   #define BOARD_QSPI_SO1                      PD_12
@@ -150,7 +150,7 @@
   #define BOARD_USBD_VID                      0x2341
   #define BOARD_USBD_PID                      0x035F
 
-  #define BOARD_USBD_STRING                   "Nicla Vision MCUboot"
+  #define BOARD_USBD_STRING                   "Nicla Vision"
 
   #define BOARD_QSPI_SO0                      PD_11
   #define BOARD_QSPI_SO1                      PF_9
