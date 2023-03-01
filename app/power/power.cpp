@@ -125,6 +125,8 @@ void power_init() {
   portenta_power_init();
 #elif defined TARGET_NICLA_VISION
   nicla_vision_power_init();
+#elif defined TARGET_GIGA
+  //no power init function
 #else
 
 #endif
