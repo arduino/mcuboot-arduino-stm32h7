@@ -45,8 +45,8 @@ To write the default keys in flash you can use this [Sketch](https://github.com/
 ### Customize signing and encryption keys
 You can use your preferred tool the generate your `ecdsa-p256` keys. With imgtool:
 ```
-imgtool keygen -k ecsdsa-p256-signing-key.pem -t ecdsa-p256
-imgtool keygen -k ecsdsa-p256-encrypt-key.pem -t ecdsa-p256
+imgtool keygen -k ecdsa-p256-signing-key.pem -t ecdsa-p256
+imgtool keygen -k ecdsa-p256-encrypt-key.pem -t ecdsa-p256
 ```
 The public signing key and the private encryption key have to be written in flash at this addresses:
 ```
@@ -55,8 +55,8 @@ encrypt key @ 0x8000400
 ```
 To get this data from the generated pem files with imgtool:
 ```
-imgtool getpub -k ecsdsa-p256-signing-key.pem 
-imgtool getpriv -k ecsdsa-p256-encrypt-key.pem
+imgtool getpub -k ecdsa-p256-signing-key.pem 
+imgtool getpriv -k ecdsa-p256-encrypt-key.pem
 ```
 Copy and paste the key data in this [Sketch](https://github.com/arduino/ArduinoCore-mbed/blob/master/libraries/STM32H747_System/examples/STM32H747_manageBootloader/STM32H747_manageBootloader.ino) and run it to flash the keys alongside the bootloader.
 
