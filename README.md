@@ -45,8 +45,8 @@ To write the default keys in flash you can use this [Sketch](https://github.com/
 ### Customize signing and encryption keys
 You can use your preferred tool the generate your `ecdsa-p256` keys. With imgtool:
 ```
-imgtool keygen -k ecdsa-p256-signing-key.pem -t ecdsa-p256
-imgtool keygen -k ecdsa-p256-encrypt-key.pem -t ecdsa-p256
+imgtool keygen -k ecdsa-p256-signing-priv-key.pem -t ecdsa-p256
+imgtool keygen -k ecdsa-p256-encrypt-priv-key.pem -t ecdsa-p256
 ```
 The public signing key and the private encryption key have to be written in flash at this addresses:
 ```
@@ -55,15 +55,39 @@ encrypt key @ 0x8000400
 ```
 To get this data from the generated pem files with imgtool:
 ```
-imgtool getpub -k ecdsa-p256-signing-key.pem 
-imgtool getpriv -k ecdsa-p256-encrypt-key.pem
+imgtool getpub -k ecdsa-p256-signing-priv-key.pem > ecdsa-p256-signing-pub-key.h
+imgtool getpriv -k ecdsa-p256-encrypt-priv-key.pem > ecdsa-p256-encrypt-priv-key.h
 ```
 Copy and paste the key data in this [Sketch](https://github.com/arduino/ArduinoCore-mbed/blob/master/libraries/STM32H747_System/examples/STM32H747_manageBootloader/STM32H747_manageBootloader.ino) and run it to flash the keys alongside the bootloader.
 
-### Create a signed and encrypted update Sketch
+### Substitute default keys for sketch generation
+By default the IDE uses the keys located in `{runtime.platform.path}/libraries/MCUboot/default_keys` 
+
+To use your custom keys follow this steps:
+1. Remove default keys
+```
+cd {runtime.platform.path}/libraries/MCUboot/default_keys
+rm -f *.pem
+```
+2. Generate encryption public key
+```
+openssl pkey -in ecdsa-p256-encrypt-priv-key.pem -pubout > ecdsa-p256-encrypt-pub-key.pem
+```
+or
+```
+ssh-keygen -e -f ecdsa-p256-encrypt-priv-key.pem -y -m "PEM" > ecdsa-p256-encrypt-pub-key.pem
+```
+3. Move keys in the MCUboot library folder
+```
+mv ecsdsa-p256-signing-priv-key.pem `{runtime.platform.path}/libraries/MCUboot/default_keys/ecdsa-p256-signing-priv-key.pem`
+mv ecdsa-p256-encrypt-pub-key.pem `{runtime.platform.path}/libraries/MCUboot/default_keys/ecdsa-p256-encrypt-pub-key.pem`
+```
+Alternatively you can customize your board.txt file following this [guide](https://arduino.github.io/arduino-cli/0.31/guides/secure-boot/)
+
+### Manually create a signed and encrypted update Sketch
 To create a signed and encrypted Sketch an additional step is needed after the Sketch binary is generated. This additional step is done passing the binary through `imgtool`. The flags used by the board to create a secure Sketch are defined [here](https://github.com/arduino/ArduinoCore-mbed/blob/fa628e35011a92fb7e54fa6bfd9a69be33173bf8/boards.txt#L79-L86). The resulting command resembles as follows:
 ```
-imgtool sign --key ecdsa-p256-signing-key.pem --encrypt ecdsa-p256-encrypt-key.pem input.bin output.bin --align 32 --max-align 32 --version 1.2.3+4 --header-size 0x20000 --pad-header --slot-size 0x1E0000
+imgtool sign --key ecdsa-p256-signing-priv-key.pem --encrypt ecdsa-p256-encrypt-pub-key.pem input.bin output.bin --align 32 --max-align 32 --version 1.2.3+4 --header-size 0x20000 --pad-header --slot-size 0x1E0000
 ```
 
 ### Load an update sketch
