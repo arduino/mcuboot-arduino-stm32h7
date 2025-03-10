@@ -1,0 +1,87 @@
+[
+    {
+        "module": "[fill]",
+        "size": {
+            ".text": 228,
+            ".data": 4,
+            ".bss": 58,
+            ".text-delta": 228,
+            ".data-delta": 4,
+            ".bss-delta": 58
+        }
+    },
+    {
+        "module": "[lib]/c_nano.a",
+        "size": {
+            ".text": 9536,
+            ".data": 564,
+            ".bss": 50,
+            ".text-delta": 9536,
+            ".data-delta": 564,
+            ".bss-delta": 50
+        }
+    },
+    {
+        "module": "[lib]/gcc.a",
+        "size": {
+            ".text": 968,
+            ".data": 0,
+            ".bss": 0,
+            ".text-delta": 968,
+            ".data-delta": 0,
+            ".bss-delta": 0
+        }
+    },
+    {
+        "module": "[lib]/misc",
+        "size": {
+            ".text": 180,
+            ".data": 0,
+            ".bss": 28,
+            ".text-delta": 180,
+            ".data-delta": 0,
+            ".bss-delta": 28
+        }
+    },
+    {
+        "module": "[misc]",
+        "size": {
+            ".text": 97798,
+            ".data": 824,
+            ".bss": 172208,
+            ".text-delta": 97798,
+            ".data-delta": 824,
+            ".bss-delta": 172208
+        }
+    },
+    {
+        "module": "cmsis/CMSIS_5",
+        "size": {
+            ".text": 200,
+            ".data": 0,
+            ".bss": 0,
+            ".text-delta": 200,
+            ".data-delta": 0,
+            ".bss-delta": 0
+        }
+    },
+    {
+        "module": "targets/TARGET_STM",
+        "size": {
+            ".text": 742,
+            ".data": 0,
+            ".bss": 0,
+            ".text-delta": 742,
+            ".data-delta": 0,
+            ".bss-delta": 0
+        }
+    },
+    {
+        "summary": {
+            "static_ram": 173736,
+            "static_ram_delta": 173736,
+            "total_flash": 111044,
+            "total_flash_delta": 111044
+        }
+    }
+]

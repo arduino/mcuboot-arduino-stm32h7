@@ -1,0 +1,32 @@
+{
+    "flags": [
+        "-c",
+        "-x",
+        "assembler-with-cpp"
+    ],
+    "macros": [],
+    "symbols": [
+        "ARM_MATH_CM7",
+        "BOARD_EXTCLOCK=16",
+        "BOARD_HAS_ETHERNET=0",
+        "BOARD_HAS_VIDEO=0",
+        "BT_UART_NO_3M_SUPPORT",
+        "CM4_BOOT_BY_APPLICATION",
+        "CORE_CM7",
+        "CYW43XXX_UNBUFFERED_UART",
+        "EXTRA_IDLE_STACK_REQUIRED",
+        "MBEDTLS_FS_IO",
+        "MBEDTLS_SHA1_C",
+        "MBED_TICKLESS",
+        "QSPI_NO_SAMPLE_SHIFT",
+        "STM32H747xx",
+        "TRANSACTION_QUEUE_SIZE_SPI=2",
+        "USE_FULL_LL_DRIVER",
+        "USE_HAL_DRIVER",
+        "USE_USB_FS",
+        "__CMSIS_RTOS",
+        "__CORTEX_M7",
+        "__FPU_PRESENT=1",
+        "__MBED_CMSIS_RTOS_CM"
+    ]
+}
