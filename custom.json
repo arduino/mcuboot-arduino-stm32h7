@@ -12,7 +12,8 @@
         "ld": ["-Wl,--gc-sections", "-Wl,--wrap,main", "-Wl,--wrap,_malloc_r",
                "-Wl,--wrap,_free_r", "-Wl,--wrap,_realloc_r", "-Wl,--wrap,_memalign_r",
                "-Wl,--wrap,_calloc_r", "-Wl,--wrap,exit", "-Wl,--wrap,atexit",
-               "-Wl,-n", "-u __wrap_printf", "-u main", "-u malloc", "-u __wrap_snprintf", "-u _malloc_r"]
+               "-Wl,-n", "-u __wrap_printf", "-u main", "-u malloc", "-u __wrap_snprintf", "-u _malloc_r",
+               "-u __wrap__calloc_r"]
     },
     "ARMC6": {
         "common": ["-c", "--target=arm-arm-none-eabi", "-mthumb", "-Oz",
