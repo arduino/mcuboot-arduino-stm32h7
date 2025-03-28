@@ -38,7 +38,7 @@ If signing and encryption keys are not stored in flash alongside MCUboot, the Sk
 By default signature verification and encryption support are disabled. To enable them you have to write your signature and encryption keys inside your board.
 In this project MCUboot is configured to support `ecdsa-p256` keys for both signature and encryption.
 
-To write the default keys in flash you can use this [Sketch](https://github.com/arduino/ArduinoCore-mbed/blob/master/libraries/STM32H747_System/examples/STM32H747_manageBootloader/STM32H747_manageBootloader.ino)
+To write the default keys in flash you can use this [Sketch](https://github.com/arduino/ArduinoCore-mbed/blob/main/libraries/MCUboot/examples/enableSecurity/enableSecurity.ino)
 
 :warning: WARNING :warning: The default keys are public therefore is not safe to use them for production, they are included only for evaluation purpose.
 
