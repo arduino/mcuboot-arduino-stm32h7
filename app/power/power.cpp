@@ -76,13 +76,33 @@ static void portenta_power_init() {
   data[1]=(20 << 3);
   i2c.write(8 << 1, data, sizeof(data));
 
-  // SW2 to 3.3V (SW2_VOLT)
-  data[0]=0x3B;
-  data[1]=0xF;
+  // SW1 turn off before config (SW1_VOLT_CTRL)
+  data[0]=0x35;
+  data[1]=0x0;
   i2c.write(8 << 1, data, sizeof(data));
 
+  // SW2 turn off before config (SW2_VOLT_CTRL)
+  data[0]=0x3B;
+  data[1]=0x0;
+  i2c.write(8 << 1, data, sizeof(data));
+
+  // SW1 set to 3.0V (SW1_VOLT)
+  data[0]=0x32;
+  data[1]=0x6;
+  i2c.write(8 << 1, data, sizeof(data));
+
+  // SW2 set to 3.3V (SW2_VOLT)
+  data[0]=0x38;
+  data[1]=0x7;
+  i2c.write(8 << 1, data, sizeof(data));
+  
   // SW1 to 3.0V (SW1_VOLT)
   data[0]=0x35;
+  data[1]=0xF;
+  i2c.write(8 << 1, data, sizeof(data));
+  
+  // SW2 turn back ON (SW2_VOLT_CTRL)
+  data[0]=0x3B;
   data[1]=0xF;
   i2c.write(8 << 1, data, sizeof(data));
 }
