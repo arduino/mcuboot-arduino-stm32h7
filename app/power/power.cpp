@@ -75,6 +75,12 @@ static void portenta_power_init() {
   data[0]=0x94;
   data[1]=(20 << 3);
   i2c.write(8 << 1, data, sizeof(data));
+  
+  // At this point  in the start-up sequence, the DC/DC converter output voltages of the PF1550, power management IC (PMIC), 
+  // have been configured with the values found in the one-time programmable registers, themselves written prior to the PMIC, during production.
+  // On some commercial samples, these values were programmed incorrectly, and the PMIC outputs 3.0V instead of 3.1 or 3.3 on the respective rails.
+  // Therefore, it is first necessary to turn the SW1 and SW2 rails off, program the correct values in the SWx_VOLT registers,
+  // and then turn them back on using the SWx_VOLT_CTRL register for the changes to take full effect.
 
   // SW1 turn off before config (SW1_VOLT_CTRL)
   data[0]=0x35;
