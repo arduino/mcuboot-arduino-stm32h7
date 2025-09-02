@@ -102,7 +102,7 @@ static void portenta_power_init() {
   data[1]=0x7;
   i2c.write(8 << 1, data, sizeof(data));
   
-  // SW1 turn back ON (SW1_VOLT_CTRL)
+  // SW1 turn back ON (SW1_CTRL)
   data[0]=0x35;
   data[1]=0xF;
   i2c.write(8 << 1, data, sizeof(data));
