@@ -87,7 +87,7 @@ static void portenta_power_init() {
   data[1]=0x0;
   i2c.write(8 << 1, data, sizeof(data));
 
-  // SW2 turn off before config (SW2_VOLT_CTRL)
+  // SW2 turn off before config (turned on by OTP settings) (SW2_CTRL)
   data[0]=0x3B;
   data[1]=0x0;
   i2c.write(8 << 1, data, sizeof(data));
